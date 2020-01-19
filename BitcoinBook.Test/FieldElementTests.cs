@@ -48,9 +48,7 @@ namespace BitcoinBook.Test
         [InlineData(19, 11, 17, 9)]
         public void AddOperatorTest(long prime, long number1, long number2, long result)
         {
-            var element = new FieldElement(number1, prime) + new FieldElement(number2, prime);
-            Assert.Equal(result, element.Number);
-            Assert.Equal(prime, element.Prime);
+            Assert.Equal(result, (new FieldElement(number1, prime) + new FieldElement(number2, prime)).Number);
         }
 
         [Fact]
@@ -78,9 +76,20 @@ namespace BitcoinBook.Test
         [InlineData(19, 11, 17, 13)]
         public void SubtractOperatorTest(long prime, long number1, long number2, long result)
         {
-            var element = new FieldElement(number1, prime) - new FieldElement(number2, prime);
-            Assert.Equal(result, element.Number);
-            Assert.Equal(prime, element.Prime);
+            Assert.Equal(result, (new FieldElement(number1, prime) - new FieldElement(number2, prime)).Number);
+        }
+
+        [Fact]
+        public void MultiplyOperatorTest()
+        {
+            Assert.Equal(23, (new FieldElement(95, 97) * new FieldElement(45, 97) * new FieldElement(31, 97)).Number);
+            Assert.Equal(68, (new FieldElement(17, 97) * new FieldElement(13, 97) * new FieldElement(19, 97) * new FieldElement(44, 97)).Number);
+        }
+
+        [Fact]
+        public void PowerOperatorTest()
+        {
+            Assert.Equal(2, (new FieldElement(2, 7) ^ 4).Number);
         }
     }
 }
