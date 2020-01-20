@@ -3,9 +3,9 @@ using Xunit;
 
 namespace BitcoinBook.Test
 {
-    public class PointTests
+    public class DoublePointTests
     {
-        readonly Curve c = new Curve(5, 7);
+        readonly DoubleCurve c = new DoubleCurve(5, 7);
 
         [Fact]
         public void InvalidPointTest()

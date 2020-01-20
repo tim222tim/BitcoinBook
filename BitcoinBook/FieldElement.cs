@@ -56,6 +56,8 @@ namespace BitcoinBook
             return new FieldElement(BigInteger.ModPow(Number, exponent, Prime), Prime);
         }
 
+        public static bool operator ==(FieldElement a, FieldElement b) => a.Equals(b);
+        public static bool operator !=(FieldElement a, FieldElement b) => !a.Equals(b);
         public static FieldElement operator +(FieldElement a, FieldElement b) => a.Add(b);
         public static FieldElement operator -(FieldElement a, FieldElement b) => a.Subtract(b);
         public static FieldElement operator *(FieldElement a, FieldElement b) => a.Multiply(b);

@@ -1,20 +1,18 @@
-﻿using System.Numerics;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
     public class Curve
     {
-        public double A { get; }
-        public double B { get; }
+        public FieldElement A { get; }
+        public FieldElement B { get; }
 
-        public Curve(double a, double b)
+        public Curve(FieldElement a, FieldElement b)
         {
             A = a;
             B = b;
             Infinity = BitcoinBook.Point.Infinity(A, B);
         }
 
-        public Point Point(double x, double y)
+        public Point Point(FieldElement x, FieldElement y)
         {
             return new Point(x, y, A, B);
         }
