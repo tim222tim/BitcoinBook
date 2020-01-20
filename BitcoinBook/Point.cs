@@ -54,6 +54,19 @@ namespace BitcoinBook
             return Equals((Point) obj);
         }
 
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = x.GetHashCode();
+                hashCode = (hashCode * 397) ^ y.GetHashCode();
+                hashCode = (hashCode * 397) ^ A.GetHashCode();
+                hashCode = (hashCode * 397) ^ B.GetHashCode();
+                hashCode = (hashCode * 397) ^ IsInfinity.GetHashCode();
+                return hashCode;
+            }
+        }
+
         public Point Add(Point p)
         {
             CheckCurve(p);
