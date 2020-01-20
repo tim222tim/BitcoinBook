@@ -49,9 +49,9 @@ namespace BitcoinBook
 
         public FieldElement Power(BigInteger exponent)
         {
-            if (exponent < 0)
+            while (exponent < 0)
             {
-                return Power(Prime + exponent - 1);
+                exponent += Prime - 1;
             }
             return new FieldElement(BigInteger.ModPow(Number, exponent, Prime), Prime);
         }
