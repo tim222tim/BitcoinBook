@@ -49,7 +49,7 @@ namespace BitcoinBook
 
         public FieldElement Power(BigInteger exponent)
         {
-            while (exponent < 0)
+            while (exponent < 0) // TODO take out while by using mod
             {
                 exponent += Prime - 1;
             }
