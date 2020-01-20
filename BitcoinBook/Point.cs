@@ -80,7 +80,7 @@ namespace BitcoinBook
 
         public override string ToString()
         {
-            return IsInfinity ? "Inf" : $"({x},{y})_{A}_{B}";
+            return IsInfinity ? "Inf" : $"({x.Number},{y.Number})_{A.Number}_{B.Number} Field({x.Prime})";
         }
 
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
