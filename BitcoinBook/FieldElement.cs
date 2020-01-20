@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Numerics;
 
 namespace BitcoinBook
 {
     public struct FieldElement
     {
-        public long Number { get; }
-        public long Prime { get; }
+        public BigInteger Number { get; }
+        public BigInteger Prime { get; }
 
-        public FieldElement(long number, long prime)
+        public FieldElement(BigInteger number, BigInteger prime)
         {
             if (number < 0 || number >= prime)
             {
@@ -17,18 +18,16 @@ namespace BitcoinBook
             Prime = prime;
         }
 
-        public FieldElement Add(FieldElement element)
+        public FieldElement Add(FieldElement b)
         {
-            CheckField(element);
-
-            return new FieldElement((Number + element.Number) % Prime, Prime);
+            CheckField(b);
+            return new FieldElement((Number + b.Number) % Prime, Prime);
         }
 
-        public FieldElement Subtract(FieldElement element)
+        public FieldElement Subtract(FieldElement b)
         {
-            CheckField(element);
-
-            var result = Number - element.Number;
+            CheckField(b);
+            var result = Number - b.Number;
             if (result < 0)
             {
                 result += Prime;
@@ -36,22 +35,32 @@ namespace BitcoinBook
             return new FieldElement(result % Prime, Prime);
         }
 
-        public FieldElement Multiply(FieldElement element)
+        public FieldElement Multiply(FieldElement b)
         {
-            CheckField(element);
-
-            return new FieldElement((Number * element.Number) % Prime, Prime);
+            CheckField(b);
+            return new FieldElement((Number * b.Number) % Prime, Prime);
         }
 
-        public FieldElement Power(int exponent)
+        public FieldElement Divide(FieldElement b)
         {
-            return new FieldElement((long)Math.Pow(Number, exponent) % Prime, Prime);
+            CheckField(b);
+            return Multiply(b ^ (Prime - 2));
+        }
+
+        public FieldElement Power(BigInteger exponent)
+        {
+            if (exponent < 0)
+            {
+                return Power(Prime + exponent - 1);
+            }
+            return new FieldElement(BigInteger.ModPow(Number, exponent, Prime), Prime);
         }
 
         public static FieldElement operator +(FieldElement a, FieldElement b) => a.Add(b);
         public static FieldElement operator -(FieldElement a, FieldElement b) => a.Subtract(b);
         public static FieldElement operator *(FieldElement a, FieldElement b) => a.Multiply(b);
-        public static FieldElement operator ^(FieldElement a, int exponent) => a.Power(exponent);
+        public static FieldElement operator /(FieldElement a, FieldElement b) => a.Divide(b);
+        public static FieldElement operator ^(FieldElement a, BigInteger exponent) => a.Power(exponent);
 
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         void CheckField(FieldElement element)

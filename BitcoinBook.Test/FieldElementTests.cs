@@ -82,14 +82,25 @@ namespace BitcoinBook.Test
         [Fact]
         public void MultiplyOperatorTest()
         {
-            Assert.Equal(23, (new FieldElement(95, 97) * new FieldElement(45, 97) * new FieldElement(31, 97)).Number);
-            Assert.Equal(68, (new FieldElement(17, 97) * new FieldElement(13, 97) * new FieldElement(19, 97) * new FieldElement(44, 97)).Number);
+            var f = new Field(97);
+            Assert.Equal(23, (f.Element(95) * f.Element(45) * f.Element(31)).Number);
+            Assert.Equal(68, (f.Element(17) * f.Element(13) * f.Element(19) * f.Element(44)).Number);
+        }
+
+        [Fact]
+        public void DivideOperatorTest()
+        {
+            var f = new Field(31);
+            Assert.Equal(4, (f.Element(3) / f.Element(24)).Number);
         }
 
         [Fact]
         public void PowerOperatorTest()
         {
             Assert.Equal(2, (new FieldElement(2, 7) ^ 4).Number);
+            var f = new Field(31);
+            Assert.Equal(29, (f.Element(17) ^ -3).Number);
+            Assert.Equal(13, ((f.Element(4) ^ -4) * f.Element(11)).Number);
         }
     }
 }
