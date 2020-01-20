@@ -57,5 +57,13 @@ namespace BitcoinBook.Test
             Assert.Equal(result, p1 + p2);
             Assert.Equal(result, p2 + p1);
         }
+
+        [Fact]
+        public void AddSameTest()
+        {
+            var p1 = c.Point(-1, 1);
+            var result = c.Point(18, -77);
+            Assert.Equal(result, p1 + p1);
+        }
     }
 }

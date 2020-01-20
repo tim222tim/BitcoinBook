@@ -4,17 +4,17 @@ namespace BitcoinBook
 {
     public class Curve
     {
-        public BigInteger A { get; }
-        public BigInteger B { get; }
+        public double A { get; }
+        public double B { get; }
 
-        public Curve(BigInteger a, BigInteger b)
+        public Curve(double a, double b)
         {
             A = a;
             B = b;
             Infinity = BitcoinBook.Point.Infinity(A, B);
         }
 
-        public Point Point(BigInteger x, BigInteger y)
+        public Point Point(double x, double y)
         {
             return new Point(x, y, A, B);
         }

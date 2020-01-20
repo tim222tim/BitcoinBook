@@ -5,18 +5,18 @@ namespace BitcoinBook
 {
     public struct Point : IEquatable<Point>
     {
-        readonly BigInteger x;
-        readonly BigInteger y;
+        readonly double x;
+        readonly double y;
 
-        public BigInteger X => !IsInfinity ? x : throw new ArithmeticException("X not valid for identity point");
-        public BigInteger Y => !IsInfinity ? y : throw new ArithmeticException("Y not valid for identity point");
-        public BigInteger A { get; }
-        public BigInteger B { get; }
+        public double X => !IsInfinity ? x : throw new ArithmeticException("X not valid for identity point");
+        public double Y => !IsInfinity ? y : throw new ArithmeticException("Y not valid for identity point");
+        public double A { get; }
+        public double B { get; }
         public bool IsInfinity { get; }
 
-        public Point(BigInteger x, BigInteger y, BigInteger a, BigInteger b)
+        public Point(double x, double y, double a, double b)
         {
-            if (BigInteger.Pow(y, 2) != BigInteger.Pow(x, 3) + a * x + b)
+            if (Math.Pow(y, 2) != Math.Pow(x, 3) + a * x + b)
             {
                 throw new ArithmeticException($"{x},{y} is not on the curve");
             }
@@ -28,14 +28,16 @@ namespace BitcoinBook
             IsInfinity = false;
         }
 
-        Point(BigInteger a, BigInteger b)
+        Point(double a, double b)
         {
             A = a;
             B = b;
+            x = double.MinValue;
+            y = double.MinValue;
             IsInfinity = true;
         }
 
-        public static Point Infinity(BigInteger a, BigInteger b)
+        public static Point Infinity(double a, double b)
         {
             return new Point(a, b);
         }
@@ -73,19 +75,47 @@ namespace BitcoinBook
             if (IsInfinity) return p;
             if (p.IsInfinity) return this;
             if (X == p.x && Y != p.Y) return Infinity(A, B);
-            var s = (p.Y - y) / (p.X - X);
-            var rx = BigInteger.Pow(s, 2) - X - p.X;
-            var ry = s * (X - rx) - Y;
-            return new Point(rx, ry, A, B);
+            if (Equals(p)) return AddToSelf(this);
+            return AddGeneral(this, p);
         }
 
         public static Point operator +(Point p1, Point p2) => p1.Add(p2);
 
+        public override string ToString()
+        {
+            return IsInfinity ? "Inf" : $"({x},{y})_{A}_{B}";
+        }
+
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         void CheckCurve(Point p)
         {
-            if (p.A != A || p.B != B) throw new InvalidOperationException("Points must beon the same curve");
+            if (p.A != A || p.B != B) throw new InvalidOperationException("Points must be on the same curve");
         }
 
+        static Point AddToSelf(Point p)
+        {
+            var slope = SlopeOfTangent(p);
+            var rx = Math.Pow(slope, 2) - 2 * p.X;
+            var ry = slope * (p.X - rx) - p.Y;
+            return new Point(rx, ry, p.A, p.B);
+        }
+
+        static Point AddGeneral(Point p1, Point p2)
+        {
+            var slope = Slope(p1, p2);
+            var rx = Math.Pow(slope, 2) - p1.X - p2.X;
+            var ry = slope * (p1.X - rx) - p1.Y;
+            return new Point(rx, ry, p1.A, p1.B);
+        }
+
+        static double Slope(Point p1, Point p2)
+        {
+            return (p2.Y - p1.Y) / (p2.X - p1.X);
+        }
+
+        static double SlopeOfTangent(Point p)
+        {
+            return (3 * Math.Pow(p.X, 2) + p.A) / (2 * p.Y);
+        }
     }
 }
