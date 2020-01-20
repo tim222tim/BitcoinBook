@@ -47,5 +47,15 @@ namespace BitcoinBook.Test
             var p2 = c.Point(-1, 1);
             Assert.Equal(c.Infinity, p1 + p2);
         }
+
+        [Fact]
+        public void AddTest()
+        {
+            var p1 = c.Point(-1, -1);
+            var p2 = c.Point(2, 5);
+            var result = c.Point(3, -7);
+            Assert.Equal(result, p1 + p2);
+            Assert.Equal(result, p2 + p1);
+        }
     }
 }

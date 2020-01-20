@@ -60,7 +60,10 @@ namespace BitcoinBook
             if (IsInfinity) return p;
             if (p.IsInfinity) return this;
             if (X == p.x && Y != p.Y) return Infinity(A, B);
-            throw new NotImplementedException();
+            var s = (p.Y - y) / (p.X - X);
+            var rx = BigInteger.Pow(s, 2) - X - p.X;
+            var ry = s * (X - rx) - Y;
+            return new Point(rx, ry, A, B);
         }
 
         public static Point operator +(Point p1, Point p2) => p1.Add(p2);
