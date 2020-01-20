@@ -3,12 +3,16 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class Point : IEquatable<Point>
+    public struct Point : IEquatable<Point>
     {
-        public BigInteger X { get; }
-        public BigInteger Y { get; }
+        readonly BigInteger x;
+        readonly BigInteger y;
+
+        public BigInteger X => !IsInfinity ? x : throw new ArithmeticException("X not valid for identity point");
+        public BigInteger Y => !IsInfinity ? y : throw new ArithmeticException("Y not valid for identity point");
         public BigInteger A { get; }
         public BigInteger B { get; }
+        public bool IsInfinity { get; }
 
         public Point(BigInteger x, BigInteger y, BigInteger a, BigInteger b)
         {
@@ -17,37 +21,55 @@ namespace BitcoinBook
                 throw new ArithmeticException($"{x},{y} is not on the curve");
             }
 
-            X = x;
-            Y = y;
+            this.x = x;
+            this.y = y;
             A = a;
             B = b;
+            IsInfinity = false;
         }
 
-        public bool Equals(Point other)
+        Point(BigInteger a, BigInteger b)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return X.Equals(other.X) && Y.Equals(other.Y) && A.Equals(other.A) && B.Equals(other.B);
+            A = a;
+            B = b;
+            IsInfinity = true;
+        }
+
+        public static Point Infinity(BigInteger a, BigInteger b)
+        {
+            return new Point(a, b);
+        }
+
+        public bool Equals(Point p)
+        {
+            if (A != p.A || B != p.B) return false;
+            if (IsInfinity != p.IsInfinity) return false;
+            if (IsInfinity && p.IsInfinity) return true;
+            return X == p.X && Y == p.Y;
         }
 
         public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+        { 
+            if (obj == null || obj.GetType() != GetType()) return false;
             return Equals((Point) obj);
         }
 
-        public override int GetHashCode()
+        public Point Add(Point p)
         {
-            unchecked
-            {
-                var hashCode = X.GetHashCode();
-                hashCode = (hashCode * 397) ^ Y.GetHashCode();
-                hashCode = (hashCode * 397) ^ A.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
-                return hashCode;
-            }
+            CheckCurve(p);
+            if (IsInfinity) return p;
+            if (p.IsInfinity) return this;
+            if (X == p.x && Y != p.Y) return Infinity(A, B);
+            throw new NotImplementedException();
         }
+
+        public static Point operator +(Point p1, Point p2) => p1.Add(p2);
+
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
+        void CheckCurve(Point p)
+        {
+            if (p.A != A || p.B != B) throw new InvalidOperationException("Points must beon the same curve");
+        }
+
     }
 }

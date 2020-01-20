@@ -26,6 +26,26 @@ namespace BitcoinBook.Test
             var p2 = c.Point(18, 77);
             Assert.False(p1.Equals(p2));
             Assert.True(p1.Equals(c.Point(-1, -1)));
+            Assert.Equal(p1, c.Point(-1, -1));
+            Assert.NotEqual(p1, p2);
+            Assert.Equal(c.Infinity, c.Infinity);
+            Assert.NotEqual(c.Infinity, p1);
+        }
+
+        [Fact]
+        public void AddIdentityTest()
+        {
+            var p1 = c.Point(-1, -1);
+            Assert.Equal(p1, p1 + c.Infinity);
+            Assert.Equal(p1, c.Infinity + p1);
+        }
+
+        [Fact]
+        public void AddInverseTest()
+        {
+            var p1 = c.Point(-1, -1);
+            var p2 = c.Point(-1, 1);
+            Assert.Equal(c.Infinity, p1 + p2);
         }
     }
 }

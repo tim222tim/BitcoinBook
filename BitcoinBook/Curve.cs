@@ -11,11 +11,14 @@ namespace BitcoinBook
         {
             A = a;
             B = b;
+            Infinity = BitcoinBook.Point.Infinity(A, B);
         }
 
         public Point Point(BigInteger x, BigInteger y)
         {
             return new Point(x, y, A, B);
         }
+
+        public Point Infinity { get; }
     }
 }

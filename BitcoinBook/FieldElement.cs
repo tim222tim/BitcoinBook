@@ -63,9 +63,9 @@ namespace BitcoinBook
         public static FieldElement operator ^(FieldElement a, BigInteger exponent) => a.Power(exponent);
 
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-        void CheckField(FieldElement element)
+        void CheckField(FieldElement b)
         {
-            if (element.Prime != Prime) throw new InvalidOperationException("Numbers must bein the same field");
+            if (b.Prime != Prime) throw new InvalidOperationException("Numbers must be in the same field");
         }
     }
 }
