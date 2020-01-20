@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace BitcoinBook.Test
+namespace BitcoinBook
 {
     public class Field
     {
