@@ -13,8 +13,13 @@ namespace BitcoinBook.Test
             var gy = BigInteger.Parse("483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", NumberStyles.HexNumber);
 
             var g = new S256Point(gx, gy);
-            Assert.Equal(S256Point.Generator, g);
+            Assert.Equal(S256Point.S256Generator, g);
         }
 
+        [Fact]
+        public void OrderTest()
+        {
+            Assert.Equal(S256Point.Infinity(), S256Point.S256Generator * S256Point.S256Order);
+        }
     }
 }
