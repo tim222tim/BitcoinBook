@@ -30,6 +30,19 @@ namespace BitcoinBook.Test
             Assert.Throws<ArithmeticException>(() => curve.Point(x, y));
         }
 
+        [Fact]
+        public void EqualsTest()
+        {
+            var p1 = curve.Point(192, 105);
+            var p1b = curve.Point(192, 105);
+            var p2 = curve.Point(17, 56);
+            Assert.Equal(p1, p1b);
+            Assert.Equal(p2, p2);
+            Assert.True(p1 == p1b);
+            Assert.NotEqual(p1, p2);
+            Assert.True(p1 != p2);
+        }
+
         [Theory]
         [InlineData(170, 142, 192, 105, 17, 56)]
         [InlineData(60, 139, 47, 71, 117, 141)]

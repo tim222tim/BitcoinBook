@@ -81,6 +81,8 @@ namespace BitcoinBook
             return AddGeneral(this, p);
         }
 
+        public static bool operator ==(Point a, Point b) => a.Equals(b);
+        public static bool operator !=(Point a, Point b) => !a.Equals(b);
         public static Point operator +(Point p1, Point p2) => p1.Add(p2);
 
         public override string ToString()
