@@ -12,6 +12,7 @@ namespace BitcoinBook
         public FieldElement Y => !IsInfinity ? y : throw new ArithmeticException("Y not valid for infinity point");
         public Curve Curve { get; }
         public bool IsInfinity { get; }
+
         FieldElement A => Curve.A;
         FieldElement B => Curve.B;
 
@@ -86,7 +87,7 @@ namespace BitcoinBook
             if (coefficient < 0) throw new ArgumentException("Must be 0 or greater", nameof(coefficient));
 
             var result = Curve.Infinity;
-            while (--coefficient > 0)
+            while (coefficient-- > 0)
             {
                 result = result.Add(this);
             }
