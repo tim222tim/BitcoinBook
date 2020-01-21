@@ -10,41 +10,38 @@ namespace BitcoinBook
 
         public FieldElement X => !IsInfinity ? x : throw new ArithmeticException("X not valid for infinity point");
         public FieldElement Y => !IsInfinity ? y : throw new ArithmeticException("Y not valid for infinity point");
-        public FieldElement A { get; }
-        public FieldElement B { get; }
+        public Curve Curve { get; }
         public bool IsInfinity { get; }
+        FieldElement A => Curve.A;
+        FieldElement B => Curve.B;
 
-        public Point(FieldElement x, FieldElement y, FieldElement a, FieldElement b)
+        public Point(FieldElement x, FieldElement y, Curve curve)
         {
-            FieldElement.ThrowIfNotSameField(x, y, a, b);
+            FieldElement.ThrowIfNotSameField(x, y, curve.A);
 
-            if ((y ^ 2) != (x ^ 3) + a * x + b)
+            if ((y ^ 2) != (x ^ 3) + curve.A * x + curve.B)
             {
                 throw new ArithmeticException($"{x},{y} is not on the curve");
             }
 
             this.x = x;
             this.y = y;
-            A = a;
-            B = b;
+            Curve = curve;
+
             IsInfinity = false;
         }
 
-        Point(FieldElement a, FieldElement b)
+        Point(Curve curve)
         {
-            FieldElement.ThrowIfNotSameField(a, b);
-
             x = default;
             y = default;
-            A = a;
-            B = b;
+            Curve = curve;
             IsInfinity = true;
         }
 
-        public static Point Infinity(FieldElement a, FieldElement b)
+        public static Point Infinity(Curve curve)
         {
-            FieldElement.ThrowIfNotSameField(a, b);
-            return new Point(a, b);
+            return new Point(curve);
         }
 
         public bool Equals(Point p)
@@ -79,7 +76,7 @@ namespace BitcoinBook
             ThrowIfNotSameCurve(this, p);
             if (IsInfinity) return p;
             if (p.IsInfinity) return this;
-            if (X == p.x && Y != p.Y) return Infinity(A, B);
+            if (X == p.x && Y != p.Y) return Curve.Infinity;
             if (Equals(p)) return AddToSelf(this);
             return AddGeneral(this, p);
         }
@@ -110,7 +107,7 @@ namespace BitcoinBook
         {
             foreach (var point in points)
             {
-                if (point.A != points[0].A || point.B != points[0].B)
+                if (point.Curve != points[0].Curve)
                 {
                     return false;
                 }
@@ -128,7 +125,7 @@ namespace BitcoinBook
             var slope = SlopeOfTangent(p);
             var rx = (slope ^ 2) - p.X.Field.Element(2) * p.X;
             var ry = slope * (p.X - rx) - p.Y;
-            return new Point(rx, ry, p.A, p.B);
+            return p.Curve.Point(rx, ry);
         }
 
         static Point AddGeneral(Point p1, Point p2)
@@ -136,7 +133,7 @@ namespace BitcoinBook
             var slope = Slope(p1, p2);
             var rx = (slope ^ 2) - p1.X - p2.X;
             var ry = slope * (p1.X - rx) - p1.Y;
-            return new Point(rx, ry, p1.A, p1.B);
+            return p1.Curve.Point(rx, ry);
         }
 
         static FieldElement Slope(Point p1, Point p2)
