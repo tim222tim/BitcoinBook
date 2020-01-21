@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public struct FieldElement
+    public class FieldElement
     {
         public BigInteger Number { get; }
         public Field Field { get; }

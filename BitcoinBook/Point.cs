@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public struct Point : IEquatable<Point>
+    public class Point : IEquatable<Point>
     {
         readonly FieldElement x;
         readonly FieldElement y;
@@ -32,7 +32,7 @@ namespace BitcoinBook
             IsInfinity = false;
         }
 
-        Point(Curve curve)
+        protected Point(Curve curve)
         {
             x = default;
             y = default;
