@@ -56,7 +56,7 @@ namespace BitcoinBook
         public override bool Equals(object obj)
         {
             if (obj == null || obj.GetType() != GetType()) return false;
-            return Equals((DoublePoint)obj);
+            return Equals((Point)obj);
         }
 
         public override int GetHashCode()
