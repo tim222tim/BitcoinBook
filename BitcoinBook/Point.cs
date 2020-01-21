@@ -82,7 +82,7 @@ namespace BitcoinBook
             return AddGeneral(this, p);
         }
 
-        public Point MultiplyBy(BigInteger coefficient)
+        public virtual Point MultiplyBy(BigInteger coefficient)
         {
             if (coefficient < 0) throw new ArgumentException("Must be 0 or greater", nameof(coefficient));
 

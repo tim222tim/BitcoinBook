@@ -28,5 +28,11 @@ namespace BitcoinBook
         {
             return new S256Point();
         }
+
+        public override Point MultiplyBy(BigInteger coefficient)
+        {
+            coefficient = BigInteger.Remainder(coefficient, S256Order);
+            return base.MultiplyBy(coefficient);
+        }
     }
 }
