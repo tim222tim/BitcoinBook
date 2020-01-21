@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace BitcoinBook
 {
@@ -79,6 +80,19 @@ namespace BitcoinBook
             if (X == p.x && Y != p.Y) return Infinity(A, B);
             if (Equals(p)) return AddToSelf(this);
             return AddGeneral(this, p);
+        }
+
+        public Point MultiplyBy(BigInteger i)
+        {
+            if (i < 1) throw new ArgumentException("Must be 1 or greater", nameof(i));
+
+            var result = this;
+            while (--i > 0)
+            {
+                result = result.Add(this);
+            }
+
+            return result;
         }
 
         public static bool operator ==(Point a, Point b) => a.Equals(b);

@@ -34,11 +34,11 @@ namespace BitcoinBook.Test
         public void EqualsTest()
         {
             var p1 = curve.Point(192, 105);
-            var p1b = curve.Point(192, 105);
+            var p1B = curve.Point(192, 105);
             var p2 = curve.Point(17, 56);
-            Assert.Equal(p1, p1b);
+            Assert.Equal(p1, p1B);
             Assert.Equal(p2, p2);
-            Assert.True(p1 == p1b);
+            Assert.True(p1 == p1B);
             Assert.NotEqual(p1, p2);
             Assert.True(p1 != p2);
         }
@@ -47,11 +47,29 @@ namespace BitcoinBook.Test
         [InlineData(170, 142, 192, 105, 17, 56)]
         [InlineData(60, 139, 47, 71, 117, 141)]
         [InlineData(47, 71, 143, 98, 76, 66)]
-        public void AddTest(int x3, int y3, int x1, int y1, int x2, int y2)
+        public void AddTest(int rx, int ry, int x1, int y1, int x2, int y2)
         {
             var p1 = curve.Point(x1, y1);
             var p2 = curve.Point(x2, y2);
-            Assert.Equal(curve.Point(x3, y3), p1 + p2);
+            Assert.Equal(curve.Point(rx, ry), p1 + p2);
+        }
+
+        [Theory]
+        [InlineData(192, 105, 192, 105, 1)]
+        [InlineData(49, 71, 192, 105, 2)]
+        [InlineData(64, 168, 143, 98, 2)]
+        [InlineData(36, 111, 47, 71, 2)]
+        [InlineData(194, 51, 47, 71, 4)]
+        [InlineData(116, 55, 47, 71, 8)]
+        public void MultiplyByTest(int rx, int ry, int x, int y, int m)
+        {
+            Assert.Equal(curve.Point(rx, ry), curve.Point(x, y).MultiplyBy(m));
+        }
+
+        [Fact]
+        public void MultiplyGetInfinityTest()
+        {
+            Assert.True(curve.Point(47, 71).MultiplyBy(21).IsInfinity);
         }
     }
 }
