@@ -81,17 +81,30 @@ namespace BitcoinBook
             return AddGeneral(this, p);
         }
 
-        public Point MultiplyBy(BigInteger i)
+        public Point MultiplyBy(BigInteger coefficient)
         {
-            if (i < 1) throw new ArgumentException("Must be 1 or greater", nameof(i));
+            if (coefficient < 0) throw new ArgumentException("Must be 0 or greater", nameof(coefficient));
 
-            var result = this;
-            while (--i > 0)
+            var result = Curve.Infinity;
+            while (--coefficient > 0)
             {
                 result = result.Add(this);
             }
 
             return result;
+        }
+
+        public BigInteger GetOrder()
+        {
+            BigInteger count = 1;
+            var product = this;
+            while (!product.IsInfinity)
+            {
+                product += this;
+                ++count;
+            }
+
+            return count;
         }
 
         public static bool operator ==(Point a, Point b) => a.Equals(b);

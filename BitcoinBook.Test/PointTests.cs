@@ -69,7 +69,14 @@ namespace BitcoinBook.Test
         [Fact]
         public void MultiplyGetInfinityTest()
         {
-            Assert.True(curve.Point(47, 71).MultiplyBy(21).IsInfinity);
+            var p = curve.Point(47, 71);
+            Assert.True(p.MultiplyBy(21).IsInfinity);
+        }
+
+        [Fact]
+        public void OrderTest()
+        {
+            Assert.Equal(7, curve.Point(15, 86).GetOrder());
         }
     }
 }
