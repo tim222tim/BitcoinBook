@@ -15,6 +15,8 @@ namespace BitcoinBook
 
         public Point(FieldElement x, FieldElement y, FieldElement a, FieldElement b)
         {
+            FieldElement.ThrowIfNotSameField(x, y, a, b);
+
             if ((y ^ 2) != (x ^ 3) + a * x + b)
             {
                 throw new ArithmeticException($"{x},{y} is not on the curve");
@@ -29,6 +31,8 @@ namespace BitcoinBook
 
         Point(FieldElement a, FieldElement b)
         {
+            FieldElement.ThrowIfNotSameField(a, b);
+
             A = a;
             B = b;
             IsInfinity = true;
@@ -36,6 +40,7 @@ namespace BitcoinBook
 
         public static Point Infinity(FieldElement a, FieldElement b)
         {
+            FieldElement.ThrowIfNotSameField(a, b);
             return new Point(a, b);
         }
 
@@ -68,7 +73,7 @@ namespace BitcoinBook
 
         public Point Add(Point p)
         {
-            CheckCurve(p);
+            ThrowIfNotSameCurve(this, p);
             if (IsInfinity) return p;
             if (p.IsInfinity) return this;
             if (X == p.x && Y != p.Y) return Infinity(A, B);
@@ -83,10 +88,21 @@ namespace BitcoinBook
             return IsInfinity ? "Inf" : $"({x.Number},{y.Number})_{A.Number}_{B.Number} Field({x.Prime})";
         }
 
-        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-        void CheckCurve(Point p)
+        public static bool SameCurve(params Point[] points)
         {
-            if (p.A != A || p.B != B) throw new InvalidOperationException("Points must be on the same curve");
+            foreach (var point in points)
+            {
+                if (point.A != points[0].A || point.B != points[0].B)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static void ThrowIfNotSameCurve(params Point[] points)
+        {
+            if (!SameCurve(points)) throw new InvalidOperationException("Points must be on the same curve");
         }
 
         static Point AddToSelf(Point p)

@@ -20,13 +20,13 @@ namespace BitcoinBook
 
         public FieldElement Add(FieldElement b)
         {
-            CheckField(b);
+            ThrowIfNotSameField(this, b);
             return new FieldElement((Number + b.Number) % Prime, Prime);
         }
 
         public FieldElement Subtract(FieldElement b)
         {
-            CheckField(b);
+            ThrowIfNotSameField(this, b);
             var result = Number - b.Number;
             if (result < 0)
             {
@@ -37,13 +37,13 @@ namespace BitcoinBook
 
         public FieldElement Multiply(FieldElement b)
         {
-            CheckField(b);
+            ThrowIfNotSameField(this, b);
             return new FieldElement((Number * b.Number) % Prime, Prime);
         }
 
         public FieldElement Divide(FieldElement b)
         {
-            CheckField(b);
+            ThrowIfNotSameField(this, b);
             return Multiply(b ^ (Prime - 2));
         }
 
@@ -64,10 +64,39 @@ namespace BitcoinBook
         public static FieldElement operator /(FieldElement a, FieldElement b) => a.Divide(b);
         public static FieldElement operator ^(FieldElement a, BigInteger exponent) => a.Power(exponent);
 
-        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-        void CheckField(FieldElement b)
+        public bool Equals(FieldElement other)
         {
-            if (b.Prime != Prime) throw new InvalidOperationException("Numbers must be in the same field");
+            return Number.Equals(other.Number) && Prime.Equals(other.Prime);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is FieldElement other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Number.GetHashCode() * 397) ^ Prime.GetHashCode();
+            }
+        }
+
+        public static bool SameField(params FieldElement[] elements)
+        {
+            foreach (var element in elements)
+            {
+                if (element.Prime != elements[0].Prime)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static void ThrowIfNotSameField(params FieldElement[] elements)
+        {
+            if (!SameField(elements)) throw new InvalidOperationException("Elements must be in the same field");
         }
     }
 }
