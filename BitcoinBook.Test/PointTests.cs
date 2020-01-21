@@ -70,23 +70,21 @@ namespace BitcoinBook.Test
         public void MultiplyByZeroTest()
         {
             var p = curve.Point(47, 71);
-            Assert.True(p.MultiplyBy(0).IsInfinity);
-            Assert.Equal(p, p.MultiplyBy(1));
-            Assert.True(p.MultiplyBy(21).IsInfinity);
+            Assert.Equal(curve.Infinity, p * 0);
         }
 
         [Fact]
         public void MultiplyByOneTest()
         {
             var p = curve.Point(47, 71);
-            Assert.Equal(p, p.MultiplyBy(1));
+            Assert.Equal(p, p * 1);
         }
 
         [Fact]
         public void MultiplyToInfinityTest()
         {
             var p = curve.Point(47, 71);
-            Assert.True(p.MultiplyBy(21).IsInfinity);
+            Assert.Equal(curve.Infinity, p * 21);
         }
 
         [Fact]
