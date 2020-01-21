@@ -88,6 +88,13 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
+        public void MultiplyByLotsTest()
+        {
+            var p = curve.Point(47, 71);
+            Assert.Equal(curve.Point(36, 112), p * 1234567);
+        }
+
+        [Fact]
         public void OrderTest()
         {
             Assert.Equal(7, curve.Point(15, 86).GetOrder());

@@ -86,10 +86,17 @@ namespace BitcoinBook
         {
             if (coefficient < 0) throw new ArgumentException("Must be 0 or greater", nameof(coefficient));
 
+            var current = this;
             var result = Curve.Infinity;
-            while (coefficient-- > 0)
+            while (coefficient > 0)
             {
-                result = result.Add(this);
+                if (!coefficient.IsEven)
+                {
+                    result += current;
+                }
+
+                current += current;
+                coefficient >>= 1;
             }
 
             return result;
