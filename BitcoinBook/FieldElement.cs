@@ -6,22 +6,23 @@ namespace BitcoinBook
     public struct FieldElement
     {
         public BigInteger Number { get; }
-        public BigInteger Prime { get; }
+        public Field Field { get; }
+        public BigInteger Prime => Field.Prime;
 
-        public FieldElement(BigInteger number, BigInteger prime)
+        public FieldElement(BigInteger number, Field field)
         {
-            if (number < 0 || number >= prime)
+            if (number < 0 || number >= field.Prime)
             {
-                throw new ArgumentOutOfRangeException($"Number {number} must be in range 0 to {prime-1}");
+                throw new ArgumentOutOfRangeException($"Number {number} must be in range 0 to {field.Prime-1}");
             }
             Number = number;
-            Prime = prime;
+            Field = field;
         }
 
         public FieldElement Add(FieldElement b)
         {
             ThrowIfNotSameField(this, b);
-            return new FieldElement((Number + b.Number) % Prime, Prime);
+            return Field.Element((Number + b.Number) % Prime);
         }
 
         public FieldElement Subtract(FieldElement b)
@@ -32,13 +33,13 @@ namespace BitcoinBook
             {
                 result += Prime;
             }
-            return new FieldElement(result % Prime, Prime);
+            return new FieldElement(result % Prime, Field);
         }
 
         public FieldElement Multiply(FieldElement b)
         {
             ThrowIfNotSameField(this, b);
-            return new FieldElement((Number * b.Number) % Prime, Prime);
+            return new FieldElement((Number * b.Number) % Prime, Field);
         }
 
         public FieldElement Divide(FieldElement b)
@@ -53,7 +54,7 @@ namespace BitcoinBook
             {
                 exponent += Prime - 1;
             }
-            return new FieldElement(BigInteger.ModPow(Number, exponent, Prime), Prime);
+            return Field.Element(BigInteger.ModPow(Number, exponent, Prime));
         }
 
         public static bool operator ==(FieldElement a, FieldElement b) => a.Equals(b);

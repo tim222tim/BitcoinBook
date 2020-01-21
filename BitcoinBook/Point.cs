@@ -34,6 +34,8 @@ namespace BitcoinBook
         {
             FieldElement.ThrowIfNotSameField(a, b);
 
+            x = default;
+            y = default;
             A = a;
             B = b;
             IsInfinity = true;
@@ -124,7 +126,7 @@ namespace BitcoinBook
         static Point AddToSelf(Point p)
         {
             var slope = SlopeOfTangent(p);
-            var rx = (slope ^ 2) - new FieldElement(2, p.x.Prime) * p.X;
+            var rx = (slope ^ 2) - p.X.Field.Element(2) * p.X;
             var ry = slope * (p.X - rx) - p.Y;
             return new Point(rx, ry, p.A, p.B);
         }
@@ -144,7 +146,7 @@ namespace BitcoinBook
 
         static FieldElement SlopeOfTangent(Point p)
         {
-            return (new FieldElement(3, p.x.Prime) * (p.X ^ 2) + p.A) / (new FieldElement(2, p.x.Prime) * p.Y);
+            return (p.X.Field.Element(3) * (p.X ^ 2) + p.A) / (p.X.Field.Element(2) * p.Y);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace BitcoinBook
 
         public Curve(FieldElement a, FieldElement b)
         {
-            if (A.Prime != B.Prime) throw new InvalidOperationException("Numbers must be in the same field");
+            if (a.Prime != b.Prime) throw new InvalidOperationException("Numbers must be in the same field");
 
             A = a;
             B = b;
