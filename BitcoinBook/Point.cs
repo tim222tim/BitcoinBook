@@ -103,7 +103,7 @@ namespace BitcoinBook
 
         public override string ToString()
         {
-            return IsInfinity ? "Inf" : $"({x.Number},{y.Number})_{A.Number}_{B.Number} Field({x.Prime})";
+            return IsInfinity ? "Inf" : $"({x.Number},{y.Number})_{A.Number}_{B.Number} Field({x.Field.Prime})";
         }
 
         public static bool SameCurve(params Point[] points)

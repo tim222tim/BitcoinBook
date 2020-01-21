@@ -10,7 +10,7 @@ namespace BitcoinBook.Test
         {
             var element = new FieldElement(1, new Field(3));
             Assert.Equal(1, element.Number);
-            Assert.Equal(3, element.Prime);
+            Assert.Equal(3, element.Field.Prime);
         }
 
         [Theory]
@@ -36,10 +36,10 @@ namespace BitcoinBook.Test
         [InlineData(19, 11, 17, 9)]
         public void AddTest(long prime, long number1, long number2, long result)
         {
-            var field = new Field(prime);
-            var element = field.Element(number1).Add(field.Element(number2));
-            Assert.Equal(result, element.Number);
-            Assert.Equal(prime, element.Prime);
+            var f = new Field(prime);
+            var e = f.Element(number1).Add(f.Element(number2));
+            Assert.Equal(result, e.Number);
+            Assert.Equal(prime, e.Field.Prime);
         }
 
         [Theory]
@@ -49,8 +49,8 @@ namespace BitcoinBook.Test
         [InlineData(19, 11, 17, 9)]
         public void AddOperatorTest(long prime, long number1, long number2, long result)
         {
-            var field = new Field(prime);
-            Assert.Equal(result, (field.Element(number1) + field.Element(number2)).Number);
+            var f = new Field(prime);
+            Assert.Equal(result, (f.Element(number1) + f.Element(number2)).Number);
         }
 
         [Fact]
@@ -66,10 +66,10 @@ namespace BitcoinBook.Test
         [InlineData(19, 11, 17, 13)]
         public void SubtractTest(long prime, long number1, long number2, long result)
         {
-            var field = new Field(prime);
-            var element = field.Element(number1).Subtract(field.Element(number2));
-            Assert.Equal(result, element.Number);
-            Assert.Equal(prime, element.Prime);
+            var f = new Field(prime);
+            var e = f.Element(number1).Subtract(f.Element(number2));
+            Assert.Equal(result, e.Number);
+            Assert.Equal(prime, e.Field.Prime);
         }
 
         [Theory]
@@ -79,8 +79,8 @@ namespace BitcoinBook.Test
         [InlineData(19, 11, 17, 13)]
         public void SubtractOperatorTest(long prime, long number1, long number2, long result)
         {
-            var field = new Field(prime);
-            Assert.Equal(result, (field.Element(number1) - field.Element(number2)).Number);
+            var f = new Field(prime);
+            Assert.Equal(result, (f.Element(number1) - f.Element(number2)).Number);
         }
 
         [Fact]

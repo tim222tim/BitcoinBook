@@ -12,11 +12,11 @@ namespace BitcoinBook
 
         public Curve(FieldElement a, FieldElement b)
         {
-            if (a.Prime != b.Prime) throw new InvalidOperationException("Numbers must be in the same field");
+            if (a.Field!= b.Field) throw new InvalidOperationException("Numbers must be in the same field");
 
             A = a;
             B = b;
-            field = new Field(A.Prime);
+            field = A.Field;
             Infinity = BitcoinBook.Point.Infinity(A, B);
         }
 
@@ -26,7 +26,7 @@ namespace BitcoinBook
 
         public Point Point(FieldElement x, FieldElement y)
         {
-            if (x.Prime != y.Prime) throw new InvalidOperationException("Numbers must be in the same field");
+            if (x.Field != y.Field) throw new InvalidOperationException("Numbers must be in the same field");
 
             return new Point(x, y, A, B);
         }

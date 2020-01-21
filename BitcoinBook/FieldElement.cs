@@ -7,7 +7,8 @@ namespace BitcoinBook
     {
         public BigInteger Number { get; }
         public Field Field { get; }
-        public BigInteger Prime => Field.Prime;
+        
+        BigInteger Prime => Field.Prime;
 
         public FieldElement(BigInteger number, Field field)
         {
