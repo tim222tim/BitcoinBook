@@ -22,7 +22,7 @@ namespace BitcoinBook
             var sinv = BigInteger.ModPow(s, S256Curve.Order - 2, S256Curve.Order);
             var u = BigInteger.Remainder(hash * sinv, S256Curve.Order);
             var v = BigInteger.Remainder(r * sinv, S256Curve.Order);
-            return ((S256Curve.Generator * u) + (Key * v)).X.Number == r;
+            return (S256Curve.Generator * u + Key * v).X.Number == r;
         }
 
         public bool VerifySignature(string hash, string r, string s, NumberStyles numberStyles = NumberStyles.HexNumber)
