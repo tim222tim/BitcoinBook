@@ -13,10 +13,5 @@ namespace BitcoinBook
         );
         public static BigInteger Order { get; } = 
             BigInteger.Parse("00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", NumberStyles.HexNumber);
-
-        public static S256Point Point(BigInteger x, BigInteger y)
-        {
-            return new S256Point(x, y);
-        }
     }
 }

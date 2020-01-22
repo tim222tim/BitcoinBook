@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Globalization;
+using System.Numerics;
 
 namespace BitcoinBook
 {
@@ -9,6 +10,11 @@ namespace BitcoinBook
         }
 
         public S256Point(BigInteger x, BigInteger y) : this(new S256FieldElement(x), new S256FieldElement(y))
+        {
+        }
+
+        public S256Point(string x, string y, NumberStyles numberStyles = NumberStyles.HexNumber) 
+            : this(BigInteger.Parse(x, numberStyles), BigInteger.Parse(y, numberStyles))
         {
         }
 
