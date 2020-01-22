@@ -27,5 +27,10 @@ namespace BitcoinBook
             coefficient = BigInteger.Remainder(coefficient, S256Curve.Order);
             return base.MultiplyBy(coefficient);
         }
+
+        public override string ToString()
+        {
+            return IsInfinity ? "Inf" : $"(0x{X.Number:X64},0x{Y.Number:X64})_S256)";
+        }
     }
 }
