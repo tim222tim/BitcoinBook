@@ -5,11 +5,11 @@ namespace BitcoinBook
 {
     public class S256Point : Point
     {
-        public S256Point(S256FieldElement x, S256FieldElement y) : base(x, y, S256Curve.Curve)
+        public S256Point(FieldElement x, FieldElement y) : base(x, y, S256Curve.Curve)
         {
         }
 
-        public S256Point(BigInteger x, BigInteger y) : this(new S256FieldElement(x), new S256FieldElement(y))
+        public S256Point(BigInteger x, BigInteger y) : this(new FieldElement(x, S256Curve.Field), new FieldElement(y, S256Curve.Field))
         {
         }
 
