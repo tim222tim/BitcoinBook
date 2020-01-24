@@ -18,5 +18,10 @@ namespace BitcoinBook
             this(BigInteger.Parse(r, numberStyles), BigInteger.Parse(s, numberStyles))
         {
         }
+
+        public override string ToString()
+        {
+            return $"Signature({R:X},{S:x})";
+        }
     }
 }

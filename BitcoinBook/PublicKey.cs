@@ -12,9 +12,13 @@ namespace BitcoinBook
             Key = key;
         }
 
-        public PublicKey(string x, string y, NumberStyles numberStyles = NumberStyles.HexNumber)
+        public PublicKey(string x, string y, NumberStyles numberStyles = NumberStyles.HexNumber) :
+            this(S256Curve.Point(x, y, numberStyles))
         {
-            Key = S256Curve.Point(x, y, numberStyles);
+        }
+
+        public PublicKey(PrivateKey privateKey) : this(S256Curve.Generator * privateKey.Key)
+        {
         }
 
         public bool Verify(BigInteger hash, Signature signature)
@@ -25,9 +29,9 @@ namespace BitcoinBook
             return (S256Curve.Generator * u + Key * v).X.Number == signature.R;
         }
 
-        public bool Verify(string hash, Signature signature, NumberStyles numberStyles = NumberStyles.HexNumber)
+        public bool Verify(string data, Signature signature, NumberStyles numberStyles = NumberStyles.HexNumber)
         {
-            return Verify(BigInteger.Parse(hash, numberStyles), signature);
+            return Verify(S256Curve.ComputeHash(data), signature);
         }
 
         public override string ToString()
