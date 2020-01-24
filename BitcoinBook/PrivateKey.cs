@@ -33,6 +33,10 @@ namespace BitcoinBook
             var r = (S256Curve.Generator * k).X.Number;
             var kinv = BigInteger.ModPow(k, S256Curve.Order - 2, S256Curve.Order);
             var s = BigInteger.Remainder((hash + r * Key) * kinv, S256Curve.Order);
+            if (s > S256Curve.Order / 2)
+            {
+                s = S256Curve.Order - s;
+            }
             return new Signature(r, s);
         }
 
