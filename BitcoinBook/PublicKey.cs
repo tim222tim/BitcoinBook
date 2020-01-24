@@ -27,10 +27,7 @@ namespace BitcoinBook
 
         public bool Verify(string hash, Signature signature, NumberStyles numberStyles = NumberStyles.HexNumber)
         {
-            return Verify(
-                BigInteger.Parse(hash, numberStyles),
-                signature
-            );
+            return Verify(BigInteger.Parse(hash, numberStyles), signature);
         }
 
         public override string ToString()
