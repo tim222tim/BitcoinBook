@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Numerics;
 
 namespace BitcoinBook
@@ -34,6 +35,11 @@ namespace BitcoinBook
         public Point Point(BigInteger x, BigInteger y)
         {
             return Point(field.Element(x), field.Element(y));
+        }
+
+        public Point Point(string x, string y, NumberStyles numberStyles = NumberStyles.HexNumber)
+        {
+            return Point(BigInteger.Parse(x, numberStyles), BigInteger.Parse(y, numberStyles));
         }
 
         public Point Infinity { get; }

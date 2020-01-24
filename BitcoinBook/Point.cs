@@ -32,7 +32,7 @@ namespace BitcoinBook
             IsInfinity = false;
         }
 
-        protected Point(Curve curve)
+        Point(Curve curve)
         {
             x = default;
             y = default;
@@ -120,11 +120,6 @@ namespace BitcoinBook
         public static Point operator +(Point p1, Point p2) => p1.Add(p2);
         public static Point operator *(Point p1, BigInteger coefficient) => p1.MultiplyBy(coefficient);
 
-        public override string ToString()
-        {
-            return IsInfinity ? "Inf" : $"({x.Number},{y.Number})_{A.Number}_{B.Number} Field({x.Field.Prime})";
-        }
-
         public static bool SameCurve(params Point[] points)
         {
             foreach (var point in points)
@@ -140,6 +135,14 @@ namespace BitcoinBook
         public static void ThrowIfNotSameCurve(params Point[] points)
         {
             if (!SameCurve(points)) throw new InvalidOperationException("Points must be on the same curve");
+        }
+
+        public override string ToString()
+        {
+            return IsInfinity ? "Inf" : 
+                x.Field.Prime < 1000 ?
+                    $"({x.Number},{y.Number})_{A.Number}_{B.Number} Field({x.Field.Prime})" :
+                    $"(0x{X.Number:X64},0x{Y.Number:X64})_S256)";
         }
 
         static Point AddToSelf(Point p)

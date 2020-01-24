@@ -5,16 +5,16 @@ namespace BitcoinBook
 {
     public class PublicKey
     {
-        public S256Point Key { get; }
+        public Point Key { get; }
 
-        public PublicKey(S256Point key)
+        public PublicKey(Point key)
         {
             Key = key;
         }
 
         public PublicKey(string x, string y, NumberStyles numberStyles = NumberStyles.HexNumber)
         {
-            Key = new S256Point(x, y, numberStyles);
+            Key = S256Curve.Point(x, y, numberStyles);
         }
 
         public bool Verify(BigInteger hash, Signature signature)
@@ -31,6 +31,11 @@ namespace BitcoinBook
                 BigInteger.Parse(hash, numberStyles),
                 signature
             );
+        }
+
+        public override string ToString()
+        {
+            return Key.ToString();
         }
     }
 }
