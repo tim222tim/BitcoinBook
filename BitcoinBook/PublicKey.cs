@@ -35,14 +35,24 @@ namespace BitcoinBook
             return Verify(S256Curve.ComputeHash(data), signature);
         }
 
-        public string ToSecFormat()
+        public string ToSecUncompressedFormat()
         {
-            return $"04{Key.X.Number}{Key.Y.Number}";
+            return $"04{ToHex(Key.X.Number)}{ToHex(Key.Y.Number)}";
+        }
+
+        public string ToSecCompressedFormat()
+        {
+            return $"{(Key.Y.Number.IsEven ? "02" : "03")}{ToHex(Key.X.Number)}";
         }
 
         string ToHex(BigInteger i)
         {
-            return $"{i:X64}";
+            var hex = i.ToString("X64");
+            if (hex.Length == 65 && hex.StartsWith("0"))
+            {
+                hex = hex.Substring(1);
+            }
+            return hex.ToLower();
         }
 
         public override string ToString()
