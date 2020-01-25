@@ -16,8 +16,10 @@ namespace BitcoinBook.Test
         [Fact]
         public void SignDataTest()
         {
-            var privateKey = new PrivateKey();
+            var privateKey = new PrivateKey(12345);
             var data = "Programming Bitcoin!";
+            var hash = S256Curve.ComputeHash(data);
+            var hashStr = $"{hash:X64}";
             var signature = privateKey.Sign(data);
             Assert.True(privateKey.PublicKey.Verify(data, signature));
         }

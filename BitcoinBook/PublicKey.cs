@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Numerics;
 
 namespace BitcoinBook
@@ -32,6 +33,16 @@ namespace BitcoinBook
         public bool Verify(string data, Signature signature, NumberStyles numberStyles = NumberStyles.HexNumber)
         {
             return Verify(S256Curve.ComputeHash(data), signature);
+        }
+
+        public string ToSecFormat()
+        {
+            return $"04{Key.X.Number}{Key.Y.Number}";
+        }
+
+        string ToHex(BigInteger i)
+        {
+            return $"{i:X64}";
         }
 
         public override string ToString()

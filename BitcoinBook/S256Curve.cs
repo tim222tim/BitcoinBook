@@ -23,7 +23,7 @@ namespace BitcoinBook
         public static BigInteger ComputeHash(byte[] data)
         {
             using var sha256Hash = SHA256.Create();
-            return new BigInteger(AddZeros(sha256Hash.ComputeHash(data), 4));
+            return new BigInteger(PrefixZeros(sha256Hash.ComputeHash(data), 4));
         }
 
         public static BigInteger ComputeHash(string data)
@@ -31,7 +31,7 @@ namespace BitcoinBook
             return ComputeHash(Encoding.UTF8.GetBytes(data));
         }
 
-        static byte[] AddZeros(byte[] bytes, int count)
+        static byte[] PrefixZeros(byte[] bytes, int count)
         {
             var newBytes = new byte[bytes.Length + count];
             for (int i = 0; i < count; i++)
@@ -39,6 +39,17 @@ namespace BitcoinBook
                 newBytes[i] = 0;
             }
             bytes.CopyTo(newBytes, 2);
+            return newBytes;
+        }
+
+        static byte[] SuffixZeros(byte[] bytes, int count)
+        {
+            var newBytes = new byte[bytes.Length + count];
+            bytes.CopyTo(newBytes, 0);
+            for (int i = 0; i < count; i++)
+            {
+                newBytes[bytes.Length + i] = 0;
+            }
             return newBytes;
         }
     }
