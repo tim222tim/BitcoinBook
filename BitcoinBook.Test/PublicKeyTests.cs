@@ -76,6 +76,17 @@ namespace BitcoinBook.Test
                 PublicKey.ParseSecFormat("0296be5b1292f6c856b3c5654e886fc13511462059089cdf9c479623bfcbe77690"));
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("x")]
+        [InlineData("04")]
+        [InlineData("0423")]
+        public void ParseSecFormatExceptionTest(string sec)
+        {
+            Assert.Throws<FormatException>(() => PublicKey.ParseSecFormat(sec));
+        }
+
         [Fact]
         public void HexTest()
         {

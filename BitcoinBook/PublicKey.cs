@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Numerics;
@@ -25,7 +26,16 @@ namespace BitcoinBook
 
         public static PublicKey ParseSecFormat(string sec)
         {
-            var prefix = sec[1];
+            if (sec == null || sec.Length < 2)
+            {
+                sec = "  ";
+            }
+            var prefix = sec[0] == '0' ? sec[1] : ' ';
+            if (sec.Length != GetValidLength(prefix))
+            {
+                throw new FormatException("Invalid SEC format");
+            }
+
             if (prefix == '4')
             {
                 return new PublicKey("0" + sec.Substring(2, 64), "0" + sec.Substring(66));
@@ -39,6 +49,20 @@ namespace BitcoinBook
             var oddBeta = beta.Number % 2 == 0 ? S256Curve.Field.Element(S256Curve.Field.Prime - beta.Number) : beta;
 
             return new PublicKey(S256Curve.Point(x, isEven ? evenBeta : oddBeta));
+        }
+
+        static int GetValidLength(char prefix)
+        {
+            switch (prefix)
+            {
+                case '2':
+                case '3':
+                    return 66;
+                case '4':
+                    return 130;
+                default:
+                    return -1;
+            }
         }
 
         public bool Verify(BigInteger hash, Signature signature)
