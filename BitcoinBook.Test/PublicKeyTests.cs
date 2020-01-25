@@ -53,7 +53,7 @@ namespace BitcoinBook.Test
             Assert.Equal(
                 "0357a4f368868a8a6d572991e484e664810ff14c05c0fa023275251151fe0e53d1",
                 new PrivateKey(5001).PublicKey.ToSecCompressedFormat());
-            // TODO why did this one come out wrong?
+            // TODO how come this one didn't come out the same as the book?
             // Assert.Equal(
             //     "02933ec2d2b111b92737ec12f1c5d20f3233a0ad21cd8b36d0bca7a0cfa5cb8701",
             //     new PrivateKey((BigInteger)Math.Pow(2019, 5)).PublicKey.ToSecCompressedFormat());
