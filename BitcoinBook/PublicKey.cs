@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Globalization;
+using System.Net.NetworkInformation;
 using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class PublicKey
+    public class PublicKey : IEquatable<PublicKey>
     {
         public Point Key { get; }
 
@@ -20,6 +21,24 @@ namespace BitcoinBook
 
         public PublicKey(PrivateKey privateKey) : this(S256Curve.Generator * privateKey.Key)
         {
+        }
+
+        public static PublicKey ParseSecFormat(string sec)
+        {
+            var prefix = sec[1];
+            if (prefix == '4')
+            {
+                return new PublicKey("0" + sec.Substring(2, 64), "0" + sec.Substring(66));
+            }
+
+            var isEven = prefix == '2';
+            var x = S256Curve.Field.Element(BigInteger.Parse("0" + sec.Substring(2), NumberStyles.HexNumber));
+            var alpha = (x ^ 3) + S256Curve.Curve.B;
+            var beta = alpha.SquareRoot();
+            var evenBeta = beta.Number % 2 == 0 ? beta : S256Curve.Field.Element(S256Curve.Field.Prime - beta.Number);
+            var oddBeta = beta.Number % 2 == 0 ? S256Curve.Field.Element(S256Curve.Field.Prime - beta.Number) : beta;
+
+            return new PublicKey(S256Curve.Point(x, isEven ? evenBeta : oddBeta));
         }
 
         public bool Verify(BigInteger hash, Signature signature)
@@ -58,6 +77,26 @@ namespace BitcoinBook
         public override string ToString()
         {
             return Key.ToString();
+        }
+
+        public bool Equals(PublicKey other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Key, other.Key);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((PublicKey) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Key != null ? Key.GetHashCode() : 0);
         }
     }
 }

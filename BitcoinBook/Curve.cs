@@ -34,6 +34,8 @@ namespace BitcoinBook
 
         public Point Point(BigInteger x, BigInteger y)
         {
+            x = BigInteger.Remainder(x, field.Prime);
+            y = BigInteger.Remainder(y, field.Prime);
             return Point(field.Element(x), field.Element(y));
         }
 

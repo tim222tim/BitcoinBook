@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,6 +19,11 @@ namespace BitcoinBook
         public static Point Point(string x, string y, NumberStyles numberStyles = NumberStyles.HexNumber)
         {
             return Curve.Point(x, y, numberStyles);
+        }
+
+        public static Point Point(FieldElement x, FieldElement y, NumberStyles numberStyles = NumberStyles.HexNumber)
+        {
+            return Curve.Point(x, y);
         }
 
         public static BigInteger ComputeHash(byte[] data)
