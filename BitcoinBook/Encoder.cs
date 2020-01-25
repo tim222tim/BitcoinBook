@@ -7,16 +7,7 @@ namespace BitcoinBook
     public static class Encoder
     {
         const string alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-        static readonly int[] values = new int[256];
-
-        static Encoder()
-        {
-            Array.Fill(values, -1);
-            for (var i = 0; i < alphabet.Length; i++)
-            {
-                values[alphabet[i]] = i;
-            }
-        }
+        static readonly int[] values = InitValues();
 
         public static string ToBase58(byte[] bytes)
         {
@@ -46,8 +37,7 @@ namespace BitcoinBook
                 {
                     throw new FormatException("Invalid Base58 format");
                 }
-                result *= 58;
-                result += value;
+                result = result * 58 + value;
             }
 
             return result.ToByteArray();
@@ -62,6 +52,18 @@ namespace BitcoinBook
             }
 
             return index;
+        }
+
+        static int[] InitValues()
+        {
+            var array = new int[256];
+            Array.Fill(array, -1);
+            for (var i = 0; i < alphabet.Length; i++)
+            {
+                array[alphabet[i]] = i;
+            }
+
+            return array;
         }
     }
 }
