@@ -45,12 +45,12 @@ namespace BitcoinBook
 
         public Signature Sign(byte[] data)
         {
-            return Sign(S256Curve.ComputeHash(data));
+            return Sign(Cipher.ComputeHash256(data));
         }
 
         public Signature Sign(string data)
         {
-            return Sign(S256Curve.ComputeHash(data));
+            return Sign(Cipher.ComputeHash256(data));
         }
     }
 }

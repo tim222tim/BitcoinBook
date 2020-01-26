@@ -13,7 +13,7 @@ namespace BitcoinBook.Test
         [InlineData("EQJsjkd6JaGwxrjEhfeqPenqHwrBmPQZjJGNSCHBkcF7", "0c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab6")]
         public void ToBase58Test(string expected, string input)
         {
-            Assert.Equal(expected, Encoder.ToBase58(BigInteger.Parse(input, NumberStyles.HexNumber).ToByteArray()));
+            Assert.Equal(expected, Cipher.ToBase58(BigInteger.Parse(input, NumberStyles.HexNumber).ToByteArray()));
         }
 
         [Theory]
@@ -22,7 +22,7 @@ namespace BitcoinBook.Test
         [InlineData("0c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab6", "EQJsjkd6JaGwxrjEhfeqPenqHwrBmPQZjJGNSCHBkcF7")]
         public void FromBase58Test(string expected, string input)
         {
-            Assert.Equal(BigInteger.Parse(expected, NumberStyles.HexNumber), new BigInteger(Encoder.FromBase58(input)));
+            Assert.Equal(BigInteger.Parse(expected, NumberStyles.HexNumber), new BigInteger(Cipher.FromBase58(input)));
         }
 
         [Theory]
@@ -32,7 +32,7 @@ namespace BitcoinBook.Test
         [InlineData("kjsdl")]
         public void FormatExceptionTest(string input)
         {
-            Assert.Throws<FormatException>(() => Encoder.FromBase58(input));
+            Assert.Throws<FormatException>(() => Cipher.FromBase58(input));
         }
     }
 }

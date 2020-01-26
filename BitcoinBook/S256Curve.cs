@@ -1,8 +1,5 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace BitcoinBook
 {
@@ -24,39 +21,6 @@ namespace BitcoinBook
         public static Point Point(FieldElement x, FieldElement y, NumberStyles numberStyles = NumberStyles.HexNumber)
         {
             return Curve.Point(x, y);
-        }
-
-        public static BigInteger ComputeHash(byte[] data)
-        {
-            using var sha256Hash = SHA256.Create();
-            return new BigInteger(PrefixZeros(sha256Hash.ComputeHash(data), 4));
-        }
-
-        public static BigInteger ComputeHash(string data)
-        {
-            return ComputeHash(Encoding.UTF8.GetBytes(data));
-        }
-
-        static byte[] PrefixZeros(byte[] bytes, int count)
-        {
-            var newBytes = new byte[bytes.Length + count];
-            for (int i = 0; i < count; i++)
-            {
-                newBytes[i] = 0;
-            }
-            bytes.CopyTo(newBytes, 2);
-            return newBytes;
-        }
-
-        static byte[] SuffixZeros(byte[] bytes, int count)
-        {
-            var newBytes = new byte[bytes.Length + count];
-            bytes.CopyTo(newBytes, 0);
-            for (int i = 0; i < count; i++)
-            {
-                newBytes[bytes.Length + i] = 0;
-            }
-            return newBytes;
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace BitcoinBook
 {
-    public static class Encoder
+    public static class Cipher
     {
         const string alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
         static readonly int[] values = InitValues();
@@ -41,6 +42,39 @@ namespace BitcoinBook
             }
 
             return result.ToByteArray();
+        }
+
+        public static BigInteger ComputeHash256(byte[] data)
+        {
+            using var sha256Hash = SHA256.Create();
+            return new BigInteger(SuffixZeros(sha256Hash.ComputeHash(data), 4));
+        }
+
+        public static BigInteger ComputeHash256(string data)
+        {
+            return ComputeHash256(Encoding.UTF8.GetBytes(data));
+        }
+
+        static byte[] PrefixZeros(byte[] bytes, int count)
+        {
+            var newBytes = new byte[bytes.Length + count];
+            for (var i = 0; i < count; i++)
+            {
+                newBytes[i] = 0;
+            }
+            bytes.CopyTo(newBytes, 4);
+            return newBytes;
+        }
+
+        static byte[] SuffixZeros(byte[] bytes, int count)
+        {
+            var newBytes = new byte[bytes.Length + count];
+            bytes.CopyTo(newBytes, 0);
+            for (var i = 0; i < count; i++)
+            {
+                newBytes[bytes.Length + i] = 0;
+            }
+            return newBytes;
         }
 
         static int CountZeros(byte[] bytes)
