@@ -75,7 +75,7 @@ namespace BitcoinBook
 
         public bool Verify(string data, Signature signature, NumberStyles numberStyles = NumberStyles.HexNumber)
         {
-            return Verify(Cipher.ComputeHash256(data), signature);
+            return Verify(Cipher.ComputeHash256Int(data), signature);
         }
 
         public string ToSecUncompressedFormat()

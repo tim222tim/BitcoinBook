@@ -44,17 +44,33 @@ namespace BitcoinBook
             return result.ToByteArray();
         }
 
-        public static BigInteger ComputeHash256(byte[] data)
+        public static byte[] ComputeHash256(byte[] data)
         {
             using var sha256Hash = SHA256.Create();
-            var hash = sha256Hash.ComputeHash(data);
-            Array.Reverse(hash);
-            return new BigInteger(SuffixZeros(hash, 4));
+            return sha256Hash.ComputeHash(data);
         }
 
-        public static BigInteger ComputeHash256(string data)
+        public static BigInteger ComputeHash256Int(byte[] data)
         {
-            return ComputeHash256(Encoding.UTF8.GetBytes(data));
+            var hash = ComputeHash256(data);
+            Array.Reverse(hash);
+            return new BigInteger(SuffixZeros(hash, 2));
+        }
+
+        public static BigInteger ComputeHash256Int(string data)
+        {
+            return ComputeHash256Int(Encoding.UTF8.GetBytes(data));
+        }
+
+        public static string ComputeHash256String(byte[] data)
+        {
+            var hash = ComputeHash256(data);
+            return BitConverter.ToString(hash).Replace("-", "");
+        }
+
+        public static string ComputeHash256String(string data)
+        {
+            return ComputeHash256String(Encoding.UTF8.GetBytes(data));
         }
 
         static byte[] PrefixZeros(byte[] bytes, int count)
@@ -64,7 +80,7 @@ namespace BitcoinBook
             {
                 newBytes[i] = 0;
             }
-            bytes.CopyTo(newBytes, 4);
+            bytes.CopyTo(newBytes, count);
             return newBytes;
         }
 
