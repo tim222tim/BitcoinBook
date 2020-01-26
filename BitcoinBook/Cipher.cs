@@ -47,7 +47,9 @@ namespace BitcoinBook
         public static BigInteger ComputeHash256(byte[] data)
         {
             using var sha256Hash = SHA256.Create();
-            return new BigInteger(SuffixZeros(sha256Hash.ComputeHash(data), 4));
+            var hash = sha256Hash.ComputeHash(data);
+            Array.Reverse(hash);
+            return new BigInteger(SuffixZeros(hash, 4));
         }
 
         public static BigInteger ComputeHash256(string data)
