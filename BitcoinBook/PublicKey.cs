@@ -78,7 +78,7 @@ namespace BitcoinBook
             return Verify(Cipher.ComputeHash256Int(data), signature);
         }
 
-        public byte[] ToSecUncompressed()
+        byte[] ToSecUncompressed()
         {
             var bytes = new byte[1 + 32 + 32];
             bytes[0] = 4;
@@ -87,7 +87,7 @@ namespace BitcoinBook
             return bytes;
         }
 
-        public byte[] ToSecCompressed()
+        byte[] ToSecCompressed()
         {
             var bytes = new byte[1 + 32];
             bytes[0] = Key.Y.Number.IsEven ? (byte)2 : (byte)3;
@@ -95,19 +95,23 @@ namespace BitcoinBook
             return bytes;
         }
 
-        public string ToSecUncompressedString()
+        public byte[] ToSec(bool compressed = true)
         {
-            return Cipher.ToHex(ToSecUncompressed());
+            return compressed ? ToSecCompressed() : ToSecUncompressed();
         }
 
-        public string ToSecCompressedString()
+        public string ToSecString(bool compressed = true)
         {
-            return Cipher.ToHex(ToSecCompressed());
+            return Cipher.ToHex(ToSec(compressed));
         }
 
         public string ToAddress(bool compressed = true, bool mainnet = true)
         {
-            throw new NotImplementedException();
+            var sec = ToSec(compressed);
+            var address = new byte[sec.Length + 1];
+            address[0] = mainnet ? (byte) 0 : (byte) '\x6f';
+            sec.CopyTo(address, 1);
+            return Cipher.ToBase58Check(address);
         }
 
         public override string ToString()
