@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Numerics;
+using System.Text;
 using Xunit;
 
 namespace BitcoinBook.Test
@@ -33,6 +34,12 @@ namespace BitcoinBook.Test
         public void FormatExceptionTest(string input)
         {
             Assert.Throws<FormatException>(() => Cipher.FromBase58(input));
+        }
+
+        [Fact]
+        public void ToBase58CheckTest()
+        {
+            Assert.Equal("281F8n7tpJgwSsqCe7h2EfBvMD8k", Cipher.ToBase58Check(Encoding.UTF8.GetBytes("Programming Bitcoin!")));
         }
     }
 }

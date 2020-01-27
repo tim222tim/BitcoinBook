@@ -89,6 +89,13 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
+        public void AddressTest()
+        {
+            Assert.Equal("mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA",
+                new PrivateKey(5002).PublicKey.ToAddress(false, false));
+        }
+
+        [Fact]
         public void HexTest()
         {
             Assert.Equal("1F", $"{new BigInteger(31):X2}");

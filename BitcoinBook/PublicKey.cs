@@ -88,6 +88,11 @@ namespace BitcoinBook
             return $"{(Key.Y.Number.IsEven ? "02" : "03")}{ToHex(Key.X.Number)}";
         }
 
+        public string ToAddress(bool compressed = true, bool mainnet = true)
+        {
+            throw new NotImplementedException();
+        }
+
         string ToHex(BigInteger i)
         {
             var hex = i.ToString("X64");

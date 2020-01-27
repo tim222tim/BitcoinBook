@@ -21,6 +21,7 @@ namespace BitcoinBook.Test
             var data = "Programming Bitcoin!";
             var hash = Cipher.ComputeHash256Int(data);
             var hashStr = $"{hash:X64}";
+            var hash160 = Cipher.ComputeHash160String(data);
             var signature = privateKey.Sign(data);
             Assert.True(privateKey.PublicKey.Verify(data, signature));
         }

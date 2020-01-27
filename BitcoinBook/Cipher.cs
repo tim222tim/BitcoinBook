@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
+using DevHawk.Security.Cryptography;
 
 namespace BitcoinBook
 {
@@ -10,10 +11,22 @@ namespace BitcoinBook
         const string alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
         static readonly int[] values = InitValues();
 
+        static int[] InitValues()
+        {
+            var array = new int[256];
+            Array.Fill(array, -1);
+            for (var i = 0; i < alphabet.Length; i++)
+            {
+                array[alphabet[i]] = i;
+            }
+
+            return array;
+        }
+
         public static string ToBase58(byte[] bytes)
         {
             var builder = new StringBuilder();
-            var number = new BigInteger(bytes);
+            var number = new BigInteger(Add(bytes, new byte[] {0, 0}));
             while (number > 0)
             {
                 number = BigInteger.DivRem(number, 58, out var remainder);
@@ -22,6 +35,19 @@ namespace BitcoinBook
 
             builder.Insert(0, new string('1', CountZeros(bytes)));
             return builder.ToString();
+        }
+
+        public static string ToBase58Check(byte[] bytes)
+        {
+            return ToBase58(Add(bytes, ComputeHash256Prefix(bytes)));
+        }
+
+        static byte[] ComputeHash256Prefix(byte[] bytes)
+        {
+            var hash = ComputeHash256(bytes);
+            var hashPrefix = new byte[4];
+            Array.Copy(hash, hashPrefix, 4);
+            return hashPrefix;
         }
 
         public static byte[] FromBase58(string base58)
@@ -44,17 +70,39 @@ namespace BitcoinBook
             return result.ToByteArray();
         }
 
+        public static byte[] ComputeHash160(byte[] data)
+        {
+            using var algorithm = new RIPEMD160();
+            return algorithm.ComputeHash(data);
+        }
+
+        public static byte[] ComputeHash160(string data)
+        {
+            return ComputeHash160(Encoding.UTF8.GetBytes(data));
+        }
+
         public static byte[] ComputeHash256(byte[] data)
         {
-            using var sha256Hash = SHA256.Create();
-            return sha256Hash.ComputeHash(data);
+            using var algorithm = SHA256.Create();
+            return algorithm.ComputeHash(data);
+        }
+
+        public static string ComputeHash160String(byte[] data)
+        {
+            var hash = ComputeHash160(data);
+            return BitConverter.ToString(hash).Replace("-", "");
+        }
+
+        public static string ComputeHash160String(string data)
+        {
+            return ComputeHash160String(Encoding.UTF8.GetBytes(data));
         }
 
         public static BigInteger ComputeHash256Int(byte[] data)
         {
             var hash = ComputeHash256(data);
             Array.Reverse(hash);
-            return new BigInteger(SuffixZeros(hash, 2));
+            return new BigInteger(Add(hash, new byte[] {0, 0}));
         }
 
         public static BigInteger ComputeHash256Int(string data)
@@ -73,25 +121,11 @@ namespace BitcoinBook
             return ComputeHash256String(Encoding.UTF8.GetBytes(data));
         }
 
-        static byte[] PrefixZeros(byte[] bytes, int count)
+        static byte[] Add(byte[] b1, byte[] b2)
         {
-            var newBytes = new byte[bytes.Length + count];
-            for (var i = 0; i < count; i++)
-            {
-                newBytes[i] = 0;
-            }
-            bytes.CopyTo(newBytes, count);
-            return newBytes;
-        }
-
-        static byte[] SuffixZeros(byte[] bytes, int count)
-        {
-            var newBytes = new byte[bytes.Length + count];
-            bytes.CopyTo(newBytes, 0);
-            for (var i = 0; i < count; i++)
-            {
-                newBytes[bytes.Length + i] = 0;
-            }
+            var newBytes = new byte[b1.Length + b2.Length];
+            b1.CopyTo(newBytes, 0);
+            b2.CopyTo(newBytes, b1.Length);
             return newBytes;
         }
 
@@ -104,18 +138,6 @@ namespace BitcoinBook
             }
 
             return index;
-        }
-
-        static int[] InitValues()
-        {
-            var array = new int[256];
-            Array.Fill(array, -1);
-            for (var i = 0; i < alphabet.Length; i++)
-            {
-                array[alphabet[i]] = i;
-            }
-
-            return array;
         }
     }
 }
