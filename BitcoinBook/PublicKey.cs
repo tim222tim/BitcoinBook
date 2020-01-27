@@ -80,27 +80,17 @@ namespace BitcoinBook
 
         public string ToSecUncompressedFormat()
         {
-            return $"04{ToHex(Key.X.Number)}{ToHex(Key.Y.Number)}";
+            return $"04{Cipher.ToHex64(Key.X.Number)}{Cipher.ToHex64(Key.Y.Number)}";
         }
 
         public string ToSecCompressedFormat()
         {
-            return $"{(Key.Y.Number.IsEven ? "02" : "03")}{ToHex(Key.X.Number)}";
+            return $"{(Key.Y.Number.IsEven ? "02" : "03")}{Cipher.ToHex64(Key.X.Number)}";
         }
 
         public string ToAddress(bool compressed = true, bool mainnet = true)
         {
             throw new NotImplementedException();
-        }
-
-        string ToHex(BigInteger i)
-        {
-            var hex = i.ToString("X64");
-            if (hex.Length == 65 && hex.StartsWith("0"))
-            {
-                hex = hex.Substring(1);
-            }
-            return hex.ToLower();
         }
 
         public override string ToString()

@@ -121,6 +121,28 @@ namespace BitcoinBook
             return ComputeHash160String(Encoding.UTF8.GetBytes(data));
         }
 
+        public static byte[] ToBytes64(BigInteger i)
+        {
+            var littleEndianBytes = i.ToByteArray();
+            var bigEndianBytes = new byte[32];
+            var lx = 0;
+            var bx = 31;
+            while (bx >= 0 && lx < littleEndianBytes.Length)
+            {
+                bigEndianBytes[bx--] = littleEndianBytes[lx++];
+            }
+            while (bx >= 0)
+            {
+                bigEndianBytes[bx--] = 0;
+            }
+            return bigEndianBytes;
+        }
+
+        public static string ToHex64(BigInteger i)
+        {
+            return BitConverter.ToString(ToBytes64(i)).Replace("-", "").ToLower();
+        }
+
         static byte[] Add(byte[] b1, byte[] b2)
         {
             var newBytes = new byte[b1.Length + b2.Length];
