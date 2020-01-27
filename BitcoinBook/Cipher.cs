@@ -26,7 +26,7 @@ namespace BitcoinBook
         public static string ToBase58(byte[] bytes)
         {
             var builder = new StringBuilder();
-            var number = new BigInteger(bytes);
+            var number = ToBigInteger(bytes);
             while (number > 0)
             {
                 number = BigInteger.DivRem(number, 58, out var remainder);
@@ -67,7 +67,7 @@ namespace BitcoinBook
                 result = result * 58 + value;
             }
 
-            return result.ToByteArray();
+            return ToBytes(result);
         }
 
         public static byte[] ComputeHash256(byte[] data)
@@ -78,9 +78,7 @@ namespace BitcoinBook
 
         public static BigInteger ComputeHash256Int(byte[] data)
         {
-            var hash = ComputeHash256(data);
-            Array.Reverse(hash);
-            return new BigInteger(Add(hash, new byte[] {0, 0}));
+            return ToBigInteger(ComputeHash256(data));
         }
 
         public static BigInteger ComputeHash256Int(string data)
@@ -121,26 +119,46 @@ namespace BitcoinBook
             return ComputeHash160String(Encoding.UTF8.GetBytes(data));
         }
 
-        public static byte[] ToBytes64(BigInteger i)
+        public static byte[] ToBytes(BigInteger i)
         {
-            var littleEndianBytes = i.ToByteArray();
-            var bigEndianBytes = new byte[32];
-            var lx = 0;
-            var bx = 31;
-            while (bx >= 0 && lx < littleEndianBytes.Length)
+            var rawBytes = i.ToByteArray();
+            var length = rawBytes.Length;
+            if (rawBytes[length - 1] == 0)
             {
-                bigEndianBytes[bx--] = littleEndianBytes[lx++];
+                --length;
             }
-            while (bx >= 0)
+            var bytes = new byte[length];
+            Array.Copy(rawBytes, bytes, length);
+            Array.Reverse(bytes);
+            return bytes;
+        }
+
+        static byte[] PadBytes(byte[] bytes, int length)
+        {
+            var newBytes = new byte[length];
+            var pad = length - bytes.Length;
+            for (var i = 0; i < pad; i++)
             {
-                bigEndianBytes[bx--] = 0;
+                newBytes[i] = 0;
             }
-            return bigEndianBytes;
+            bytes.CopyTo(newBytes, pad);
+            return newBytes;
+        }
+
+        public static byte[] ToBytes32(BigInteger i)
+        {
+            return PadBytes(ToBytes(i), 32);
         }
 
         public static string ToHex64(BigInteger i)
         {
-            return BitConverter.ToString(ToBytes64(i)).Replace("-", "").ToLower();
+            return BitConverter.ToString(ToBytes32(i)).Replace("-", "").ToLower();
+        }
+
+        public static BigInteger ToBigInteger(byte[] data)
+        {
+            Array.Reverse(data);
+            return new BigInteger(Add(data, new byte[] { 0}));
         }
 
         static byte[] Add(byte[] b1, byte[] b2)
