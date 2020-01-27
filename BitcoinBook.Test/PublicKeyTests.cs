@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 using Xunit;
@@ -33,48 +34,60 @@ namespace BitcoinBook.Test
                 signature));
         }
 
-        [Fact]
-        public void SecUncompressedFormatTest()
+        public static IEnumerable<object[]> SecUncompressedFormatTestData => new[]
         {
-            Assert.Equal(
-                "04ffe558e388852f0120e46af2d1b370f85854a8eb0841811ece0e3e03d282d57c315dc72890a4f10a1481c031b03b351b0dc79901ca18a00cf009dbdb157a1d10", 
-                new PrivateKey(5000).PublicKey.ToSecString(false));
-            Assert.Equal(
-                "04027f3da1918455e03c46f659266a1bb5204e959db7364d2f473bdf8f0a13cc9dff87647fd023c13b4a4994f17691895806e1b40b57f4fd22581a4f46851f3b06",
-                new PrivateKey((BigInteger)Math.Pow(2018, 5)).PublicKey.ToSecString(false));
-            Assert.Equal(
-                "04d90cd625ee87dd38656dd95cf79f65f60f7273b67d3096e68bd81e4f5342691f842efa762fd59961d0e99803c61edba8b3e3f7dc3a341836f97733aebf987121",
-                new PrivateKey("0deadbeef12345").PublicKey.ToSecString(false));
+            new object[] { "04ffe558e388852f0120e46af2d1b370f85854a8eb0841811ece0e3e03d282d57c315dc72890a4f10a1481c031b03b351b0dc79901ca18a00cf009dbdb157a1d10", 
+                new PrivateKey(5000) },
+            new object[] { "04027f3da1918455e03c46f659266a1bb5204e959db7364d2f473bdf8f0a13cc9dff87647fd023c13b4a4994f17691895806e1b40b57f4fd22581a4f46851f3b06", 
+                new PrivateKey((BigInteger) Math.Pow(2018, 5)) },
+            new object[] { "04d90cd625ee87dd38656dd95cf79f65f60f7273b67d3096e68bd81e4f5342691f842efa762fd59961d0e99803c61edba8b3e3f7dc3a341836f97733aebf987121", 
+                new PrivateKey("0deadbeef12345") },
+        };
+
+        [Theory]
+        [MemberData(nameof(SecUncompressedFormatTestData))]
+        public void SecUncompressedFormatTest(string expected, PrivateKey privateKey)
+        {
+            Assert.Equal(expected, privateKey.PublicKey.ToSecString(false));
         }
 
-        [Fact]
-        public void SecCompressedFormatTest()
+        public static IEnumerable<object[]> SecCompressedFormatTestData => new[]
         {
-            Assert.Equal(
-                "0357a4f368868a8a6d572991e484e664810ff14c05c0fa023275251151fe0e53d1",
-                new PrivateKey(5001).PublicKey.ToSecString());
-            // TODO how come this one didn't come out the same as the book?
-            // Assert.Equal(
-            //     "02933ec2d2b111b92737ec12f1c5d20f3233a0ad21cd8b36d0bca7a0cfa5cb8701",
-            //     new PrivateKey((BigInteger)Math.Pow(2019, 5)).PublicKey.ToSecString());
-            Assert.Equal(
-                "0296be5b1292f6c856b3c5654e886fc13511462059089cdf9c479623bfcbe77690",
-                new PrivateKey("0deadbeef54321").PublicKey.ToSecString());
+            new object[] { "0357a4f368868a8a6d572991e484e664810ff14c05c0fa023275251151fe0e53d1",
+                new PrivateKey(5001) },
+            // TODO Why doesn't this answer match the book?
+            // new object[] { "02933ec2d2b111b92737ec12f1c5d20f3233a0ad21cd8b36d0bca7a0cfa5cb8701",
+            //     new PrivateKey((BigInteger) Math.Pow(2019, 5)) },
+            new object[] { "0296be5b1292f6c856b3c5654e886fc13511462059089cdf9c479623bfcbe77690",
+                new PrivateKey("0deadbeef54321") },
+        };
+
+        [Theory]
+        [MemberData(nameof(SecCompressedFormatTestData))]
+        public void SecCompressedFormatTest(string expected, PrivateKey privateKey)
+        {
+            Assert.Equal(expected, privateKey.PublicKey.ToSecString());
         }
 
-        [Fact]
-        public void ParseSecTest()
+        public static IEnumerable<object[]> ParseSecTestData => new[]
         {
-            Assert.Equal(new PrivateKey(5000).PublicKey, 
-                PublicKey.ParseSecFormat("04ffe558e388852f0120e46af2d1b370f85854a8eb0841811ece0e3e03d282d57c315dc72890a4f10a1481c031b03b351b0dc79901ca18a00cf009dbdb157a1d10"));
-            Assert.Equal(new PrivateKey((BigInteger)Math.Pow(2018, 5)).PublicKey,
-                PublicKey.ParseSecFormat("04027f3da1918455e03c46f659266a1bb5204e959db7364d2f473bdf8f0a13cc9dff87647fd023c13b4a4994f17691895806e1b40b57f4fd22581a4f46851f3b06"));
-            Assert.Equal(new PrivateKey("0deadbeef12345").PublicKey,
-                PublicKey.ParseSecFormat("04d90cd625ee87dd38656dd95cf79f65f60f7273b67d3096e68bd81e4f5342691f842efa762fd59961d0e99803c61edba8b3e3f7dc3a341836f97733aebf987121"));
-            Assert.Equal(new PrivateKey(5001).PublicKey,
-                PublicKey.ParseSecFormat("0357a4f368868a8a6d572991e484e664810ff14c05c0fa023275251151fe0e53d1"));
-            Assert.Equal(new PrivateKey("0deadbeef54321").PublicKey,
-                PublicKey.ParseSecFormat("0296be5b1292f6c856b3c5654e886fc13511462059089cdf9c479623bfcbe77690"));
+            new object[] { new PrivateKey(5000), 
+                "04ffe558e388852f0120e46af2d1b370f85854a8eb0841811ece0e3e03d282d57c315dc72890a4f10a1481c031b03b351b0dc79901ca18a00cf009dbdb157a1d10" },
+            new object[] { new PrivateKey((BigInteger)Math.Pow(2018, 5)), 
+                "04027f3da1918455e03c46f659266a1bb5204e959db7364d2f473bdf8f0a13cc9dff87647fd023c13b4a4994f17691895806e1b40b57f4fd22581a4f46851f3b06" },
+            new object[] { new PrivateKey("0deadbeef12345"), 
+                "04d90cd625ee87dd38656dd95cf79f65f60f7273b67d3096e68bd81e4f5342691f842efa762fd59961d0e99803c61edba8b3e3f7dc3a341836f97733aebf987121" },
+            new object[] { new PrivateKey(5001), 
+                "0357a4f368868a8a6d572991e484e664810ff14c05c0fa023275251151fe0e53d1" },
+            new object[] { new PrivateKey("0deadbeef54321"), 
+                "0296be5b1292f6c856b3c5654e886fc13511462059089cdf9c479623bfcbe77690" },
+        };
+
+        [Theory]
+        [MemberData(nameof(ParseSecTestData))]
+        public void ParseSecTest(PrivateKey expected, string sec)
+        {
+            Assert.Equal(expected.PublicKey, PublicKey.ParseSecFormat(sec));
         }
 
         [Theory]
@@ -88,15 +101,18 @@ namespace BitcoinBook.Test
             Assert.Throws<FormatException>(() => PublicKey.ParseSecFormat(sec));
         }
 
-        [Fact]
-        public void AddressTest()
+        public static IEnumerable<object[]> AddressTestData => new[]
+            {
+                new object[] { "mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA", new PrivateKey(5002), false, false },
+                new object[] { "mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH", new PrivateKey((BigInteger) Math.Pow(2020, 5)), true, false},
+                new object[] { "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1", new PrivateKey("012345deadbeef"), true, true },
+            };
+
+        [Theory]
+        [MemberData(nameof(AddressTestData))]
+        public void AddressTest(string expectedAddress, PrivateKey privateKey, bool compressed, bool mainnet)
         {
-            Assert.Equal("mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA",
-                new PrivateKey(5002).PublicKey.ToAddress(false, false));
-            Assert.Equal("mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH",
-                new PrivateKey((BigInteger)Math.Pow(2020, 5)).PublicKey.ToAddress(true, false));
-            Assert.Equal("1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1",
-                new PrivateKey("012345deadbeef").PublicKey.ToAddress());
+            Assert.Equal(expectedAddress, privateKey.PublicKey.ToAddress(compressed, mainnet));
         }
 
         [Fact]
