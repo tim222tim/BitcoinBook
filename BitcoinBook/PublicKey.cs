@@ -107,10 +107,10 @@ namespace BitcoinBook
 
         public string ToAddress(bool compressed = true, bool mainnet = true)
         {
-            var sec = ToSec(compressed);
-            var address = new byte[sec.Length + 1];
+            var hash = Cipher.ComputeHash160(ToSec(compressed));
+            var address = new byte[hash.Length + 1];
             address[0] = mainnet ? (byte) 0 : (byte) '\x6f';
-            sec.CopyTo(address, 1);
+            hash.CopyTo(address, 1);
             return Cipher.ToBase58Check(address);
         }
 

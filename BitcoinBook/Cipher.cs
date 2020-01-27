@@ -72,8 +72,8 @@ namespace BitcoinBook
 
         public static byte[] ComputeHash256(byte[] data)
         {
-            using var algorithm = SHA256.Create();
-            return algorithm.ComputeHash(algorithm.ComputeHash(data));
+            using var sha256 = SHA256.Create();
+            return sha256.ComputeHash(sha256.ComputeHash(data));
         }
 
         public static BigInteger ComputeHash256Int(byte[] data)
@@ -99,8 +99,9 @@ namespace BitcoinBook
 
         public static byte[] ComputeHash160(byte[] data)
         {
-            using var algorithm = new RIPEMD160();
-            return algorithm.ComputeHash(data);
+            using var sha256 = SHA256.Create();
+            using var rip160 = new RIPEMD160();
+            return rip160.ComputeHash(sha256.ComputeHash(data));
         }
 
         public static byte[] ComputeHash160(string data)
@@ -162,8 +163,14 @@ namespace BitcoinBook
 
         public static BigInteger ToBigInteger(byte[] data)
         {
-            Array.Reverse(data);
-            return new BigInteger(Add(data, new byte[] { 0}));
+            var i = new BigInteger();
+            foreach (var b in data)
+            {
+                i *= 256;
+                i += b;
+            }
+
+            return i;
         }
 
         static byte[] Add(byte[] b1, byte[] b2)

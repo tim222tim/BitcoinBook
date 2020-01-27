@@ -91,10 +91,10 @@ namespace BitcoinBook.Test
         [Fact]
         public void AddressTest()
         {
-            // Assert.Equal("mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA",
-            //     new PrivateKey(5002).PublicKey.ToAddress(false, false));
-            // Assert.Equal("mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH",
-            //     new PrivateKey((BigInteger)Math.Pow(2020, 5)).PublicKey.ToAddress(true, false));
+            Assert.Equal("mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA",
+                new PrivateKey(5002).PublicKey.ToAddress(false, false));
+            Assert.Equal("mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH",
+                new PrivateKey((BigInteger)Math.Pow(2020, 5)).PublicKey.ToAddress(true, false));
             Assert.Equal("1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1",
                 new PrivateKey("012345deadbeef").PublicKey.ToAddress());
         }
