@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Numerics;
 
 namespace BitcoinBook
@@ -51,6 +52,20 @@ namespace BitcoinBook
         public Signature Sign(string data)
         {
             return Sign(Cipher.ComputeHash256Int(data));
+        }
+
+        public string Wif(bool compressed = true, bool testnet = false)
+        {
+            var length = compressed ? 34 : 33;
+            var bytes = new byte[length];
+            bytes[0] = testnet ? (byte)'\xef' : (byte)'\x80';
+            Cipher.ToBytes32(Key).CopyTo(bytes, 1);
+            if (compressed)
+            {
+                bytes[length - 1] = 1;
+            }
+
+            return Cipher.ToBase58Check(bytes);
         }
     }
 }

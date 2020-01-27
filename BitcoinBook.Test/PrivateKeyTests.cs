@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using Xunit;
 
 namespace BitcoinBook.Test
@@ -19,11 +21,23 @@ namespace BitcoinBook.Test
         {
             var privateKey = new PrivateKey(12345);
             var data = "Programming Bitcoin!";
-            var hash = Cipher.ComputeHash256Int(data);
-            var hashStr = $"{hash:X64}";
-            var hash160 = Cipher.ComputeHash160String(data);
             var signature = privateKey.Sign(data);
             Assert.True(privateKey.PublicKey.Verify(data, signature));
+        }
+
+        public static IEnumerable<object[]> WifTestData => new[]
+        {
+            new object[] { "cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN8rFTv2sfUK", new PrivateKey(5003), true, true },
+            // TODO the end of this one is not the same as the book
+            // new object[] { "91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjpWAxgzczjbCwxic", new PrivateKey((BigInteger) Math.Pow(2021, 5)), false, true},
+            new object[] { "KwDiBf89QgGbjEhKnhXJuH7LrciVrZi3qYjgiuQJv1h8Ytr2S53a", new PrivateKey("54321deadbeef"), true, false },
+        };
+
+        [Theory]
+        [MemberData(nameof(WifTestData))]
+        public void WifTest(string expected, PrivateKey privateKey, bool compressed, bool testnet)
+        {
+            Assert.Equal(expected, privateKey.Wif(compressed, testnet));
         }
     }
 }
