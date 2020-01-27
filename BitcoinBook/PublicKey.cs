@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
-using System.Net.NetworkInformation;
 using System.Numerics;
 
 namespace BitcoinBook
@@ -105,11 +103,11 @@ namespace BitcoinBook
             return Cipher.ToHex(ToSec(compressed));
         }
 
-        public string ToAddress(bool compressed = true, bool mainnet = true)
+        public string ToAddress(bool compressed = true, bool testnet = false)
         {
             var hash = Cipher.ComputeHash160(ToSec(compressed));
             var address = new byte[hash.Length + 1];
-            address[0] = mainnet ? (byte) 0 : (byte) '\x6f';
+            address[0] = testnet ? (byte) '\x6f' : (byte)0;
             hash.CopyTo(address, 1);
             return Cipher.ToBase58Check(address);
         }

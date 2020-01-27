@@ -103,16 +103,16 @@ namespace BitcoinBook.Test
 
         public static IEnumerable<object[]> AddressTestData => new[]
             {
-                new object[] { "mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA", new PrivateKey(5002), false, false },
-                new object[] { "mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH", new PrivateKey((BigInteger) Math.Pow(2020, 5)), true, false},
-                new object[] { "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1", new PrivateKey("012345deadbeef"), true, true },
+                new object[] { "mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA", new PrivateKey(5002), false, true },
+                new object[] { "mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH", new PrivateKey((BigInteger) Math.Pow(2020, 5)), true, true},
+                new object[] { "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1", new PrivateKey("012345deadbeef"), true, false },
             };
 
         [Theory]
         [MemberData(nameof(AddressTestData))]
-        public void AddressTest(string expectedAddress, PrivateKey privateKey, bool compressed, bool mainnet)
+        public void AddressTest(string expectedAddress, PrivateKey privateKey, bool compressed, bool testnet)
         {
-            Assert.Equal(expectedAddress, privateKey.PublicKey.ToAddress(compressed, mainnet));
+            Assert.Equal(expectedAddress, privateKey.PublicKey.ToAddress(compressed, testnet));
         }
 
         [Fact]
