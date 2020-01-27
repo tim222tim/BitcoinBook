@@ -35,11 +35,5 @@ namespace BitcoinBook.Test
         {
             Assert.Throws<FormatException>(() => Cipher.FromBase58(input));
         }
-
-        [Fact]
-        public void ToBase58CheckTest()
-        {
-            Assert.Equal("281F8n7tpJgwSsqCe7h2EfBvMD8k", Cipher.ToBase58Check(Encoding.UTF8.GetBytes("Programming Bitcoin!")));
-        }
     }
 }

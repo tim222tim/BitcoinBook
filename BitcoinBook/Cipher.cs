@@ -26,7 +26,7 @@ namespace BitcoinBook
         public static string ToBase58(byte[] bytes)
         {
             var builder = new StringBuilder();
-            var number = new BigInteger(Add(bytes, new byte[] {0, 0}));
+            var number = new BigInteger(bytes);
             while (number > 0)
             {
                 number = BigInteger.DivRem(number, 58, out var remainder);
