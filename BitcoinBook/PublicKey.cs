@@ -78,14 +78,31 @@ namespace BitcoinBook
             return Verify(Cipher.ComputeHash256Int(data), signature);
         }
 
-        public string ToSecUncompressedFormat()
+        public byte[] ToSecUncompressed()
         {
-            return $"04{Cipher.ToHex64(Key.X.Number)}{Cipher.ToHex64(Key.Y.Number)}";
+            var bytes = new byte[1 + 32 + 32];
+            bytes[0] = 4;
+            Cipher.ToBytes32(Key.X.Number).CopyTo(bytes, 1);
+            Cipher.ToBytes32(Key.Y.Number).CopyTo(bytes, 1 + 32);
+            return bytes;
         }
 
-        public string ToSecCompressedFormat()
+        public byte[] ToSecCompressed()
         {
-            return $"{(Key.Y.Number.IsEven ? "02" : "03")}{Cipher.ToHex64(Key.X.Number)}";
+            var bytes = new byte[1 + 32];
+            bytes[0] = Key.Y.Number.IsEven ? (byte)2 : (byte)3;
+            Cipher.ToBytes32(Key.X.Number).CopyTo(bytes, 1);
+            return bytes;
+        }
+
+        public string ToSecUncompressedString()
+        {
+            return Cipher.ToHex(ToSecUncompressed());
+        }
+
+        public string ToSecCompressedString()
+        {
+            return Cipher.ToHex(ToSecCompressed());
         }
 
         public string ToAddress(bool compressed = true, bool mainnet = true)
