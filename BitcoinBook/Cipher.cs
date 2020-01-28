@@ -120,38 +120,27 @@ namespace BitcoinBook
             return ComputeHash160String(Encoding.UTF8.GetBytes(data));
         }
 
-        public static byte[] ToBytes(BigInteger i)
+        public static byte[] ToBytes(BigInteger i, int minLength = 0)
         {
             var rawBytes = i.ToByteArray();
-            var length = rawBytes.Length;
-            if (rawBytes[length - 1] == 0)
+            var rawLength = rawBytes.Length;
+            if (rawBytes[rawLength - 1] == 0)
             {
-                --length;
+                --rawLength;
             }
-            var bytes = new byte[length];
-            var rx = length - 1;
+            var bytes = new byte[Math.Max(rawLength, minLength)];
+            var rx = rawLength - 1;
             var bx = 0;
+            var pad = bytes.Length - rawLength;
+            while (pad-- > 0)
+            {
+                bytes[bx++] = 0;
+            }
             while (rx >= 0)
             {
                 bytes[bx++] = rawBytes[rx--];
             }
-            while (bx < length)
-            {
-                bytes[bx++] = 0;
-            }
             return bytes;
-        }
-
-        static byte[] PadBytes(byte[] bytes, int length)
-        {
-            var newBytes = new byte[length];
-            var pad = length - bytes.Length;
-            for (var i = 0; i < pad; i++)
-            {
-                newBytes[i] = 0;
-            }
-            bytes.CopyTo(newBytes, pad);
-            return newBytes;
         }
 
         public static string ToHex(byte[] bytes)
@@ -161,8 +150,7 @@ namespace BitcoinBook
 
         public static byte[] ToBytes32(BigInteger i)
         {
-            var bytes = ToBytes(i); 
-            return PadBytes(bytes, 32);
+            return ToBytes(i, 32);
         }
 
         public static string ToHex32(BigInteger i)
