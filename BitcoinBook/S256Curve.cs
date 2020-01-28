@@ -5,7 +5,7 @@ namespace BitcoinBook
 {
     public static class S256Curve
     {
-        public static Field Field { get; } = new Field(BigInteger.Pow(2, 256) - BigInteger.Pow(2, 32) - 977);
+        public static Field Field { get; } = new Field(PrimeByPowers(256, 32, 9, 8, 7, 6, 4, 0));
         public static Curve Curve { get; } = new Curve(Field, 0, 7);
         public static Point Generator = Curve.Point(
             "79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798", 
@@ -21,6 +21,17 @@ namespace BitcoinBook
         public static Point Point(FieldElement x, FieldElement y, NumberStyles numberStyles = NumberStyles.HexNumber)
         {
             return Curve.Point(x, y);
+        }
+
+        static BigInteger PrimeByPowers(int initialPower, params int[] subtractPowers)
+        {
+            var i = BigInteger.Pow(2, initialPower);
+            foreach (var p in subtractPowers)
+            {
+                i -= BigInteger.Pow(2, p);
+            }
+
+            return i;
         }
     }
 }
