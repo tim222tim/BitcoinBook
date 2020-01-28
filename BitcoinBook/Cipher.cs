@@ -128,18 +128,21 @@ namespace BitcoinBook
             {
                 --rawLength;
             }
+
             var bytes = new byte[Math.Max(rawLength, minLength)];
-            var rx = rawLength - 1;
             var bx = 0;
             var pad = bytes.Length - rawLength;
-            while (pad-- > 0)
+            while (bx < pad)
             {
                 bytes[bx++] = 0;
             }
+
+            var rx = rawLength - 1;
             while (rx >= 0)
             {
                 bytes[bx++] = rawBytes[rx--];
             }
+
             return bytes;
         }
 
