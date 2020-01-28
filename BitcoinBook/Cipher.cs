@@ -9,9 +9,9 @@ namespace BitcoinBook
     public static class Cipher
     {
         const string alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-        static readonly int[] values = InitValues();
+        static readonly int[] values = InitReverseAlphabet();
 
-        static int[] InitValues()
+        static int[] InitReverseAlphabet()
         {
             var array = new int[256];
             Array.Fill(array, -1);
@@ -39,7 +39,7 @@ namespace BitcoinBook
 
         public static string ToBase58Check(byte[] bytes)
         {
-            return ToBase58(Add(bytes, ComputeHash256Prefix(bytes)));
+            return ToBase58(Concat(bytes, ComputeHash256Prefix(bytes)));
         }
 
         static byte[] ComputeHash256Prefix(byte[] bytes)
@@ -129,8 +129,16 @@ namespace BitcoinBook
                 --length;
             }
             var bytes = new byte[length];
-            Array.Copy(rawBytes, bytes, length);
-            Array.Reverse(bytes);
+            var rx = length - 1;
+            var bx = 0;
+            while (rx >= 0)
+            {
+                bytes[bx++] = rawBytes[rx--];
+            }
+            while (bx < length)
+            {
+                bytes[bx++] = 0;
+            }
             return bytes;
         }
 
@@ -167,14 +175,13 @@ namespace BitcoinBook
             var i = new BigInteger();
             foreach (var b in data)
             {
-                i *= 256;
-                i += b;
+                i = i * 256 + b;
             }
 
             return i;
         }
 
-        static byte[] Add(byte[] b1, byte[] b2)
+        static byte[] Concat(byte[] b1, byte[] b2)
         {
             var newBytes = new byte[b1.Length + b2.Length];
             b1.CopyTo(newBytes, 0);
