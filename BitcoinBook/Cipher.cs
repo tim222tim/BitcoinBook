@@ -151,6 +151,11 @@ namespace BitcoinBook
             return BitConverter.ToString(bytes).Replace("-", "").ToLower();
         }
 
+        public static string ToHex(BigInteger i)
+        {
+            return ToHex(ToBytes(i));
+        }
+
         public static byte[] ToBytes32(BigInteger i)
         {
             return ToBytes(i, 32);

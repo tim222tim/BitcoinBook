@@ -122,16 +122,5 @@ namespace BitcoinBook.Test
             var privateKey = new PrivateKey(Cipher.ToBigInteger(hash));
             Assert.Equal("mvzHKaHbDMaLdNbDrPuiSbGV91o6ADjCAK", new PublicKey(privateKey).ToAddress(true, true));
         }
-
-        [Fact]
-        public void HexTest()
-        {
-            Assert.Equal("1F", $"{new BigInteger(31):X2}");
-            Assert.Equal("001F", $"{new BigInteger(31):X4}");
-            Assert.Equal("00FE", $"{new BigInteger(254):X4}");
-            Assert.Equal("0FE", $"{new BigInteger(254):X2}");
-            Assert.Equal("00000000000000000000000000000000000000000000000000000000000000FE", $"{new BigInteger(254):X64}");
-            Assert.Equal("00000000000000000000000000000000000000000000000000000000000000FE", new BigInteger(254).ToString("X64"));
-        }
     }
 }
