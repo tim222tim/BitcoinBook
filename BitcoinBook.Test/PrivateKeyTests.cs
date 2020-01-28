@@ -28,8 +28,7 @@ namespace BitcoinBook.Test
         public static IEnumerable<object[]> WifTestData => new[]
         {
             new object[] { "cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN8rFTv2sfUK", new PrivateKey(5003), true, true },
-            // TODO the end of this one is not the same as the book
-            // new object[] { "91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjpWAxgzczjbCwxic", new PrivateKey((BigInteger) Math.Pow(2021, 5)), false, true},
+            new object[] { "91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjpWAxgzczjbCwxic", new PrivateKey(BigInteger.Pow(2021, 5)), false, true},
             new object[] { "KwDiBf89QgGbjEhKnhXJuH7LrciVrZi3qYjgiuQJv1h8Ytr2S53a", new PrivateKey("54321deadbeef"), true, false },
         };
 

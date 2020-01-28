@@ -153,7 +153,8 @@ namespace BitcoinBook
 
         public static byte[] ToBytes32(BigInteger i)
         {
-            return PadBytes(ToBytes(i), 32);
+            var bytes = ToBytes(i); 
+            return PadBytes(bytes, 32);
         }
 
         public static string ToHex32(BigInteger i)
