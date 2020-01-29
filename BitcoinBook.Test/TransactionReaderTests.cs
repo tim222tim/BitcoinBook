@@ -12,9 +12,9 @@ namespace BitcoinBook.Test
         [InlineData(2, "02000000")]
         [InlineData(274, "12010000")]
         [InlineData(2054357487, "EF01737A")]
-        public void ReadVersionTests(uint expected, string input)
+        public void ReadIntTests(uint expected, string input)
         {
-            Assert.Equal(expected, GetReader(input).ReadVersion());
+            Assert.Equal(expected, GetReader(input).ReadInt(4));
         }
 
         [Theory]
@@ -23,7 +23,7 @@ namespace BitcoinBook.Test
         [InlineData("000000")]
         public void ReadVersionThrowsTests(string input)
         {
-            Assert.Throws<EndOfStreamException>(() => GetReader(input).ReadVersion());
+            Assert.Throws<EndOfStreamException>(() => GetReader(input).ReadInt(4));
         }
 
         [Theory]
@@ -61,8 +61,14 @@ namespace BitcoinBook.Test
             "b6dbf67d4750b0a56244948a87988ac005a6202000000001976a9143c82d7df364eb6c75be8c80" +
             "df2b3eda8db57397088ac46430600";
             var transaction = GetReader(input).ReadTransaction();
-            Assert.Equal(Cipher.ToBytes("304402207899531a52d59a6de200179928ca900254a36b8dff8bb75f5f5d71b1cdc26125022008b422690b8461cb52c3cc30330b23d574351872b7c361e9aae3649071c1a71601 035d5c93d9ac96881f19ba1f686f15f009ded7c62efe85a872e6a19b43c15a2937"), 
-                transaction.Inputs[1].ScriptSig.Bytes);
+            Assert.Equal(1U, transaction.Version);
+            Assert.Equal(4, transaction.Inputs.Count);
+            Assert.Equal(1U, transaction.Inputs[0].PreviousIndex);
+            Assert.Equal(6*16 + 10, transaction.Inputs[0].ScriptSig.Bytes.Length);
+            Assert.Equal(6U * 256*256 + 67 * 256 + 70, transaction.LockTime);
+            Assert.Equal(0U, transaction.Inputs[1].PreviousIndex);
+            Assert.Equal(6 * 16 + 10, transaction.Inputs[1].ScriptSig.Bytes.Length);
+            Assert.StartsWith("473044", Cipher.ToHex(transaction.Inputs[1].ScriptSig.Bytes));
         }
 
         static TransactionReader GetReader(string input)

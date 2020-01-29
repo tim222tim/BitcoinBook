@@ -54,12 +54,12 @@ namespace BitcoinBook
             return inputs;
         }
 
-        public TransactionInput ReadInput()
+        TransactionInput ReadInput()
         {
             return new TransactionInput(reader.ReadBytes(32), ReadInt(4), ReadScript(), ReadInt(4));
         }
 
-        public uint ReadVersion()
+        uint ReadVersion()
         {
             return ReadInt(4);
         }
@@ -96,7 +96,7 @@ namespace BitcoinBook
             }
         }
 
-        uint ReadInt(int length)
+        public uint ReadInt(int length)
         {
             uint i = 0;
             uint factor = 1;
