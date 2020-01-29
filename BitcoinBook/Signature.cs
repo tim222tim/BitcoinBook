@@ -33,6 +33,10 @@ namespace BitcoinBook
         string ToPrefixedHex(BigInteger i)
         {
             var hex = Cipher.ToHex(i);
+            if (hex[0] >= '8')
+            {
+                hex = "00" + hex;
+            }
             return $"02{hex.Length/2:X2}{hex}";
         }
     }
