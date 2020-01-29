@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Xunit;
 
 namespace BitcoinBook.Test
@@ -9,11 +8,11 @@ namespace BitcoinBook.Test
         [Theory]
         [InlineData(0, "00000000")]
         [InlineData(1, "01000000")]
-        [InlineData(1, "010000009348934789534")]
+        [InlineData(1, "01000000934893478953F4")]
         [InlineData(2, "02000000")]
         [InlineData(274, "12010000")]
         [InlineData(2054357487, "EF01737A")]
-        public void ReadTransactionTests(int expected, string input)
+        public void ReadVersionTests(uint expected, string input)
         {
             Assert.Equal(expected, GetReader(input).ReadVersion());
         }
@@ -22,9 +21,22 @@ namespace BitcoinBook.Test
         [InlineData("")]
         [InlineData("01")]
         [InlineData("000000")]
-        public void ReadTransactionThrowsTests(string input)
+        public void ReadVersionThrowsTests(string input)
         {
             Assert.Throws<EndOfStreamException>(() => GetReader(input).ReadVersion());
+        }
+
+        [Theory]
+        [InlineData(0, "00")]
+        [InlineData(1, "0134")]
+        [InlineData(252, "FC75")]
+        [InlineData(255, "FDFF00")]
+        [InlineData(257, "FD010166")]
+        [InlineData(2054357487, "FEEF01737A7464")]
+        [InlineData(578437695752307201, "FF0102030405060708DDEE")]
+        public void ReadVarIntTests(ulong expected, string input)
+        {
+            Assert.Equal(expected, GetReader(input).ReadVarInt());
         }
 
         static TransactionReader GetReader(string input)
