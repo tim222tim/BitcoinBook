@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Numerics;
 
 namespace BitcoinBook
 {
@@ -17,6 +17,48 @@ namespace BitcoinBook
         {
         }
 
+        public Transaction ReadTransaction()
+        {
+            return new Transaction(ReadVersion(), ReadInputs(ReadVarInt()), ReadOutputs(ReadVarInt()), ReadInt(4));
+        }
+
+        IList<TransactionOutput> ReadOutputs(ulong count)
+        {
+            var outputs = new List<TransactionOutput>();
+            while (count-- > 0)
+            {
+                outputs.Add(ReadOutput());
+            }
+
+            return outputs;
+        }
+
+        TransactionOutput ReadOutput()
+        {
+            return new TransactionOutput(ReadLong(8), ReadScriptPubKey());
+        }
+
+        static ScriptPubKey ReadScriptPubKey()
+        {
+            return new ScriptPubKey();
+        }
+
+        IList<TransactionInput> ReadInputs(ulong count)
+        {
+            var inputs = new List<TransactionInput>();
+            while (count-- > 0)
+            {
+                inputs.Add(ReadInput());
+            }
+
+            return inputs;
+        }
+
+        public TransactionInput ReadInput()
+        {
+            return new TransactionInput(reader.ReadBytes(32), ReadInt(4), ReadScript(), ReadInt(4));
+        }
+
         public uint ReadVersion()
         {
             return ReadInt(4);
@@ -27,6 +69,11 @@ namespace BitcoinBook
             var i = ReadLong(1);
             var len = GetVarLength(i);
             return len == 1 ? i : ReadLong(len);
+        }
+
+        ScriptSig ReadScript()
+        {
+            return new ScriptSig();
         }
 
         int GetVarLength(ulong i)
