@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 
@@ -17,7 +18,63 @@ namespace BitcoinBook
         {
         }
 
-        public void WriteInt(ulong i, int length)
+        public void Write(Transaction transaction)
+        {
+            Write(transaction.Version, 4);
+            Write(transaction.Inputs);
+            Write(transaction.Outputs);
+            Write(transaction.LockTime, 4);
+        }
+
+        void Write(ICollection<TransactionInput> inputs)
+        {
+            WriteVar((ulong) inputs.Count);
+            foreach (var input in inputs)
+            {
+                Write(input);
+            }
+        }
+
+        void Write(TransactionInput input)
+        {
+            writer.Write(input.PreviousTransaction);
+            Write(input.PreviousIndex, 4);
+            Write(input.ScriptSig);
+            Write(input.Sequence, 4);
+        }
+
+        void Write(ScriptSig scriptSig)
+        {
+            WriteVarBytes(scriptSig.Bytes);
+        }
+
+        void WriteVarBytes(byte[] bytes)
+        {
+            WriteVar((ulong) bytes.Length);
+            writer.Write(bytes);
+        }
+
+        void Write(ICollection<TransactionOutput> outputs)
+        {
+            WriteVar((ulong)outputs.Count);
+            foreach (var output in outputs)
+            {
+                Write(output);
+            }
+        }
+
+        void Write(TransactionOutput output)
+        {
+            Write(output.Amount, 8);
+            Write(output.ScriptPubKey);
+        }
+
+        void Write(ScriptPubKey scriptPubKey)
+        {
+            WriteVarBytes(scriptPubKey.Bytes);
+        }
+
+        public void Write(ulong i, int length)
         {
             var bytes = new BigInteger(i).ToByteArray();
             var bx = 0;
@@ -32,14 +89,14 @@ namespace BitcoinBook
             }
         }
 
-        public void WriteVarInt(ulong i)
+        public void WriteVar(ulong i)
         {
             var length = GetVarLength(i);
             if (length > 1)
             {
                 writer.Write(GetVarPrefix(i));
             }
-            WriteInt(i, length);
+            Write(i, length);
         }
 
         int GetVarLength(ulong i)

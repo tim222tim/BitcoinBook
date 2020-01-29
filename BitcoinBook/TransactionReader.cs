@@ -59,11 +59,6 @@ namespace BitcoinBook
             return new TransactionInput(reader.ReadBytes(32), ReadInt(4), ReadScript(), ReadInt(4));
         }
 
-        uint ReadVersion()
-        {
-            return ReadInt(4);
-        }
-
         public ulong ReadVarInt()
         {
             var i = ReadLong(1);
