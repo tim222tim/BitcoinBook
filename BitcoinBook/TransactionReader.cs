@@ -38,9 +38,9 @@ namespace BitcoinBook
             return new TransactionOutput(ReadLong(8), ReadScriptPubKey());
         }
 
-        static ScriptPubKey ReadScriptPubKey()
+        ScriptPubKey ReadScriptPubKey()
         {
-            return new ScriptPubKey();
+            return new ScriptPubKey(ReadVarBytes());
         }
 
         IList<TransactionInput> ReadInputs(ulong count)
@@ -73,7 +73,12 @@ namespace BitcoinBook
 
         ScriptSig ReadScript()
         {
-            return new ScriptSig();
+            return new ScriptSig(ReadVarBytes());
+        }
+
+        byte[] ReadVarBytes()
+        {
+            return reader.ReadBytes((int) ReadVarInt());
         }
 
         int GetVarLength(ulong i)
