@@ -19,7 +19,7 @@ namespace BitcoinBook
 
         public Transaction ReadTransaction()
         {
-            return new Transaction(ReadVersion(), ReadInputs(ReadVarInt()), ReadOutputs(ReadVarInt()), ReadInt(4));
+            return new Transaction(ReadInt(4), ReadInputs(ReadVarInt()), ReadOutputs(ReadVarInt()), ReadInt(4));
         }
 
         IList<TransactionOutput> ReadOutputs(ulong count)
