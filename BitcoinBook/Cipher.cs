@@ -144,6 +144,22 @@ namespace BitcoinBook
             return bytes;
         }
 
+        public static byte[] ToBytes32(BigInteger i)
+        {
+            return ToBytes(i, 32);
+        }
+
+        public static byte[] ToBytes(string hex)
+        {
+            byte[] bytes = new byte[hex.Length / 2];
+            for (var i = 0; i < hex.Length; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+
+            return bytes;
+        }
+
         public static string ToHex(byte[] bytes)
         {
             return BitConverter.ToString(bytes).Replace("-", "").ToLower();
@@ -152,11 +168,6 @@ namespace BitcoinBook
         public static string ToHex(BigInteger i)
         {
             return ToHex(ToBytes(i));
-        }
-
-        public static byte[] ToBytes32(BigInteger i)
-        {
-            return ToBytes(i, 32);
         }
 
         public static string ToHex32(BigInteger i)

@@ -11,7 +11,7 @@ namespace BitcoinBook.Test
         [InlineData("EQJsjkd6JaGwxrjEhfeqPenqHwrBmPQZjJGNSCHBkcF7", "c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab6")]
         public void ToBase58Test(string expected, string input)
         {
-            Assert.Equal(expected, Cipher.ToBase58(HexToByteArray(input)));
+            Assert.Equal(expected, Cipher.ToBase58(Cipher.ToBytes(input)));
         }
 
         [Theory]
@@ -20,7 +20,7 @@ namespace BitcoinBook.Test
         [InlineData("c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab6", "EQJsjkd6JaGwxrjEhfeqPenqHwrBmPQZjJGNSCHBkcF7")]
         public void FromBase58Test(string expected, string input)
         {
-            Assert.Equal(HexToByteArray(expected), Cipher.FromBase58(input));
+            Assert.Equal(Cipher.ToBytes(expected), Cipher.FromBase58(input));
         }
 
         [Theory]
@@ -31,18 +31,6 @@ namespace BitcoinBook.Test
         public void FormatExceptionTest(string input)
         {
             Assert.Throws<FormatException>(() => Cipher.FromBase58(input));
-        }
-
-        public static byte[] HexToByteArray(string hex)
-        {
-            var length = hex.Length;
-            var bytes = new byte[length / 2];
-            for (var i = 0; i < length; i += 2)
-            {
-                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            }
-
-            return bytes;
         }
     }
 }
