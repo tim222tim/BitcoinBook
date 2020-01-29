@@ -28,8 +28,28 @@ namespace BitcoinBook
             }
             while (wx++ < length)
             {
-                writer.Write(0b0);
+                writer.Write((byte)0);
             }
+        }
+
+        public void WriteVarInt(ulong i)
+        {
+            var length = GetVarLength(i);
+            if (length > 1)
+            {
+                writer.Write(GetVarPrefix(i));
+            }
+            WriteInt(i, length);
+        }
+
+        int GetVarLength(ulong i)
+        {
+            return i < 0xfd ? 1 : i < 0x10000 ? 2 : i < 0x100000000 ? 4 : 8;
+        }
+
+        byte GetVarPrefix(ulong i)
+        {
+            return i < 0x10000 ? (byte)0xfd : i < 0x100000000 ? (byte)0xfe : (byte)0xff;
         }
     }
 }
