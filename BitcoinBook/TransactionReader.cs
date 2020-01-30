@@ -60,7 +60,7 @@ namespace BitcoinBook
 
         TransactionInput ReadInput()
         {
-            return new TransactionInput(ReadBytesReverse(32), ReadInt(4), ReadScript(), ReadInt(4));
+            return new TransactionInput(ReadBytesReverse(32), (int) ReadInt(4), ReadScript(), ReadInt(4));
         }
 
         byte[] ReadBytesReverse(int count)

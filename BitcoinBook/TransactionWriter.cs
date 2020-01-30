@@ -81,6 +81,11 @@ namespace BitcoinBook
             WriteVarBytes(scriptPubKey.Bytes);
         }
 
+        public void Write(int i, int length)
+        {
+            Write((ulong)i, length);
+        }
+
         public void Write(ulong i, int length)
         {
             var bytes = new BigInteger(i).ToByteArray();
