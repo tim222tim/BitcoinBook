@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,15 +11,14 @@ namespace BitcoinBook.Test
     public class TransactionFetcherTests
     {
         const string baseUri = "http://song";
-        const string transactionId = "9489189d92d17860ff7cab2adf5a41433caa1a6f73aaa2f0139489847b5c2451";
+        const string transactionId = "4ea6e2222c4d59dea646e21a103d8b812a6db433f8ca331778a9408990fa17ee";
 
         readonly Mock<FakeHttpMessageHandler> mock = new Mock<FakeHttpMessageHandler>() { CallBase = true };
-        readonly HttpClient httpClient;
         readonly TransactionFetcher fetcher;
 
         public TransactionFetcherTests()
         {
-            httpClient = new HttpClient(mock.Object) { BaseAddress = new Uri(baseUri) };
+            var httpClient = new HttpClient(mock.Object) { BaseAddress = new Uri(baseUri) };
             fetcher = new TransactionFetcher(httpClient);
         }
 
@@ -44,12 +44,14 @@ namespace BitcoinBook.Test
             Assert.NotNull(transaction);
             Assert.Equal(1, transaction.Version);
             Assert.Equal(1, transaction.Inputs.Count);
-            Assert.Equal("6ed9db1175873ec4a944453e611c85495af44014c0469000f50e4b052155f858", 
+            Assert.Equal("74e09a06fdf7dca73972629f129b51167483a040a3ac53bcdb1cd9a3a2e92abe", 
                 Cipher.ToHex(transaction.Inputs[0].PreviousTransaction));
-            Assert.Equal(1, transaction.Inputs[0].PreviousIndex);
-            Assert.Equal(2, transaction.Outputs.Count);
-            Assert.Equal(107860000, transaction.Outputs[0].Amount);
-            Assert.Equal(19332416, transaction.Outputs[1].Amount);
+            Assert.Equal(0, transaction.Inputs[0].PreviousIndex);
+            Assert.Equal(4, transaction.Outputs.Count);
+            Assert.Equal(000639022, transaction.Outputs[0].Amount);
+            Assert.Equal(000123640, transaction.Outputs[1].Amount);
+            Assert.Equal(318444117, transaction.Outputs[2].Amount);
+            Assert.Equal(001022351, transaction.Outputs[3].Amount);
         }
 
         void ExpectStatusCode(string id, HttpStatusCode statusCode)
@@ -77,6 +79,6 @@ namespace BitcoinBook.Test
         }
 
         const string rawTransaction =
-            "0100000000010158f85521054b0ef5009046c01440f45a49851c613e4544a9c43e877511dbd96e0100000000ffffffff0220d06d06000000001976a9146c0e16d43b03f94c4673373b8fb8547eb4ff543588ac40fd260100000000220020701a8d401c84fb13e6baf169d59684e17abd9fa216c8cc5b9fc63d622ff8c58d0400473044022076d197b976513eafb7f518c922bfb5e7a5340570ede97141f230db68d352119802202aae5a5161b3fb6e73f13e919f9266bbbb14d13729a4c80ccc99c30bc16d8e2c0147304402200d0080177dc637521e57a7e24d1041f413c1461870db350765fcc86c9b7165a00220556957fb0f3b1bbf46397751ede7dc69bf6cd3358a7dd126c6f9125cd86a7069016952210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea368e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f88053ae00000000";
+            "0100000001be2ae9a2a3d91cdbbc53aca340a0837416519b129f627239a7dcf7fd069ae074000000006a473044022035a874a246f4de3570295fa8e32ca48a3eb1cf3a4bea6cbea6d18f122f2da51a02204ee9fe995e4934445d381be89b5635bf16bcf9bd023d81e5dc54991d7124921101210279fc02b440c755d18e80add59b5f1ec9452ab8348e75ced61e47c0750408e028feffffff042ec00900000000001976a914664403549f16e3ded11e2a5049e7837269d129ed88acf8e20100000000001976a9149a0093bfcbd8cb1162fd3c3355c6a8fddba2df6488ac5512fb12000000001976a9141a225100a114159cd16dc22650bf39043ba5eaca88ac8f990f00000000001976a914888a6f53d62ea69aabd94f59e8356fc73ad1f37f88ac2dc70600";
     }
 }

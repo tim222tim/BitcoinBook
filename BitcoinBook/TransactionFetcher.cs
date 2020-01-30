@@ -32,7 +32,14 @@ namespace BitcoinBook
             {
                 hex = hex.Substring(0, 8) + hex.Substring(12); // cut out two bytes?
             }
-            return new TransactionReader(hex).ReadTransaction();
+
+            var transaction = new TransactionReader(hex).ReadTransaction();
+            if (transaction.Id != transactionId)
+            {
+                throw new FetchException("Got wrong transaciton ID");
+            }
+
+            return transaction;
         }
 
         static string GetUrl(bool testnet = false)

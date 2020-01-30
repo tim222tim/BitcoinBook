@@ -39,12 +39,12 @@ namespace BitcoinBook
 
         public static string ToBase58Check(byte[] bytes)
         {
-            return ToBase58(Concat(bytes, ComputeHash256Prefix(bytes)));
+            return ToBase58(Concat(bytes, Hash256Prefix(bytes)));
         }
 
-        static byte[] ComputeHash256Prefix(byte[] bytes)
+        static byte[] Hash256Prefix(byte[] bytes)
         {
-            var hash = ComputeHash256(bytes);
+            var hash = Hash256(bytes);
             var hashPrefix = new byte[4];
             Array.Copy(hash, hashPrefix, 4);
             return hashPrefix;
@@ -70,54 +70,54 @@ namespace BitcoinBook
             return ToBytes(result);
         }
 
-        public static byte[] ComputeHash256(byte[] data)
+        public static byte[] Hash256(byte[] data)
         {
             using var sha256 = SHA256.Create();
             return sha256.ComputeHash(sha256.ComputeHash(data));
         }
 
-        public static BigInteger ComputeHash256Int(byte[] data)
+        public static BigInteger Hash256Int(byte[] data)
         {
-            return ToBigInteger(ComputeHash256(data));
+            return ToBigInteger(Hash256(data));
         }
 
-        public static BigInteger ComputeHash256Int(string data)
+        public static BigInteger Hash256Int(string data)
         {
-            return ComputeHash256Int(Encoding.UTF8.GetBytes(data));
+            return Hash256Int(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string ComputeHash256String(byte[] data)
+        public static string Hash256String(byte[] data)
         {
-            var hash = ComputeHash256(data);
+            var hash = Hash256(data);
             return BitConverter.ToString(hash).Replace("-", "");
         }
 
-        public static string ComputeHash256String(string data)
+        public static string Hash256String(string data)
         {
-            return ComputeHash256String(Encoding.UTF8.GetBytes(data));
+            return Hash256String(Encoding.UTF8.GetBytes(data));
         }
 
-        public static byte[] ComputeHash160(byte[] data)
+        public static byte[] Hash160(byte[] data)
         {
             using var sha256 = SHA256.Create();
             using var rip160 = new RIPEMD160();
             return rip160.ComputeHash(sha256.ComputeHash(data));
         }
 
-        public static byte[] ComputeHash160(string data)
+        public static byte[] Hash160(string data)
         {
-            return ComputeHash160(Encoding.UTF8.GetBytes(data));
+            return Hash160(Encoding.UTF8.GetBytes(data));
         }
 
-        public static string ComputeHash160String(byte[] data)
+        public static string Hash160String(byte[] data)
         {
-            var hash = ComputeHash160(data);
+            var hash = Hash160(data);
             return BitConverter.ToString(hash).Replace("-", "");
         }
 
-        public static string ComputeHash160String(string data)
+        public static string Hash160String(string data)
         {
-            return ComputeHash160String(Encoding.UTF8.GetBytes(data));
+            return Hash160String(Encoding.UTF8.GetBytes(data));
         }
 
         public static byte[] ToBytes(BigInteger i, int minLength = 0)

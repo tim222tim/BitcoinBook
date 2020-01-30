@@ -73,7 +73,7 @@ namespace BitcoinBook
 
         public bool Verify(string data, Signature signature)
         {
-            return Verify(Cipher.ComputeHash256Int(data), signature);
+            return Verify(Cipher.Hash256Int(data), signature);
         }
 
         byte[] ToSecUncompressed()
@@ -105,7 +105,7 @@ namespace BitcoinBook
 
         public string ToAddress(bool compressed = true, bool testnet = false)
         {
-            var hash = Cipher.ComputeHash160(ToSec(compressed));
+            var hash = Cipher.Hash160(ToSec(compressed));
             var address = new byte[hash.Length + 1];
             address[0] = testnet ? (byte) '\x6f' : (byte)0;
             hash.CopyTo(address, 1);
