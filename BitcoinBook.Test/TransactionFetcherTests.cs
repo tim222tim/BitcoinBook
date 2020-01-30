@@ -42,6 +42,11 @@ namespace BitcoinBook.Test
             ExpectContent(transactionId, rawTransaction);
             var transaction = await fetcher.Fetch(transactionId);
             Assert.NotNull(transaction);
+            Assert.Equal(1, transaction.Version);
+            Assert.Equal(1, transaction.Inputs.Count);
+            Assert.Equal("6ed9db1175873ec4a944453e611c85495af44014c0469000f50e4b052155f858", 
+                Cipher.ToHex(transaction.Inputs[0].PreviousTransaction));
+            Assert.Equal(2, transaction.Outputs.Count);
         }
 
         void ExpectStatusCode(string id, HttpStatusCode statusCode)

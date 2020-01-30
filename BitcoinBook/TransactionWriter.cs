@@ -20,7 +20,7 @@ namespace BitcoinBook
 
         public void Write(Transaction transaction)
         {
-            Write(transaction.Version, 4);
+            Write((ulong) transaction.Version, 4);
             Write(transaction.Inputs);
             Write(transaction.Outputs);
             Write(transaction.LockTime, 4);
@@ -37,10 +37,17 @@ namespace BitcoinBook
 
         void Write(TransactionInput input)
         {
-            writer.Write(input.PreviousTransaction);
+            WriteReverse(input.PreviousTransaction);
             Write(input.PreviousIndex, 4);
             Write(input.ScriptSig);
             Write(input.Sequence, 4);
+        }
+
+        void WriteReverse(byte[] bytes)
+        {
+            var newBytes = (byte[])bytes.Clone();
+            Array.Reverse(newBytes);
+            writer.Write(newBytes);
         }
 
         void Write(ScriptSig scriptSig)

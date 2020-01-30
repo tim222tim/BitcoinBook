@@ -61,7 +61,7 @@ namespace BitcoinBook.Test
             "b6dbf67d4750b0a56244948a87988ac005a6202000000001976a9143c82d7df364eb6c75be8c80" +
             "df2b3eda8db57397088ac46430600";
             var transaction = GetReader(input).ReadTransaction();
-            Assert.Equal(1U, transaction.Version);
+            Assert.Equal(1, transaction.Version);
             Assert.Equal(4, transaction.Inputs.Count);
             Assert.Equal(1U, transaction.Inputs[0].PreviousIndex);
             Assert.Equal(6*16 + 10, transaction.Inputs[0].ScriptSig.Bytes.Length);

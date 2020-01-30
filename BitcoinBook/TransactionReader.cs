@@ -23,7 +23,7 @@ namespace BitcoinBook
 
         public Transaction ReadTransaction()
         {
-            return new Transaction(ReadInt(4), ReadInputs(ReadVarInt()), ReadOutputs(ReadVarInt()), ReadInt(4));
+            return new Transaction((int) ReadInt(4), ReadInputs(ReadVarInt()), ReadOutputs(ReadVarInt()), ReadInt(4));
         }
 
         IList<TransactionOutput> ReadOutputs(ulong count)
@@ -60,7 +60,14 @@ namespace BitcoinBook
 
         TransactionInput ReadInput()
         {
-            return new TransactionInput(reader.ReadBytes(32), ReadInt(4), ReadScript(), ReadInt(4));
+            return new TransactionInput(ReadBytesReverse(32), ReadInt(4), ReadScript(), ReadInt(4));
+        }
+
+        byte[] ReadBytesReverse(int count)
+        {
+            var bytes = reader.ReadBytes(count);
+            Array.Reverse(bytes);
+            return bytes;
         }
 
         public ulong ReadVarInt()
