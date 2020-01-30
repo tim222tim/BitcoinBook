@@ -48,6 +48,8 @@ namespace BitcoinBook.Test
                 Cipher.ToHex(transaction.Inputs[0].PreviousTransaction));
             Assert.Equal(1, transaction.Inputs[0].PreviousIndex);
             Assert.Equal(2, transaction.Outputs.Count);
+            Assert.Equal(107860000, transaction.Outputs[0].Amount);
+            Assert.Equal(19332416, transaction.Outputs[1].Amount);
         }
 
         void ExpectStatusCode(string id, HttpStatusCode statusCode)
