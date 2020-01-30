@@ -9,16 +9,39 @@ namespace BitcoinBook.Test
 {
     public class TransactionFetcherTests
     {
-        [Fact]
-        public async Task TryItOnce()
+        const string baseUri = "http://song";
+        const string transactionId = "transactionId";
+
+        readonly Mock<FakeHttpMessageHandler> mock = new Mock<FakeHttpMessageHandler>() { CallBase = true };
+        readonly HttpClient httpClient;
+
+        public TransactionFetcherTests()
         {
-            var mockHandler = new Mock<FakeHttpMessageHandler>() {CallBase = true};
-            mockHandler.Setup(h => h.Send(It.IsAny<HttpRequestMessage>())).Returns(new HttpResponseMessage
+            httpClient = new HttpClient(mock.Object) { BaseAddress = new Uri(baseUri) };
+        }
+
+        [Fact]
+        public async Task FetchNotFoundTest()
+        {
+            ExspectStatusCode(transactionId, HttpStatusCode.NotFound);
+            Assert.Null(await new TransactionFetcher(httpClient).Fetch(transactionId));
+        }
+
+        [Fact]
+        public async Task FetchBadRequestTest()
+        {
+            ExspectStatusCode(transactionId, HttpStatusCode.BadRequest);
+            await Assert.ThrowsAsync<FetchException>(async () => await new TransactionFetcher(httpClient).Fetch(transactionId));
+        }
+
+        void ExspectStatusCode(string id, HttpStatusCode statusCode)
+        {
+            var uri = new Uri($"{baseUri}/tx/{id}.hex");
+            mock.Setup(h => h.Send(It.Is<HttpRequestMessage>(m => m.Method == HttpMethod.Get &&
+                m.RequestUri == uri))).Returns(new HttpResponseMessage
             {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("here we go!")
+                StatusCode = statusCode,
             });
-            await new TransactionFetcher(new HttpClient(mockHandler.Object){BaseAddress = new Uri("http://song")}).Fetch("x");
         }
     }
 }

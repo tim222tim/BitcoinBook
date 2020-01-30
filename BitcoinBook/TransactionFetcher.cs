@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -16,6 +17,15 @@ namespace BitcoinBook
         public async Task<Transaction> Fetch(string transactionId, bool fresh = false)
         {
             var response = await httpClient.GetAsync($"/tx/{transactionId}.hex");
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                throw new FetchException($"Received {response.StatusCode} fetching transaction");
+            }
             var content = await response.Content.ReadAsStringAsync();
             throw new NotImplementedException();
         }
