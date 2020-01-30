@@ -21,7 +21,7 @@ namespace BitcoinBook.Test
         [InlineData("00", 0)]
         [InlineData("01", 1)]
         [InlineData("FC", 252)]
-        [InlineData("FDFF", 255)]
+        [InlineData("FDFF00", 255)]
         [InlineData("FD0101", 257)]
         [InlineData("FEEF01737A", 2054357487)]
         [InlineData("FF0102030405060708", 578437695752307201)]
