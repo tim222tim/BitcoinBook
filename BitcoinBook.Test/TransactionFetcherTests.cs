@@ -72,8 +72,8 @@ namespace BitcoinBook.Test
         void ExpectResponse(string id, HttpResponseMessage message)
         {
             var uri = new Uri($"{baseUri}/tx/{id}.hex");
-            mock.Setup(h => h.Send(It.Is<HttpRequestMessage>(m => m.Method == HttpMethod.Get &&
-                                                                  m.RequestUri == uri))).Returns(message);
+            mock.Setup(h => h.Send(It.Is<HttpRequestMessage>(m => 
+                m.Method == HttpMethod.Get && m.RequestUri == uri))).Returns(message);
         }
 
         const string rawTransaction =
