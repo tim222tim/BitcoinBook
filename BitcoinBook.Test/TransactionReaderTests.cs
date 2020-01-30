@@ -73,7 +73,7 @@ namespace BitcoinBook.Test
 
         static TransactionReader GetReader(string input)
         {
-            return new TransactionReader(new MemoryStream(Cipher.ToBytes(input)));
+            return new TransactionReader(input);
         }
     }
 }

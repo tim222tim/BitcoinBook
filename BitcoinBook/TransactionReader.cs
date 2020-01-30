@@ -17,6 +17,10 @@ namespace BitcoinBook
         {
         }
 
+        public TransactionReader(string hex) : this(new MemoryStream(Cipher.ToBytes(hex ?? throw new ArgumentNullException(nameof(hex)))))
+        {
+        }
+
         public Transaction ReadTransaction()
         {
             return new Transaction(ReadInt(4), ReadInputs(ReadVarInt()), ReadOutputs(ReadVarInt()), ReadInt(4));

@@ -26,8 +26,9 @@ namespace BitcoinBook
             {
                 throw new FetchException($"Received {response.StatusCode} fetching transaction");
             }
-            var content = await response.Content.ReadAsStringAsync();
-            throw new NotImplementedException();
+
+            var hex = await response.Content.ReadAsStringAsync();
+            return new TransactionReader(hex).ReadTransaction();
         }
 
         static string GetUrl(bool testnet = false)
