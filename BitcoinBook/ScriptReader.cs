@@ -34,20 +34,20 @@ namespace BitcoinBook
                 ++count;
                 if (b > 0 && b < (int) OpCode.OP_PUSHDATA1)
                 {
-                    commands.Add(ReadUnsignedLong(b));
+                    commands.Add(ReadBytes(b));
                     count += b;
                 }
                 else if (b == (int) OpCode.OP_PUSHDATA1)
                 {
-                    var l = ReadInt(1);
-                    commands.Add(ReadBytes(l));
-                    count += l + 1;
+                    var size = ReadInt(1);
+                    commands.Add(ReadBytes(size));
+                    count += size + 1;
                 }
                 else if (b == (int)OpCode.OP_PUSHDATA2)
                 {
-                    var l = ReadInt(2);
-                    commands.Add(ReadBytes(l));
-                    count += l + 2;
+                    var size = ReadInt(2);
+                    commands.Add(ReadBytes(size));
+                    count += size + 2;
                 }
                 else
                 {
