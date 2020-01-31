@@ -5,11 +5,11 @@ namespace BitcoinBook
 {
     public class ReaderBase
     {
-        protected BinaryReader Reader { get; }
+        readonly BinaryReader reader;
 
         protected ReaderBase(BinaryReader reader)
         {
-            Reader = reader ?? throw new ArgumentNullException(nameof(reader));
+            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
 
         protected ReaderBase(Stream stream) : this(new BinaryReader(stream ?? throw new ArgumentNullException(nameof(stream))))
@@ -18,6 +18,16 @@ namespace BitcoinBook
 
         protected ReaderBase(string hex) : this(new MemoryStream(Cipher.ToBytes(hex ?? throw new ArgumentNullException(nameof(hex)))))
         {
+        }
+
+        protected byte ReadByte()
+        {
+            return reader.ReadByte();
+        }
+
+        protected byte[] ReadBytes(int count)
+        {
+            return reader.ReadBytes(count);
         }
 
         public uint ReadUnsignedInt(int length)
@@ -41,7 +51,7 @@ namespace BitcoinBook
             ulong factor = 1L;
             while (length-- > 0)
             {
-                i += Reader.ReadByte() * factor;
+                i += reader.ReadByte() * factor;
                 factor *= 256;
             }
 
@@ -62,14 +72,14 @@ namespace BitcoinBook
 
         protected byte[] ReadBytesReverse(int count)
         {
-            var bytes = Reader.ReadBytes(count);
+            var bytes = reader.ReadBytes(count);
             Array.Reverse(bytes);
             return bytes;
         }
 
         protected byte[] ReadVarBytes()
         {
-            return Reader.ReadBytes((int) ReadVarLong());
+            return reader.ReadBytes((int) ReadVarLong());
         }
 
         protected int GetVarLength(long i)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 
 namespace BitcoinBook
 {
@@ -26,7 +27,40 @@ namespace BitcoinBook
 
         public IList<object> ReadScript(int length)
         {
-            throw new NotImplementedException();
+            var commands = new List<object>();
+            var count = 0;
+            while (count < length)
+            {
+                var b = ReadByte();
+                ++count;
+                if (b > 0 && b < (int) OpCode.OP_PUSHDATA1)
+                {
+                    commands.Add(ReadUnsignedLong(b));
+                    count += b;
+                }
+                else if (b == (int) OpCode.OP_PUSHDATA1)
+                {
+                    var l = ReadInt(1);
+                    commands.Add(ReadBytes(l));
+                    count += l + 1;
+                }
+                else if (b == (int)OpCode.OP_PUSHDATA2)
+                {
+                    var l = ReadInt(2);
+                    commands.Add(ReadBytes(l));
+                    count += l + 2;
+                }
+                else
+                {
+                    commands.Add((OpCode)b);
+                }
+            }
+
+            if (count != length)
+            {
+                throw new FormatException("Script parsing ended at wrong length");
+            }
+            return commands;
         }
     }
 }
