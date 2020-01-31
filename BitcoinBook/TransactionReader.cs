@@ -39,7 +39,7 @@ namespace BitcoinBook
 
         TransactionOutput ReadOutput()
         {
-            return new TransactionOutput((int) ReadLong(8), ReadScriptPubKey());
+            return new TransactionOutput((long)ReadLong(8), ReadScriptPubKey());
         }
 
         ScriptPubKey ReadScriptPubKey()

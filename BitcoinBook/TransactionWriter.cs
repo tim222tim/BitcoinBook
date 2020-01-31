@@ -72,7 +72,7 @@ namespace BitcoinBook
 
         void Write(TransactionOutput output)
         {
-            Write(output.Amount, 8);
+            Write((ulong)output.Amount, 8);
             Write(output.ScriptPubKey);
         }
 
