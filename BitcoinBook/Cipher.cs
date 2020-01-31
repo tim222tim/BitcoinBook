@@ -151,6 +151,10 @@ namespace BitcoinBook
 
         public static byte[] ToBytes(string hex)
         {
+            if (hex.Length % 2 != 0)
+            {
+                throw new FormatException("Hex string must have an even number of bytes");
+            }
             byte[] bytes = new byte[hex.Length / 2];
             for (var i = 0; i < hex.Length; i += 2)
             {

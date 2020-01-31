@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -28,6 +27,7 @@ namespace BitcoinBook
             }
 
             var hex = await response.Content.ReadAsStringAsync();
+            hex = hex.Trim();
             if (hex.Substring(8, 2) == "00")
             {
                 hex = hex.Substring(0, 8) + hex.Substring(12); // cut out two bytes?
@@ -40,11 +40,6 @@ namespace BitcoinBook
             }
 
             return transaction;
-        }
-
-        static string GetUrl(bool testnet = false)
-        {
-            return testnet ? "http://testnet.programmingbitcoin.com" : "http://testnet.programmingbitcoin.com";
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -52,6 +51,16 @@ namespace BitcoinBook.Test
             Assert.Equal(000123640, transaction.Outputs[1].Amount);
             Assert.Equal(318444117, transaction.Outputs[2].Amount);
             Assert.Equal(001022351, transaction.Outputs[3].Amount);
+        }
+
+        [Fact]
+        public async Task FetchForRealTest()
+        {
+            var realFetcher = new TransactionFetcher(new HttpClient {BaseAddress = new Uri("http://mainnet.programmingbitcoin.com")});
+            var transaction = await realFetcher.Fetch("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c");
+            Assert.Equal(1, transaction.Inputs.Count);
+            Assert.Equal(2, transaction.Outputs.Count);
+            Assert.Equal(0005897938, transaction.Outputs[0].Amount);
         }
 
         void ExpectStatusCode(string id, HttpStatusCode statusCode)
