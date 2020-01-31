@@ -14,7 +14,7 @@ namespace BitcoinBook.Test
         [InlineData(2054357487, "EF01737A")]
         public void ReadIntTests(uint expected, string input)
         {
-            Assert.Equal(expected, GetReader(input).ReadInt(4));
+            Assert.Equal(expected, GetReader(input).ReadUnsignedInt(4));
         }
 
         [Theory]
@@ -34,9 +34,9 @@ namespace BitcoinBook.Test
         [InlineData(257, "FD010166")]
         [InlineData(2054357487, "FEEF01737A7464")]
         [InlineData(578437695752307201, "FF0102030405060708DDEE")]
-        public void ReadVarIntTests(ulong expected, string input)
+        public void ReadVarIntTests(long expected, string input)
         {
-            Assert.Equal(expected, GetReader(input).ReadVarInt());
+            Assert.Equal(expected, GetReader(input).ReadVarLong());
         }
 
         [Fact]
