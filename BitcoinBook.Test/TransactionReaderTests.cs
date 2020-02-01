@@ -64,7 +64,7 @@ namespace BitcoinBook.Test
             Assert.Equal(1, transaction.Version);
             Assert.Equal(4, transaction.Inputs.Count);
             Assert.Equal(1, transaction.Inputs[0].PreviousIndex);
-            Assert.Equal(6*16 + 10, transaction.Inputs[0].ScriptSig.Bytes.Length);
+            Assert.Equal(6 * 16 + 10, transaction.Inputs[0].ScriptSig.Bytes.Length);
             Assert.Equal(6U * 256*256 + 67 * 256 + 70, transaction.LockTime);
             Assert.Equal(0, transaction.Inputs[1].PreviousIndex);
             Assert.Equal(6 * 16 + 10, transaction.Inputs[1].ScriptSig.Bytes.Length);
