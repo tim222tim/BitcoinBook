@@ -6,11 +6,11 @@ namespace BitcoinBook
 {
     public class WriterBase
     {
-        protected BinaryWriter Writer { get; }
+        readonly BinaryWriter writer;
 
         public WriterBase(BinaryWriter writer)
         {
-            Writer = writer ?? throw new ArgumentNullException(nameof(writer));
+            this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
         public WriterBase(Stream stream) : this(new BinaryWriter(stream ?? throw new ArgumentNullException(nameof(stream))))
@@ -27,6 +27,21 @@ namespace BitcoinBook
             Write((ulong)i, length);
         }
 
+        protected void Write(byte b)
+        {
+            writer.Write(b);
+        }
+
+        protected void Write(byte[] bytes)
+        {
+            writer.Write(bytes);
+        }
+
+        protected void Write(OpCode opCode)
+        {
+            writer.Write((byte)opCode);
+        }
+
         public void Write(ulong i, int length)
         {
             var bytes = new BigInteger(i).ToByteArray();
@@ -34,11 +49,11 @@ namespace BitcoinBook
             var wx = 0;
             while (bx < bytes.Length && wx++ < length)
             {
-                Writer.Write(bytes[bx++]);
+                Write(bytes[bx++]);
             }
             while (wx++ < length)
             {
-                Writer.Write((byte)0);
+                Write((byte)0);
             }
         }
 
@@ -52,7 +67,7 @@ namespace BitcoinBook
             var length = GetVarLength(i);
             if (length > 1)
             {
-                Writer.Write(GetVarPrefix(i));
+                Write(GetVarPrefix(i));
             }
             Write(i, length);
         }
@@ -60,14 +75,14 @@ namespace BitcoinBook
         protected void WriteVarBytes(byte[] bytes)
         {
             WriteVar((ulong) bytes.Length);
-            Writer.Write(bytes);
+            writer.Write(bytes);
         }
 
         protected void WriteReverse(byte[] bytes)
         {
             var newBytes = (byte[])bytes.Clone();
             Array.Reverse(newBytes);
-            Writer.Write(newBytes);
+            writer.Write(newBytes);
         }
 
         int GetVarLength(ulong i)
