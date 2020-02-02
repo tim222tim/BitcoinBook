@@ -79,7 +79,7 @@ namespace BitcoinBook
 
         protected byte[] ReadVarBytes()
         {
-            return reader.ReadBytes((int) ReadVarLong());
+            return reader.ReadBytes(ReadVarInt());
         }
 
         protected int GetVarLength(long i)

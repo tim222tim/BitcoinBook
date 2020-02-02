@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BitcoinBook
@@ -35,7 +36,7 @@ namespace BitcoinBook
 
         TransactionInput ReadInput()
         {
-            return new TransactionInput(ReadBytesReverse(32), ReadInt(4), ReadScriptBytes(), ReadUnsignedInt(4));
+            return new TransactionInput(ReadBytesReverse(32), ReadInt(4), ReadScript(), ReadUnsignedInt(4));
         }
 
         IList<TransactionOutput> ReadOutputs(int count)
@@ -51,17 +52,46 @@ namespace BitcoinBook
 
         TransactionOutput ReadOutput()
         {
-            return new TransactionOutput(ReadLong(8), ReadScriptPubKey());
+            return new TransactionOutput(ReadLong(8), ReadScript());
         }
 
-        ScriptSig ReadScriptBytes()
+        public Script ReadScript()
         {
-            return new ScriptSig(ReadVarBytes());
-        }
+            var length = ReadVarInt();
+            var commands = new List<object>();
+            var count = 0;
+            while (count < length)
+            {
+                var b = ReadByte();
+                ++count;
+                if (b > 0 && b < (int)OpCode.OP_PUSHDATA1)
+                {
+                    commands.Add(ReadBytes(b));
+                    count += b;
+                }
+                else if (b == (int)OpCode.OP_PUSHDATA1)
+                {
+                    var size = ReadInt(1);
+                    commands.Add(ReadBytes(size));
+                    count += size + 1;
+                }
+                else if (b == (int)OpCode.OP_PUSHDATA2)
+                {
+                    var size = ReadInt(2);
+                    commands.Add(ReadBytes(size));
+                    count += size + 2;
+                }
+                else
+                {
+                    commands.Add((OpCode)b);
+                }
+            }
 
-        ScriptPubKey ReadScriptPubKey()
-        {
-            return new ScriptPubKey(ReadVarBytes());
+            if (count != length)
+            {
+                throw new FormatException("Script parsing ended at wrong length");
+            }
+            return new Script(commands);
         }
     }
 }

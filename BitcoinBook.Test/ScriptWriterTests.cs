@@ -20,15 +20,15 @@ namespace BitcoinBook.Test
 
         static void AssertWriteSameAsRead(string hex)
         {
-            var reader = new ScriptReader(hex);
-            var objects = reader.ReadScript();
-            Assert.Equal(hex, GetResult(w => w.Write(objects)));
+            var reader = new TransactionReader(hex);
+            var script = reader.ReadScript();
+            Assert.Equal(hex, GetResult(w => w.Write(script)));
         }
 
-        static string GetResult(Action<ScriptWriter> action)
+        static string GetResult(Action<TransactionWriter> action)
         {
             var stream = new MemoryStream();
-            var writer = new ScriptWriter(stream);
+            var writer = new TransactionWriter(stream);
             action(writer);
             var array = stream.ToArray();
             return Cipher.ToHex(array);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BitcoinBook
@@ -34,7 +35,7 @@ namespace BitcoinBook
         {
             WriteReverse(input.PreviousTransaction);
             Write(input.PreviousIndex, 4);
-            Write(input.ScriptSig);
+            Write(input.Script);
             Write(input.Sequence, 4);
         }
 
@@ -50,17 +51,56 @@ namespace BitcoinBook
         void Write(TransactionOutput output)
         {
             Write(output.Amount, 8);
-            Write(output.ScriptPubKey);
+            Write(output.Script);
         }
 
-        void Write(ScriptSig scriptSig)
+        public void Write(Script script)
         {
-            WriteVarBytes(scriptSig.Bytes);
+            var stream = new MemoryStream();
+            var writer = new TransactionWriter(stream);
+            writer.Write(script.Commands);
+            var bytes = stream.ToArray();
+            WriteVarBytes(bytes);
         }
 
-        void Write(ScriptPubKey scriptPubKey)
+        void Write(IEnumerable<object> commands)
         {
-            WriteVarBytes(scriptPubKey.Bytes);
+            foreach (var command in commands)
+            {
+                if (command is OpCode opCode)
+                {
+                    Write(opCode);
+                }
+                else
+                {
+                    if (!(command is byte[] bytes))
+                    {
+                        throw new FormatException("Wrong type in script commands");
+                    }
+
+                    var length = bytes.Length;
+                    if (length < (int)OpCode.OP_PUSHDATA1)
+                    {
+                        Write(length, 1);
+                    }
+                    else if (length < 0x100)
+                    {
+                        Write(OpCode.OP_PUSHDATA1);
+                        Write(length, 1);
+                    }
+                    else if (length < 520)
+                    {
+                        Write(OpCode.OP_PUSHDATA2);
+                        Write(length, 2);
+                    }
+                    else
+                    {
+                        throw new FormatException("Script value is too long");
+                    }
+                    Write(bytes);
+                }
+            }
         }
+
     }
 }
