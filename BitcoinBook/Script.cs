@@ -14,5 +14,16 @@ namespace BitcoinBook
         {
             Commands = commands ?? new List<object>();
         }
+
+        public Script(IEnumerable<object> commands1, IEnumerable<object> commands2)
+        {
+            var commands = new List<object>(commands1);
+            commands.AddRange(commands2);
+            Commands = commands;
+        }
+
+        public Script(Script scriptSig, Script scriptPubKey) : this(scriptSig.Commands, scriptPubKey.Commands)
+        {
+        }
     }
 }
