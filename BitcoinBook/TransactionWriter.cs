@@ -35,7 +35,7 @@ namespace BitcoinBook
         {
             WriteReverse(input.PreviousTransaction);
             Write(input.PreviousIndex, 4);
-            Write(input.Script);
+            Write(input.SigScript);
             Write(input.Sequence, 4);
         }
 
@@ -51,7 +51,7 @@ namespace BitcoinBook
         void Write(TransactionOutput output)
         {
             Write(output.Amount, 8);
-            Write(output.Script);
+            Write(output.ScriptPubKey);
         }
 
         public void Write(Script script)

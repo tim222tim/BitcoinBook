@@ -5,12 +5,12 @@ namespace BitcoinBook
     public class TransactionOutput
     {
         public long Amount { get; }
-        public Script Script { get; }
+        public Script ScriptPubKey { get; }
 
-        public TransactionOutput(long amount, Script script)
+        public TransactionOutput(long amount, Script scriptPubKey)
         {
             Amount = amount;
-            Script = script ?? throw new ArgumentNullException(nameof(script));
+            ScriptPubKey = scriptPubKey ?? throw new ArgumentNullException(nameof(scriptPubKey));
         }
     }
 }

@@ -6,14 +6,14 @@ namespace BitcoinBook
     {
         public byte[] PreviousTransaction { get; }
         public int PreviousIndex { get; }
-        public Script Script { get; }
+        public Script SigScript { get; }
         public uint Sequence { get; }
 
-        public TransactionInput(byte[] previousTransaction, int previousIndex, Script script, uint sequence)
+        public TransactionInput(byte[] previousTransaction, int previousIndex, Script scriptSig, uint sequence)
         {
             PreviousTransaction = previousTransaction ?? throw new ArgumentNullException(nameof(previousIndex));
             PreviousIndex = previousIndex;
-            Script = script ?? new Script();
+            SigScript = scriptSig ?? new Script();
             Sequence = sequence;
         }
 
