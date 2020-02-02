@@ -32,12 +32,12 @@ namespace BitcoinBook
             writer.Write(b);
         }
 
-        protected void Write(byte[] bytes)
+        public void Write(byte[] bytes)
         {
             writer.Write(bytes);
         }
 
-        protected void Write(OpCode opCode)
+        public void Write(OpCode opCode)
         {
             writer.Write((byte)opCode);
         }
@@ -72,7 +72,7 @@ namespace BitcoinBook
             Write(i, length);
         }
 
-        protected void WriteVarBytes(byte[] bytes)
+        public void WriteVarBytes(byte[] bytes)
         {
             WriteVar((ulong) bytes.Length);
             writer.Write(bytes);

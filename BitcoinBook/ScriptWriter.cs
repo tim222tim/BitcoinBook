@@ -17,11 +17,20 @@ namespace BitcoinBook
 
         public void Write(IEnumerable<object> commands)
         {
+            var stream = new MemoryStream();
+            var writer = new TransactionWriter(stream);
+            Write(commands, writer);
+            var bytes = stream.ToArray();
+            WriteVarBytes(bytes);
+        }
+
+        static void Write(IEnumerable<object> commands, TransactionWriter writer)
+        {
             foreach (var command in commands)
             {
                 if (command is OpCode opCode)
                 {
-                    Write(opCode);
+                    writer.Write(opCode);
                 }
                 else
                 {
@@ -33,23 +42,23 @@ namespace BitcoinBook
                     var length = bytes.Length;
                     if (length < (int) OpCode.OP_PUSHDATA1)
                     {
-                        Write(length, 1);
+                        writer.Write(length, 1);
                     }
                     else if (length < 0x100)
                     {
-                        Write(OpCode.OP_PUSHDATA1);
-                        Write(length, 1);
+                        writer.Write(OpCode.OP_PUSHDATA1);
+                        writer.Write(length, 1);
                     }
                     else if (length < 520)
                     {
-                        Write(OpCode.OP_PUSHDATA2);
-                        Write(length, 2);
+                        writer.Write(OpCode.OP_PUSHDATA2);
+                        writer.Write(length, 2);
                     }
                     else
                     {
-                        throw new FormatException("Script command has invalid length");
+                        throw new FormatException("Script value is too long");
                     }
-                    Write(bytes);
+                    writer.Write(bytes);
                 }
             }
         }
