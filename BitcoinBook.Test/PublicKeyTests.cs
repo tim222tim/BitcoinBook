@@ -69,7 +69,7 @@ namespace BitcoinBook.Test
             Assert.Equal(expected, privateKey.PublicKey.ToSecString());
         }
 
-        public static IEnumerable<object[]> ParseSecTestData => new[]
+        public static IEnumerable<object[]> FromSecTestData => new[]
         {
             new object[] { new PrivateKey(5000), 
                 "04ffe558e388852f0120e46af2d1b370f85854a8eb0841811ece0e3e03d282d57c315dc72890a4f10a1481c031b03b351b0dc79901ca18a00cf009dbdb157a1d10" },
@@ -84,10 +84,17 @@ namespace BitcoinBook.Test
         };
 
         [Theory]
-        [MemberData(nameof(ParseSecTestData))]
-        public void ParseSecTest(PrivateKey expected, string sec)
+        [MemberData(nameof(FromSecTestData))]
+        public void FromSecTest(PrivateKey expected, string sec)
         {
-            Assert.Equal(expected.PublicKey, PublicKey.ParseSecFormat(sec));
+            Assert.Equal(expected.PublicKey, PublicKey.FromSec(Cipher.ToBytes(sec)));
+        }
+
+        [Theory]
+        [MemberData(nameof(FromSecTestData))]
+        public void FromSecStringTest(PrivateKey expected, string sec)
+        {
+            Assert.Equal(expected.PublicKey, PublicKey.FromSec(sec));
         }
 
         [Theory]
@@ -98,7 +105,7 @@ namespace BitcoinBook.Test
         [InlineData("0423")]
         public void ParseSecFormatExceptionTest(string sec)
         {
-            Assert.Throws<FormatException>(() => PublicKey.ParseSecFormat(sec));
+            Assert.Throws<FormatException>(() => PublicKey.FromSec(sec));
         }
 
         public static IEnumerable<object[]> AddressTestData => new[]

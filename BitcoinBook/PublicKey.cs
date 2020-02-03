@@ -18,46 +18,61 @@ namespace BitcoinBook
         {
         }
 
+        public PublicKey(BigInteger x, BigInteger y) : this(S256Curve.Point(x, y))
+        {
+        }
+
         public PublicKey(PrivateKey privateKey) : this(S256Curve.Generator * privateKey.Key)
         {
         }
 
-        public static PublicKey ParseSecFormat(string sec)
+        public static PublicKey FromSec(byte[] sec)
         {
-            if (sec == null || sec.Length < 2)
+            if (sec == null || sec.Length == 0)
             {
-                sec = "  ";
+                sec = new byte[] {0x00};
             }
-            var prefix = sec[0] == '0' ? sec[1] : ' ';
+
+            var prefix = sec[0];
             if (sec.Length != GetValidLength(prefix))
             {
                 throw new FormatException("Invalid SEC format");
             }
 
-            if (prefix == '4')
+            var xBytes = new byte[32];
+            Array.Copy(sec, 1, xBytes, 0, 32);
+            var xInt = Cipher.ToBigInteger(xBytes);
+            if (prefix == 0x04)
             {
-                return new PublicKey("0" + sec.Substring(2, 64), "0" + sec.Substring(66));
+                var yBytes = new byte[32];
+                Array.Copy(sec, 33, yBytes, 0, 32);
+                return new PublicKey(xInt, Cipher.ToBigInteger(yBytes));
             }
 
-            var isEven = prefix == '2';
-            var x = S256Curve.Field.Element(BigInteger.Parse("0" + sec.Substring(2), NumberStyles.HexNumber));
-            var alpha = (x ^ 3) + S256Curve.Curve.B;
+            var isEven = prefix == 0x02;
+            var xField = S256Curve.Field.Element(xInt);
+            var alpha = (xField ^ 3) + S256Curve.Curve.B;
             var beta = alpha.SquareRoot();
             var evenBeta = beta.Number % 2 == 0 ? beta : S256Curve.Field.Element(S256Curve.Field.Prime - beta.Number);
             var oddBeta = beta.Number % 2 == 0 ? S256Curve.Field.Element(S256Curve.Field.Prime - beta.Number) : beta;
 
-            return new PublicKey(S256Curve.Point(x, isEven ? evenBeta : oddBeta));
+            return new PublicKey(S256Curve.Point(xField, isEven ? evenBeta : oddBeta));
         }
 
-        static int GetValidLength(char prefix)
+        public static PublicKey FromSec(string sec)
+        {
+            return FromSec(Cipher.ToBytes(sec ?? ""));
+        }
+
+        static int GetValidLength(byte prefix)
         {
             switch (prefix)
             {
-                case '2':
-                case '3':
-                    return 66;
-                case '4':
-                    return 130;
+                case 0x02:
+                case 0x03:
+                    return 33;
+                case 0x04:
+                    return 65;
                 default:
                     return -1;
             }

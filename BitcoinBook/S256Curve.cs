@@ -18,7 +18,12 @@ namespace BitcoinBook
             return Curve.Point(x, y, numberStyles);
         }
 
-        public static Point Point(FieldElement x, FieldElement y, NumberStyles numberStyles = NumberStyles.HexNumber)
+        public static Point Point(FieldElement x, FieldElement y)
+        {
+            return Curve.Point(x, y);
+        }
+
+        public static Point Point(BigInteger x, BigInteger y)
         {
             return Curve.Point(x, y);
         }
