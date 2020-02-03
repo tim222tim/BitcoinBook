@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Data;
+using System.Globalization;
 using System.Numerics;
 
 namespace BitcoinBook
@@ -24,20 +26,27 @@ namespace BitcoinBook
             return $"Signature({R:X},{S:x})";
         }
 
-        public string ToDerFormat()
+        public string ToDerString()
         {
-            var rs = ToPrefixedHex(R) + ToPrefixedHex(S);
-            return $"30{rs.Length/2:X2}{rs}";
+            return Cipher.ToHex(ToDer());
         }
 
-        string ToPrefixedHex(BigInteger i)
+        public byte[] ToDer()
         {
-            var hex = Cipher.ToHex(i);
-            if (hex[0] >= '8')
-            {
-                hex = "00" + hex;
-            }
-            return $"02{hex.Length/2:X2}{hex}";
+            var rBytes = ToPrefixedBytes(R);
+            var sBytes = ToPrefixedBytes(S);
+            var der = new byte[rBytes.Length + sBytes.Length + 2];
+            der[0] = 0x30;
+            der[1] = (byte) (rBytes.Length + sBytes.Length);
+            rBytes.CopyTo(der, 2);
+            sBytes.CopyTo(der, rBytes.Length + 2);
+            return der;
+        }
+
+        byte[] ToPrefixedBytes(BigInteger i)
+        {
+            var bytes = Cipher.ToBytesSigned(i);
+            return Cipher.Concat(new byte[] {0x02, (byte) bytes.Length}, bytes);
         }
     }
 }

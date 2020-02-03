@@ -87,7 +87,7 @@ namespace BitcoinBook.Test
             var signature = new Signature(
                 "0ac8d1c87e51d0d441be8b3dd5b05c8795b48875dffe00b7ffcfac23010d3a395",
                 "068342ceff8935ededd102dd876ffd6ba72d6a427a3edb13d26eb0781cb423c4");
-            var der = Cipher.ToBytes(signature.ToDerFormat());
+            var der = Cipher.ToBytes(signature.ToDerString());
             var commands = new List<object> {der, key.ToSec(), OpCode.OP_CHECKSIG};
             var sigHash = Cipher.ToBytes("0ec208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f600");
             Assert.True(new ScriptEvaluator().Evaluate(commands, signHash));

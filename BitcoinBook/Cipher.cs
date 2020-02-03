@@ -144,6 +144,13 @@ namespace BitcoinBook
             return bytes;
         }
 
+        public static byte[] ToBytesSigned(BigInteger i)
+        {
+            var bytes = i.ToByteArray();
+            Array.Reverse(bytes);
+            return bytes;
+        }
+
         public static byte[] ToBytes32(BigInteger i)
         {
             return ToBytes(i, 32);
@@ -190,7 +197,7 @@ namespace BitcoinBook
             return i;
         }
 
-        static byte[] Concat(byte[] b1, byte[] b2)
+        public static byte[] Concat(byte[] b1, byte[] b2)
         {
             var newBytes = new byte[b1.Length + b2.Length];
             b1.CopyTo(newBytes, 0);
