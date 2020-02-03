@@ -98,6 +98,8 @@ namespace BitcoinBook
 
         bool Evaluate(OpCode opCode, Stack<byte[]> stack, byte[] sigHash)
         {
+            var publicKey = PublicKey.ParseSecFormat(Cipher.ToHex(stack.Pop()));
+            //var signature = 
             throw new NotImplementedException();
         }
 
