@@ -86,6 +86,11 @@ namespace BitcoinBook
             return (S256Curve.Generator * u + Key * v).X.Number == signature.R;
         }
 
+        public bool Verify(byte[] hash, Signature signature)
+        {
+            return Verify(Cipher.ToBigInteger(hash), signature);
+        }
+
         public bool Verify(string data, Signature signature)
         {
             return Verify(Cipher.Hash256Int(data), signature);

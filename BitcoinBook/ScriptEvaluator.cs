@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace BitcoinBook
@@ -8,7 +9,8 @@ namespace BitcoinBook
     {
         public bool Evaluate(IEnumerable<object> scriptCommands, byte[] sigHash)
         {
-            var commands = new Stack<object>(scriptCommands ?? throw new ArgumentNullException(nameof(scriptCommands)));
+            if (scriptCommands == null) throw new ArgumentNullException(nameof(scriptCommands));
+            var commands = new Stack<object>(scriptCommands.Reverse());
             var stack = new Stack<byte[]>();
             var altStack = new Stack<byte[]>();
 
@@ -61,7 +63,7 @@ namespace BitcoinBook
             switch (opCode)
             {
                 case OpCode.OP_0:
-                    return Push(stack, new byte[0]);
+                    return Push(stack, 0);
                 case OpCode.OP_1NEGATE:
                     return Push(stack, -1);
                 case OpCode.OP_1:
@@ -98,9 +100,17 @@ namespace BitcoinBook
 
         bool Evaluate(OpCode opCode, Stack<byte[]> stack, byte[] sigHash)
         {
-            var publicKey = PublicKey.FromSec(Cipher.ToHex(stack.Pop()));
-            //var signature = 
-            throw new NotImplementedException();
+            switch (opCode)
+            {
+                case OpCode.OP_CHECKSIG:
+                    var publicKey = PublicKey.FromSec(stack.Pop());
+                    var signature = Signature.FromDer(stack.Pop());
+                    var result = publicKey.Verify(sigHash, signature);
+                    Push(stack, result);
+                    return true;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         bool Evaluate(OpCode opCode, Stack<byte[]> stack, Stack<object> commands)
@@ -133,9 +143,14 @@ namespace BitcoinBook
             }
         }
 
+        bool Push(Stack<byte[]> stack, bool b)
+        {
+            return Push(stack, b ? 1 : 0);
+        }
+
         bool Push(Stack<byte[]> stack, BigInteger i)
         {
-            return Push(stack, i.ToByteArray());
+            return Push(stack, i == 0 ? new byte[0] : i.ToByteArray());
         }
 
         bool Push(Stack<byte[]> stack, byte[] bytes)
@@ -143,7 +158,5 @@ namespace BitcoinBook
             stack.Push(bytes);
             return true;
         }
-
-
     }
 }
