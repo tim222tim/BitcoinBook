@@ -76,7 +76,7 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public void Op1IsTrue()
+        public void Op1ToOp16AreTrue()
         {
             for (var op = OpCode.OP_1; op < OpCode.OP_16; op++)
             {
