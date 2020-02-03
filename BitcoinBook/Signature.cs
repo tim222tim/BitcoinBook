@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Data;
 using System.Globalization;
 using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class Signature
+    public class Signature : IEquatable<Signature>
     {
         public BigInteger R { get; }
         public BigInteger S { get; }
@@ -19,6 +18,32 @@ namespace BitcoinBook
         public Signature(string r, string s, NumberStyles numberStyles = NumberStyles.HexNumber) :
             this(BigInteger.Parse(r, numberStyles), BigInteger.Parse(s, numberStyles))
         {
+        }
+
+        public static Signature FromDer(string der)
+        {
+            return FromDer(Cipher.ToBytes(der));
+        }
+
+        public static Signature FromDer(byte[] der)
+        {
+            if (der == null) throw new ArgumentNullException(nameof(der));
+            if (der.Length < 8) throw new FormatException("value not long enough");
+            if (der[0] != 0x30) throw new FormatException("wrong DER prefix"); 
+            if (der[1] != der.Length - 2) throw new FormatException("wrong length");
+            var rBytes = GetPrefixedBytes(der, 2);
+            var sBytes = GetPrefixedBytes(der, rBytes.Length + 4);
+            return new Signature(Cipher.ToBigInteger(rBytes), Cipher.ToBigInteger(sBytes));
+        }
+
+        static byte[] GetPrefixedBytes(byte[] bytes, int index)
+        {
+            if (bytes[index] != 0x02) throw new FormatException("wrong number prefix");
+            var length = bytes[index + 1];
+            if (index + length > bytes.Length) throw new FormatException("value not long enough for number");
+            var intBytes = new byte[length];
+            Array.Copy(bytes, index + 2, intBytes, 0, length);
+            return intBytes;
         }
 
         public override string ToString()
@@ -47,6 +72,26 @@ namespace BitcoinBook
         {
             var bytes = Cipher.ToBytesSigned(i);
             return Cipher.Concat(new byte[] {0x02, (byte) bytes.Length}, bytes);
+        }
+
+        public bool Equals(Signature other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return R.Equals(other.R) && S.Equals(other.S);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Signature) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(R, S);
         }
     }
 }
