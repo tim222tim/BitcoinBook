@@ -95,7 +95,7 @@ namespace BitcoinBook.Test
                 publicKey.ToSec(), 
                 OpCode.OP_CHECKSIG
             };
-            Assert.Equal(expected, new ScriptEvaluator().Evaluate(commands, Cipher.ToBytes(hashString)));
+            Assert.Equal(expected, evaluator.Evaluate(commands, Cipher.ToBytes(hashString)));
         }
 
         [Theory]
@@ -114,7 +114,23 @@ namespace BitcoinBook.Test
                 OpCode.OP_EQUALVERIFY, 
                 OpCode.OP_CHECKSIG
             };
-            Assert.Equal(expected, new ScriptEvaluator().Evaluate(commands, Cipher.ToBytes(sigHash)));
+            Assert.Equal(expected, evaluator.Evaluate(commands, Cipher.ToBytes(sigHash)));
+        }
+
+        [Fact]
+        public void OpAddEqualTest()
+        {
+            // 4 5 add 9 equal
+            var script = new TransactionReader("055455935987").ReadScript();
+            Assert.True(evaluator.Evaluate(script.Commands, null));
+        }
+
+        [Fact]
+        public void OpMulTest()
+        {
+            // 2 dup dup mul add 6 equal
+            var script = new TransactionReader("0752767695935687").ReadScript();
+            Assert.True(evaluator.Evaluate(script.Commands, null));
         }
     }
 }

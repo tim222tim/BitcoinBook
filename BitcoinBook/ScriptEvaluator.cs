@@ -99,6 +99,12 @@ namespace BitcoinBook
                     return stack.Pop().SequenceEqual(stack.Pop());
                 case OpCode.OP_HASH160:
                     return Push(stack, Cipher.Hash160(stack.Pop()));
+                case OpCode.OP_ADD:
+                    return Push(stack, new BigInteger(stack.Pop()) + new BigInteger(stack.Pop()));
+                case OpCode.OP_MUL:
+                    return Push(stack, new BigInteger(stack.Pop()) * new BigInteger(stack.Pop()));
+                case OpCode.OP_EQUAL:
+                    return Push(stack, new BigInteger(stack.Pop()).Equals(new BigInteger(stack.Pop())) ? 1 : 0);
                 default:
                     throw new InvalidOperationException("Unknown operation: " + opCode);
             }
