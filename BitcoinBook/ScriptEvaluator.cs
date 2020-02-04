@@ -62,11 +62,9 @@ namespace BitcoinBook
             switch (opCode)
             {
                 case OpCode.OP_0:
-                    stack.Push(0);
-                    return true;
+                    return stack.Push(0);
                 case OpCode.OP_1NEGATE:
-                    stack.Push(-1);
-                    return true;
+                    return stack.Push(-1);
                 case OpCode.OP_1:
                 case OpCode.OP_2:
                 case OpCode.OP_3:
@@ -83,8 +81,7 @@ namespace BitcoinBook
                 case OpCode.OP_14:
                 case OpCode.OP_15:
                 case OpCode.OP_16:
-                    stack.Push((int)opCode - (int)OpCode.OP_1 + 1);
-                    return true;
+                    return stack.Push((int)opCode - (int)OpCode.OP_1 + 1);
                 case OpCode.OP_NOP:
                 case OpCode.OP_NOP1:
                 case OpCode.OP_NOP4:
@@ -96,43 +93,34 @@ namespace BitcoinBook
                 case OpCode.OP_NOP10:
                     return true;
                 case OpCode.OP_DUP:
-                    stack.Push(stack.Peek());
-                    return true;
+                    return stack.Push(stack.Peek());
                 case OpCode.OP_2DUP:
                     var d1 = stack.Pop();
                     var d2 = stack.Peek();
                     stack.Push(d1);
                     stack.Push(d2);
-                    stack.Push(d1);
-                    return true;
+                    return stack.Push(d1);
                 case OpCode.OP_SWAP:
                     var s1 = stack.Pop();
                     var s2 = stack.Pop();
                     stack.Push(s1);
-                    stack.Push(s2);
-                    return true;
+                    return stack.Push(s2);
                 case OpCode.OP_VERIFY:
                     return stack.Pop().Length > 0;
                 case OpCode.OP_EQUALVERIFY:
                     return stack.Pop().SequenceEqual(stack.Pop());
                 case OpCode.OP_HASH160:
-                    stack.Push(Cipher.Hash160(stack.Pop()));
-                    return true;
+                    return stack.Push(Cipher.Hash160(stack.Pop()));
                 case OpCode.OP_SHA1:
-                    stack.Push(Cipher.Sha1(stack.Pop()));
-                    return true;
+                    return stack.Push(Cipher.Sha1(stack.Pop()));
                 case OpCode.OP_ADD:
-                    stack.Push(stack.PopInt() + stack.PopInt());
-                    return true;
+                    return stack.Push(stack.PopInt() + stack.PopInt());
                 case OpCode.OP_MUL:
-                    stack.Push(stack.PopInt() * stack.PopInt());
-                    return true;
+                    return stack.Push(stack.PopInt() * stack.PopInt());
                 case OpCode.OP_EQUAL:
-                    stack.Push(stack.PopInt().Equals(stack.PopInt()) ? 1 : 0);
-                    return true;
+                    return stack.Push(stack.PopInt().Equals(stack.PopInt()) ? 1 : 0);
                 case OpCode.OP_NOT:
-                    stack.Push(stack.Pop().Length == 0 ? 1 : 0);
-                    return true;
+                    return stack.Push(stack.Pop().Length == 0 ? 1 : 0);
                 default:
                     throw new InvalidOperationException("Unknown operation: " + opCode);
             }
@@ -146,8 +134,7 @@ namespace BitcoinBook
                     var publicKey = PublicKey.FromSec(stack.Pop());
                     var signature = Signature.FromDer(stack.Pop());
                     var result = publicKey.Verify(sigHash, signature);
-                    stack.Push(result);
-                    return true;
+                    return stack.Push(result);
                 default:
                     throw new NotImplementedException();
             }

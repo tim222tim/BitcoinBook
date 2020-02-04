@@ -3,21 +3,46 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class ScriptStack : Stack<byte[]>
+    public class ScriptStack
     {
-        public void Push(BigInteger i)
+        readonly Stack<byte[]> stack = new Stack<byte[]>();
+
+        public int Count => stack.Count;
+
+        public bool Push(byte[] bytes)
         {
-            Push(i == 0 ? new byte[0] : i.ToByteArray());
+            stack.Push(bytes);
+            return true;
         }
 
-        public void Push(bool b)
+        public bool Push(BigInteger i)
         {
-            Push(b ? 1 : 0);
+            return Push(i == 0 ? new byte[0] : i.ToByteArray());
+        }
+
+        public bool Push(bool b)
+        {
+            return Push(b ? 1 : 0);
+        }
+
+        public byte[] Pop()
+        {
+            return stack.Pop();
         }
 
         public BigInteger PopInt()
         {
             return new BigInteger(Pop());
+        }
+
+        public byte[] Peek()
+        {
+            return stack.Peek();
+        }
+
+        public BigInteger PeekInt()
+        {
+            return new BigInteger(Peek());
         }
     }
 }
