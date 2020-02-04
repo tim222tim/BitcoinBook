@@ -118,7 +118,7 @@ namespace BitcoinBook
                 case OpCode.OP_MUL:
                     return stack.Push(stack.PopInt() * stack.PopInt());
                 case OpCode.OP_EQUAL:
-                    return stack.Push(stack.PopInt().Equals(stack.PopInt()) ? 1 : 0);
+                    return stack.Push(stack.Pop().SequenceEqual(stack.Pop()) ? 1 : 0);
                 case OpCode.OP_NOT:
                     return stack.Push(stack.Pop().Length == 0 ? 1 : 0);
                 default:
