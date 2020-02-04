@@ -7,7 +7,7 @@ namespace BitcoinBook
 {
     public class ScriptEvaluator
     {
-        public bool Evaluate(IEnumerable<object> scriptCommands, byte[] sigHash)
+        public bool Evaluate(IEnumerable<object> scriptCommands, byte[] sigHash = null)
         {
             if (scriptCommands == null) throw new ArgumentNullException(nameof(scriptCommands));
             var commands = new Stack<object>(scriptCommands.Reverse());
@@ -95,16 +95,33 @@ namespace BitcoinBook
                     return true;
                 case OpCode.OP_DUP:
                     return Push(stack, stack.Peek());
+                case OpCode.OP_2DUP:
+                    var d1 = stack.Pop();
+                    var d2 = stack.Peek();
+                    Push(stack, d1);
+                    Push(stack, d2);
+                    return Push(stack, d1);
+                case OpCode.OP_SWAP:
+                    var s1 = stack.Pop();
+                    var s2 = stack.Pop();
+                    Push(stack, s1);
+                    return Push(stack, s2);
+                case OpCode.OP_VERIFY:
+                    return stack.Pop().Length > 0;
                 case OpCode.OP_EQUALVERIFY:
                     return stack.Pop().SequenceEqual(stack.Pop());
                 case OpCode.OP_HASH160:
                     return Push(stack, Cipher.Hash160(stack.Pop()));
+                case OpCode.OP_SHA1:
+                    return Push(stack, Cipher.Sha1(stack.Pop()));
                 case OpCode.OP_ADD:
                     return Push(stack, new BigInteger(stack.Pop()) + new BigInteger(stack.Pop()));
                 case OpCode.OP_MUL:
                     return Push(stack, new BigInteger(stack.Pop()) * new BigInteger(stack.Pop()));
                 case OpCode.OP_EQUAL:
                     return Push(stack, new BigInteger(stack.Pop()).Equals(new BigInteger(stack.Pop())) ? 1 : 0);
+                case OpCode.OP_NOT:
+                    return Push(stack, stack.Pop().Length == 0 ? 1 : 0);
                 default:
                     throw new InvalidOperationException("Unknown operation: " + opCode);
             }

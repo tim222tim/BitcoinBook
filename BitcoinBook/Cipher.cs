@@ -215,5 +215,11 @@ namespace BitcoinBook
 
             return index;
         }
+
+        public static byte[] Sha1(byte[] data)
+        {
+            using var sha1 = SHA1.Create();
+            return sha1.ComputeHash(data);
+        }
     }
 }
