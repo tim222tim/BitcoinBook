@@ -89,7 +89,12 @@ namespace BitcoinBook.Test
         [InlineData(false, "ff208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60")]
         public void P2PK_Test(bool expected, string hashString)
         {
-            var commands = new object[] {signature.ToDer(), publicKey.ToSec(), OpCode.OP_CHECKSIG};
+            var commands = new object[]
+            {
+                signature.ToDer(), 
+                publicKey.ToSec(), 
+                OpCode.OP_CHECKSIG
+            };
             Assert.Equal(expected, new ScriptEvaluator().Evaluate(commands, Cipher.ToBytes(hashString)));
         }
 
@@ -99,7 +104,16 @@ namespace BitcoinBook.Test
         [InlineData(false, "ec208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60", "ffacbcf383132d76998d67ac0d2d81d85c07b0a2")]
         public void P2PKH_Test(bool expected, string sigHash, string keyHash)
         {
-            var commands = new object[] { signature.ToDer(), publicKey.ToSec(), OpCode.OP_DUP, OpCode.OP_HASH160, Cipher.ToBytes(keyHash), OpCode.OP_EQUALVERIFY, OpCode.OP_CHECKSIG };
+            var commands = new object[] 
+            { 
+                signature.ToDer(), 
+                publicKey.ToSec(), 
+                OpCode.OP_DUP, 
+                OpCode.OP_HASH160, 
+                Cipher.ToBytes(keyHash), 
+                OpCode.OP_EQUALVERIFY, 
+                OpCode.OP_CHECKSIG
+            };
             Assert.Equal(expected, new ScriptEvaluator().Evaluate(commands, Cipher.ToBytes(sigHash)));
         }
     }
