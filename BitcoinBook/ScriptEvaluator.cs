@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace BitcoinBook
 {
@@ -11,8 +10,8 @@ namespace BitcoinBook
         {
             if (scriptCommands == null) throw new ArgumentNullException(nameof(scriptCommands));
             var commands = new Stack<object>(scriptCommands.Reverse());
-            var stack = new Stack<byte[]>();
-            var altStack = new Stack<byte[]>();
+            var stack = new ScriptStack();
+            var altStack = new ScriptStack();
 
             while (commands.Count > 0)
             {
@@ -58,14 +57,16 @@ namespace BitcoinBook
             return stack.Pop().Length > 0;
         }
 
-        bool Evaluate(OpCode opCode, Stack<byte[]> stack)
+        bool Evaluate(OpCode opCode, ScriptStack stack)
         {
             switch (opCode)
             {
                 case OpCode.OP_0:
-                    return Push(stack, 0);
+                    stack.Push(0);
+                    return true;
                 case OpCode.OP_1NEGATE:
-                    return Push(stack, -1);
+                    stack.Push(-1);
+                    return true;
                 case OpCode.OP_1:
                 case OpCode.OP_2:
                 case OpCode.OP_3:
@@ -82,7 +83,8 @@ namespace BitcoinBook
                 case OpCode.OP_14:
                 case OpCode.OP_15:
                 case OpCode.OP_16:
-                    return Push(stack, (int)opCode - (int)OpCode.OP_1 + 1);
+                    stack.Push((int)opCode - (int)OpCode.OP_1 + 1);
+                    return true;
                 case OpCode.OP_NOP:
                 case OpCode.OP_NOP1:
                 case OpCode.OP_NOP4:
@@ -94,40 +96,49 @@ namespace BitcoinBook
                 case OpCode.OP_NOP10:
                     return true;
                 case OpCode.OP_DUP:
-                    return Push(stack, stack.Peek());
+                    stack.Push(stack.Peek());
+                    return true;
                 case OpCode.OP_2DUP:
                     var d1 = stack.Pop();
                     var d2 = stack.Peek();
-                    Push(stack, d1);
-                    Push(stack, d2);
-                    return Push(stack, d1);
+                    stack.Push(d1);
+                    stack.Push(d2);
+                    stack.Push(d1);
+                    return true;
                 case OpCode.OP_SWAP:
                     var s1 = stack.Pop();
                     var s2 = stack.Pop();
-                    Push(stack, s1);
-                    return Push(stack, s2);
+                    stack.Push(s1);
+                    stack.Push(s2);
+                    return true;
                 case OpCode.OP_VERIFY:
                     return stack.Pop().Length > 0;
                 case OpCode.OP_EQUALVERIFY:
                     return stack.Pop().SequenceEqual(stack.Pop());
                 case OpCode.OP_HASH160:
-                    return Push(stack, Cipher.Hash160(stack.Pop()));
+                    stack.Push(Cipher.Hash160(stack.Pop()));
+                    return true;
                 case OpCode.OP_SHA1:
-                    return Push(stack, Cipher.Sha1(stack.Pop()));
+                    stack.Push(Cipher.Sha1(stack.Pop()));
+                    return true;
                 case OpCode.OP_ADD:
-                    return Push(stack, new BigInteger(stack.Pop()) + new BigInteger(stack.Pop()));
+                    stack.Push(stack.PopInt() + stack.PopInt());
+                    return true;
                 case OpCode.OP_MUL:
-                    return Push(stack, new BigInteger(stack.Pop()) * new BigInteger(stack.Pop()));
+                    stack.Push(stack.PopInt() * stack.PopInt());
+                    return true;
                 case OpCode.OP_EQUAL:
-                    return Push(stack, new BigInteger(stack.Pop()).Equals(new BigInteger(stack.Pop())) ? 1 : 0);
+                    stack.Push(stack.PopInt().Equals(stack.PopInt()) ? 1 : 0);
+                    return true;
                 case OpCode.OP_NOT:
-                    return Push(stack, stack.Pop().Length == 0 ? 1 : 0);
+                    stack.Push(stack.Pop().Length == 0 ? 1 : 0);
+                    return true;
                 default:
                     throw new InvalidOperationException("Unknown operation: " + opCode);
             }
         }
 
-        bool Evaluate(OpCode opCode, Stack<byte[]> stack, byte[] sigHash)
+        bool Evaluate(OpCode opCode, ScriptStack stack, byte[] sigHash)
         {
             switch (opCode)
             {
@@ -135,19 +146,19 @@ namespace BitcoinBook
                     var publicKey = PublicKey.FromSec(stack.Pop());
                     var signature = Signature.FromDer(stack.Pop());
                     var result = publicKey.Verify(sigHash, signature);
-                    Push(stack, result);
+                    stack.Push(result);
                     return true;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        bool Evaluate(OpCode opCode, Stack<byte[]> stack, Stack<object> commands)
+        bool Evaluate(OpCode opCode, ScriptStack stack, Stack<object> commands)
         {
             throw new NotImplementedException();
         }
 
-        bool Evaluate(OpCode opCode, Stack<byte[]> stack, Stack<byte[]> altStack)
+        bool Evaluate(OpCode opCode, ScriptStack stack, ScriptStack altStack)
         {
             throw new NotImplementedException();
         }
@@ -170,22 +181,6 @@ namespace BitcoinBook
                 default:
                     return OpertationType.Stack;
             }
-        }
-
-        bool Push(Stack<byte[]> stack, bool b)
-        {
-            return Push(stack, b ? 1 : 0);
-        }
-
-        bool Push(Stack<byte[]> stack, BigInteger i)
-        {
-            return Push(stack, i == 0 ? new byte[0] : i.ToByteArray());
-        }
-
-        bool Push(Stack<byte[]> stack, byte[] bytes)
-        {
-            stack.Push(bytes);
-            return true;
         }
     }
 }
