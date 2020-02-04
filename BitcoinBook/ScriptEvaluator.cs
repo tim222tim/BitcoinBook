@@ -93,8 +93,14 @@ namespace BitcoinBook
                 case OpCode.OP_NOP9:
                 case OpCode.OP_NOP10:
                     return true;
+                case OpCode.OP_DUP:
+                    return Push(stack, stack.Peek());
+                case OpCode.OP_EQUALVERIFY:
+                    return stack.Pop().SequenceEqual(stack.Pop());
+                case OpCode.OP_HASH160:
+                    return Push(stack, Cipher.Hash160(stack.Pop()));
                 default:
-                    throw new InvalidOperationException("Unknown operation");
+                    throw new InvalidOperationException("Unknown operation: " + opCode);
             }
         }
 
