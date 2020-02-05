@@ -23,20 +23,29 @@ namespace BitcoinBook
                 else if (command is OpCode opCode)
                 {
                     var result = false;
-                    switch (GetOpertationType(opCode))
+                    try
                     {
-                        case OpertationType.Stack:
-                            result = Evaluate(opCode, stack);
-                            break;
-                        case OpertationType.SigHash:
-                            result = Evaluate(opCode, stack, sigHash);
-                            break;
-                        case OpertationType.Commands:
-                            result = Evaluate(opCode, stack, commands);
-                            break;
-                        case OpertationType.AltStack:
-                            result = Evaluate(opCode, stack, altStack);
-                            break;
+                        switch (GetOpertationType(opCode))
+                        {
+                            case OpertationType.Stack:
+                                result = Evaluate(opCode, stack);
+                                break;
+                            case OpertationType.SigHash:
+                                result = Evaluate(opCode, stack, sigHash);
+                                break;
+                            case OpertationType.Commands:
+                                result = Evaluate(opCode, stack, commands);
+                                break;
+                            case OpertationType.AltStack:
+                                result = Evaluate(opCode, stack, altStack);
+                                break;
+                        }
+                    }
+                    catch (FormatException)
+                    {
+                    }
+                    catch (InvalidOperationException)
+                    {
                     }
                     if (!result)
                     {
@@ -49,12 +58,7 @@ namespace BitcoinBook
                 }
             }
 
-            if (stack.Count == 0)
-            {
-                return false;
-            }
-
-            return stack.Pop().Length > 0;
+            return stack.Count > 0 && stack.Pop().Length > 0;
         }
 
         bool Evaluate(OpCode opCode, ScriptStack stack)
