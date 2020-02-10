@@ -54,6 +54,25 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
+        public async Task FetchFromCache()
+        {
+            ExpectContent(transactionId, rawTransaction);
+            var transaction = await fetcher.Fetch(transactionId);
+            for (var i = 0; i < 10; i++)
+            {
+                Assert.Same(transaction, await fetcher.Fetch(transactionId));
+            }
+        }
+
+        [Fact]
+        public async Task FetchFresh()
+        {
+            ExpectContent(transactionId, rawTransaction);
+            var transaction = await fetcher.Fetch(transactionId);
+            Assert.NotSame(transaction, await fetcher.Fetch(transactionId, true));
+        }
+
+        [Fact]
         public async Task FetchForRealTest()
         {
             var realFetcher = new TransactionFetcher(new HttpClient {BaseAddress = new Uri("http://mainnet.programmingbitcoin.com")});
