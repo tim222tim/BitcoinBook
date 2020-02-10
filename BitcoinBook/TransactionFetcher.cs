@@ -22,7 +22,7 @@ namespace BitcoinBook
 
         public Task<Transaction> Fetch(byte[] transactionId, bool fresh = false)
         {
-            return Fetch(Cipher.ToHex(transactionId));
+            return Fetch(Cipher.ToHex(transactionId), fresh);
         }
 
         async Task<Transaction> InternalFetch(string transactionId)

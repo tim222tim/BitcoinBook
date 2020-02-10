@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 
 namespace BitcoinBook
@@ -29,7 +28,7 @@ namespace BitcoinBook
 
             return tranaction.Outputs.Count > input.PreviousIndex ? 
                 tranaction.Outputs[input.PreviousIndex] :
-                throw new FetchException($"Transaction output {{input.PreviousTransaction}}:{input.PreviousIndex} does not exist");
+                throw new FetchException($"Transaction output {input.PreviousTransaction}:{input.PreviousIndex} does not exist");
         }
     }
 }
