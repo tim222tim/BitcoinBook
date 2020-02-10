@@ -24,7 +24,7 @@ namespace BitcoinBook
         async Task<TransactionOutput> GetPriorOutput(TransactionInput input)
         {
             var tranaction = await fetcher.Fetch(Cipher.ToHex(input.PreviousTransaction)) ??
-                             throw new FetchException($"Transaciton {input.PreviousTransaction} not found");
+                             throw new FetchException($"Transaction {input.PreviousTransaction} not found");
 
             return tranaction.Outputs.Count > input.PreviousIndex ? 
                 tranaction.Outputs[input.PreviousIndex] :
