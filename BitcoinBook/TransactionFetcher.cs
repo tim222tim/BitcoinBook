@@ -17,20 +17,7 @@ namespace BitcoinBook
 
         public async Task<Transaction> Fetch(string transactionId, bool fresh = false)
         {
-            var transaction = fresh ? null : cache.Get<Transaction>(transactionId);
-            if (transaction == null)
-            {
-                transaction = await InternalFetch(transactionId);
-                if (transaction == null)
-                {
-                    cache.Remove(transactionId);
-                }
-                else
-                {
-                    cache.Set(transactionId, transaction);
-                }
-            }
-            return transaction;
+            return (fresh ? null : cache.Get<Transaction>(transactionId)) ?? await InternalFetch(transactionId);
         }
 
         async Task<Transaction> InternalFetch(string transactionId)
@@ -38,6 +25,7 @@ namespace BitcoinBook
             var response = await httpClient.GetAsync($"/tx/{transactionId}.hex");
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                cache.Remove(transactionId);
                 return null;
             }
 
@@ -59,6 +47,7 @@ namespace BitcoinBook
                 throw new FetchException("Got wrong transaciton ID");
             }
 
+            cache.Set(transactionId, transaction);
             return transaction;
         }
     }
