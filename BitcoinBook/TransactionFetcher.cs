@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BitcoinBook
 {
-    public class TransactionFetcher
+    public class TransactionFetcher : ITransactionFetcher
     {
         readonly HttpClient httpClient;
         readonly IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
@@ -31,6 +31,11 @@ namespace BitcoinBook
                 }
             }
             return transaction;
+        }
+
+        public Task<Transaction> Fetch(byte[] transactionId, bool fresh = false)
+        {
+            return Fetch(Cipher.ToHex(transactionId));
         }
 
         async Task<Transaction> InternalFetch(string transactionId)
