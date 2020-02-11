@@ -29,12 +29,17 @@ namespace BitcoinBook
 
         async Task<TransactionOutput> GetPriorOutput(TransactionInput input)
         {
-            var tranaction = await fetcher.Fetch(Cipher.ToHex(input.PreviousTransaction)) ??
-                             throw new FetchException($"Transaction {input.PreviousTransaction} not found");
+            return await GetOutput(Cipher.ToHex(input.PreviousTransaction), input.PreviousIndex);
+        }
 
-            return tranaction.Outputs.Count > input.PreviousIndex ? 
-                tranaction.Outputs[input.PreviousIndex] :
-                throw new FetchException($"Transaction output {input.PreviousTransaction}:{input.PreviousIndex} does not exist");
+        async Task<TransactionOutput> GetOutput(string transactionId, int index)
+        {
+            var transaction = await fetcher.Fetch(transactionId) ??
+                             throw new FetchException($"Transaction {transactionId} not found");
+
+            return transaction.Outputs.Count > index
+                ? transaction.Outputs[index]
+                : throw new FetchException($"Transaction output {transactionId}:{index} does not exist");
         }
     }
 }
