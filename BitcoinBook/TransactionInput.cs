@@ -9,11 +9,11 @@ namespace BitcoinBook
         public Script SigScript { get; }
         public uint Sequence { get; }
 
-        public TransactionInput(byte[] previousTransaction, int previousIndex, Script scriptSig, uint sequence)
+        public TransactionInput(byte[] previousTransaction, int previousIndex, Script sigScript, uint sequence)
         {
             PreviousTransaction = previousTransaction ?? throw new ArgumentNullException(nameof(previousIndex));
             PreviousIndex = previousIndex;
-            SigScript = scriptSig ?? new Script();
+            SigScript = sigScript ?? throw new ArgumentNullException(nameof(sigScript));
             Sequence = sequence;
         }
 
@@ -34,7 +34,12 @@ namespace BitcoinBook
 
         public TransactionInput CloneWithoutSigScript()
         {
-            return new TransactionInput(PreviousTransaction, PreviousIndex, null, Sequence);
+            return CloneWithSigScript(new Script());
+        }
+
+        public TransactionInput CloneWithSigScript(Script script)
+        {
+            return new TransactionInput(PreviousTransaction, PreviousIndex, script, Sequence);
         }
     }
 }

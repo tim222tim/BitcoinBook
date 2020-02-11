@@ -50,5 +50,18 @@ namespace BitcoinBook
             return new Transaction(Version, Inputs.Select(i => i.CloneWithoutSigScript()), 
                 Outputs.Select(o => o.Clone()), LockTime, Testnet);
         }
+
+        public Transaction CloneWithReplacedSigScript(int inputIndex, Script script)
+        {
+            if (inputIndex < 0 || inputIndex >= Inputs.Count)
+            {
+                throw new IndexOutOfRangeException($"Input index {inputIndex} is invalid for transaction with {Inputs.Count} inputs");
+            }
+
+            var inputs = Inputs.Select(i => i.CloneWithoutSigScript()).ToArray();
+            inputs[inputIndex] = Inputs[inputIndex].CloneWithSigScript(script);
+            return new Transaction(Version, inputs,
+                Outputs.Select(o => o.Clone()), LockTime, Testnet);
+        }
     }
 }

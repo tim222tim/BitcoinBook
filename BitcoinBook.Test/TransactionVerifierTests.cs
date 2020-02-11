@@ -1,19 +1,42 @@
 ﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BitcoinBook.Test
 {
     public class TransactionVerifierTests
     {
+        readonly TransactionFetcher fetcher = new TransactionFetcher(new HttpClient { BaseAddress = new Uri("http://mainnet.programmingbitcoin.com") });
+
         readonly Transaction transaction = new TransactionReader(rawTransaction).ReadTransaction();
-        readonly TransactionVerifier verifier = new TransactionVerifier();
+        readonly TransactionVerifier verifier;
+
+        public TransactionVerifierTests()
+        {
+            verifier = new TransactionVerifier(fetcher);
+        }
 
         [Theory]
         [InlineData(-1)]
         [InlineData(1)]
         public void ShouldThrowWhenInputOutOfRange(int inputIndex)
         {
-            Assert.Throws<IndexOutOfRangeException>(() => verifier.ComputeSigHash(transaction, inputIndex));
+            Assert.ThrowsAsync<IndexOutOfRangeException>(async () => await verifier.ComputeSigHash(transaction, inputIndex));
+        }
+
+        [Fact]
+        public async Task ComputeSigHashTest()
+        {
+            var sigHash = await verifier.ComputeSigHash(transaction, 0);
+            Assert.Equal("8c014c7778702072e30f15efd6884510f9cc04d3ac988aa16e024230f1586079", 
+                Cipher.ToHex(sigHash));
+        }
+
+        [Fact]
+        public async Task VerifyTest()
+        {
+            Assert.True(await verifier.Verify(transaction, 0));
         }
 
         const string rawTransaction =
