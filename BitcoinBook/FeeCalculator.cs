@@ -21,7 +21,7 @@ namespace BitcoinBook
             return inputAmounts - outputAmounts;
         }
 
-        async Task<TransactionOutput[]> GetPriorOutputs(IList<TransactionInput> inputs)
+        async Task<TransactionOutput[]> GetPriorOutputs(IEnumerable<TransactionInput> inputs)
         {
             var priorTasks = inputs.Select(async i => await GetPriorOutput(i));
             return await Task.WhenAll(priorTasks);
