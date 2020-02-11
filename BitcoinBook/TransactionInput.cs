@@ -2,7 +2,7 @@
 
 namespace BitcoinBook
 {
-    public class TransactionInput
+    public class TransactionInput : ICloneable
     {
         public byte[] PreviousTransaction { get; }
         public int PreviousIndex { get; }
@@ -20,6 +20,16 @@ namespace BitcoinBook
         public override string ToString()
         {
             return $"{Cipher.ToHex(PreviousTransaction)}:{PreviousIndex}";
+        }
+
+        public TransactionInput Clone()
+        {
+            return new TransactionInput(PreviousTransaction, PreviousIndex, SigScript.Clone(), Sequence);
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BitcoinBook
 {
-    public class Transaction
+    public class Transaction : ICloneable
     {
         public string Id { get; }
         public int Version { get; }
@@ -13,11 +14,11 @@ namespace BitcoinBook
         public uint LockTime { get; }
         public bool Testnet { get; }
 
-        public Transaction(int version, IList<TransactionInput> inputs, IList<TransactionOutput> outputs, uint lockTime, bool testnet = false)
+        public Transaction(int version, IEnumerable<TransactionInput> inputs, IEnumerable<TransactionOutput> outputs, uint lockTime, bool testnet = false)
         {
             Version = version;
-            Inputs = inputs ?? throw new ArgumentNullException(nameof(inputs));
-            Outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
+            Inputs = new List<TransactionInput>(inputs ?? throw new ArgumentNullException(nameof(inputs)));
+            Outputs = new List<TransactionOutput>(outputs ?? throw new ArgumentNullException(nameof(outputs)));
             LockTime = lockTime;
             Testnet = testnet;
             Id = ComputeId();
@@ -31,6 +32,16 @@ namespace BitcoinBook
             var hash = Cipher.Hash256(stream.ToArray());
             Array.Reverse(hash);
             return Cipher.ToHex(hash);
+        }
+
+        public Transaction Clone()
+        {
+            return new Transaction(Version, Inputs.Select(i => i.Clone()), Outputs.Select(o => o.Clone()), LockTime, Testnet);
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
     }
 }
