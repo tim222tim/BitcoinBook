@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BitcoinBook
@@ -14,11 +15,16 @@ namespace BitcoinBook
 
         public async Task<long> CalculateFeesAsync(Transaction transaction)
         {
-            var priorTasks = transaction.Inputs.Select(async i => await GetPriorOutput(i));
-            var priorOutputs = await Task.WhenAll(priorTasks);
+            var priorOutputs = await GetPriorOutputs(transaction.Inputs);
             var inputAmounts = priorOutputs.Sum(o => o.Amount);
             var outputAmounts = transaction.Outputs.Sum(o => o.Amount);
             return inputAmounts - outputAmounts;
+        }
+
+        async Task<TransactionOutput[]> GetPriorOutputs(IList<TransactionInput> inputs)
+        {
+            var priorTasks = inputs.Select(async i => await GetPriorOutput(i));
+            return await Task.WhenAll(priorTasks);
         }
 
         async Task<TransactionOutput> GetPriorOutput(TransactionInput input)
