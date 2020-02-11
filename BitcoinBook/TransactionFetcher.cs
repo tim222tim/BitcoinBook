@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -23,6 +25,27 @@ namespace BitcoinBook
         public Task<Transaction> Fetch(byte[] transactionId, bool fresh = false)
         {
             return Fetch(Cipher.ToHex(transactionId), fresh);
+        }
+
+        public async Task<TransactionOutput[]> GetPriorOutputs(IEnumerable<TransactionInput> inputs)
+        {
+            var priorTasks = inputs.Select(async i => await GetPriorOutput(i));
+            return await Task.WhenAll(priorTasks);
+        }
+
+        public async Task<TransactionOutput> GetPriorOutput(TransactionInput input)
+        {
+            return await GetOutput(input.PreviousTransaction, input.PreviousIndex);
+        }
+
+        public async Task<TransactionOutput> GetOutput(byte[] transactionId, int index)
+        {
+            var transaction = await Fetch(transactionId) ??
+                              throw new FetchException($"Transaction {transactionId} not found");
+
+            return transaction.Outputs.Count > index
+                ? transaction.Outputs[index]
+                : throw new FetchException($"Transaction output {transactionId}:{index} does not exist");
         }
 
         async Task<Transaction> InternalFetch(string transactionId)
