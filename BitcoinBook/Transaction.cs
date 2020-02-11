@@ -36,12 +36,19 @@ namespace BitcoinBook
 
         public Transaction Clone()
         {
-            return new Transaction(Version, Inputs.Select(i => i.Clone()), Outputs.Select(o => o.Clone()), LockTime, Testnet);
+            return new Transaction(Version, Inputs.Select(i => i.Clone()), 
+                Outputs.Select(o => o.Clone()), LockTime, Testnet);
         }
 
         object ICloneable.Clone()
         {
             return Clone();
+        }
+
+        public Transaction CloneWithoutSigScripts()
+        {
+            return new Transaction(Version, Inputs.Select(i => i.CloneWithoutSigScript()), 
+                Outputs.Select(o => o.Clone()), LockTime, Testnet);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System.Linq;
+using Xunit;
 
 namespace BitcoinBook.Test
 {
@@ -12,6 +13,17 @@ namespace BitcoinBook.Test
             var transactionClone = transaction.Clone();
             Assert.NotSame(transaction, transactionClone);
             Assert.Equal(transaction.Id, transactionClone.Id);
+        }
+
+        [Fact]
+        public void CloneWithoutSigScriptsTest()
+        {
+            var transaction2 = transaction.CloneWithoutSigScripts();
+
+            Assert.Equal(transaction.Inputs.Count, transaction2.Inputs.Count);
+            Assert.True(transaction2.Inputs.All(o => o.SigScript.Commands.Count == 0));
+            Assert.Equal(transaction.Outputs.Count, transaction2.Outputs.Count);
+            Assert.True(transaction2.Outputs.All(o => o.ScriptPubKey.Commands.Count > 0));
         }
 
         const string rawTransaction =

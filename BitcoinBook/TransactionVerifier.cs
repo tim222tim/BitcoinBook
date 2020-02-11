@@ -10,6 +10,7 @@ namespace BitcoinBook
             {
                 throw new IndexOutOfRangeException($"Input index {inputIndex} is invalid for transaction with {transaction.Inputs.Count} inputs");
             }
+
             throw new NotImplementedException();
         }
     }

@@ -31,5 +31,10 @@ namespace BitcoinBook
         {
             return Clone();
         }
+
+        public TransactionInput CloneWithoutSigScript()
+        {
+            return new TransactionInput(PreviousTransaction, PreviousIndex, null, Sequence);
+        }
     }
 }
