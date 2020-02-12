@@ -134,7 +134,7 @@ namespace BitcoinBook.Test
         public void MyTestnetAddress()
         {
             var hash = Cipher.Hash256(Encoding.ASCII.GetBytes("Tim's testnet address"));
-            var privateKey = new PrivateKey(Cipher.ToBigInteger(hash));
+            var privateKey = new PrivateKey(hash.ToBigInteger());
             Assert.Equal("mvzHKaHbDMaLdNbDrPuiSbGV91o6ADjCAK", new PublicKey(privateKey).ToAddress(true, true));
         }
     }

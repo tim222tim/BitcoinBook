@@ -26,7 +26,7 @@ namespace BitcoinBook
         public static string ToBase58(byte[] bytes)
         {
             var builder = new StringBuilder();
-            var number = ToBigInteger(bytes);
+            var number = bytes.ToBigInteger();
             while (number > 0)
             {
                 number = BigInteger.DivRem(number, 58, out var remainder);
@@ -78,7 +78,7 @@ namespace BitcoinBook
 
         public static BigInteger Hash256Int(byte[] data)
         {
-            return ToBigInteger(Hash256(data));
+            return Hash256(data).ToBigInteger();
         }
 
         public static BigInteger Hash256Int(string data)
@@ -179,18 +179,6 @@ namespace BitcoinBook
         public static string ToHex32(BigInteger i)
         {
             return ToBytes32(i).ToHex();
-        }
-
-        public static BigInteger ToBigInteger(byte[] data)
-        {
-            var i = new BigInteger();
-            foreach (var b in data)
-            {
-                i *= 256;
-                i += b;
-            }
-
-            return i;
         }
 
         static int CountZeros(byte[] bytes)

@@ -33,7 +33,7 @@ namespace BitcoinBook
             if (der[1] != der.Length - 2) throw new FormatException("wrong length");
             var rBytes = GetPrefixedBytes(der, 2);
             var sBytes = GetPrefixedBytes(der, rBytes.Length + 4);
-            return new Signature(Cipher.ToBigInteger(rBytes), Cipher.ToBigInteger(sBytes));
+            return new Signature(rBytes.ToBigInteger(), sBytes.ToBigInteger());
         }
 
         static byte[] GetPrefixedBytes(byte[] bytes, int index)

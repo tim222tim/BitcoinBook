@@ -41,12 +41,12 @@ namespace BitcoinBook
 
             var xBytes = new byte[32];
             Array.Copy(sec, 1, xBytes, 0, 32);
-            var xInt = Cipher.ToBigInteger(xBytes);
+            var xInt = xBytes.ToBigInteger();
             if (prefix == 0x04)
             {
                 var yBytes = new byte[32];
                 Array.Copy(sec, 33, yBytes, 0, 32);
-                return new PublicKey(xInt, Cipher.ToBigInteger(yBytes));
+                return new PublicKey(xInt, yBytes.ToBigInteger());
             }
 
             var isEven = prefix == 0x02;
@@ -88,7 +88,7 @@ namespace BitcoinBook
 
         public bool Verify(byte[] hash, Signature signature)
         {
-            return Verify(Cipher.ToBigInteger(hash), signature);
+            return Verify(hash.ToBigInteger(), signature);
         }
 
         public bool Verify(string data, Signature signature)
