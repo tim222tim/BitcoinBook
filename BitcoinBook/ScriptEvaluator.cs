@@ -49,7 +49,7 @@ namespace BitcoinBook
                     }
                     if (!result)
                     {
-                        return false; // operation failed
+                        return false;
                     }
                 }
                 else

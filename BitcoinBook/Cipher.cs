@@ -191,7 +191,8 @@ namespace BitcoinBook
             var i = new BigInteger();
             foreach (var b in data)
             {
-                i = i * 256 + b;
+                i *= 256;
+                i += b;
             }
 
             return i;
