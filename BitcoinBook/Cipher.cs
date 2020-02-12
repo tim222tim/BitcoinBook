@@ -117,13 +117,6 @@ namespace BitcoinBook
             return Hash160String(Encoding.UTF8.GetBytes(data));
         }
 
-        public static byte[] ToBytesSigned(BigInteger i)
-        {
-            var bytes = i.ToByteArray();
-            Array.Reverse(bytes);
-            return bytes;
-        }
-
         public static byte[] ToBytes32(BigInteger i)
         {
             return i.ToBigBytes(32);

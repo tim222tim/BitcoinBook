@@ -28,5 +28,12 @@ namespace BitcoinBook
 
             return bytes;
         }
+
+        public static byte[] ToSignedBigBytes(this BigInteger i)
+        {
+            var bytes = i.ToByteArray();
+            Array.Reverse(bytes);
+            return bytes;
+        }
     }
 }
