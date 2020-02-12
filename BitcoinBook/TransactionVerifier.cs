@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BitcoinBook
@@ -17,31 +19,35 @@ namespace BitcoinBook
             feeCalculator = new FeeCalculator(fetcher);
         }
 
-        public async Task<byte[]> ComputeSigHash(Transaction transaction, int inputIndex)
-        {
-            CheckInputIndex(transaction, inputIndex);
-
-            var priorOutput = await fetcher.GetPriorOutput(transaction.Inputs[inputIndex]);
-
-            return ComputeSigHashInternal(transaction, inputIndex, priorOutput);
-        }
-
         public async Task<bool> Verify(Transaction transaction)
         {
-            if (await feeCalculator.CalculateFeesAsync(transaction) < 0)
+            try
             {
-                return false;
-            }
-
-            for (int i = 0; i < transaction.Inputs.Count; i++)
-            {
-                if (! await Verify(transaction, i))
+                if (await feeCalculator.CalculateFeesAsync(transaction) < 0)
                 {
                     return false;
                 }
-            }
 
-            return true;
+                var tasks = new List<Task<bool>>();
+                for (var i = 0; i < transaction.Inputs.Count; i++)
+                {
+                    tasks.Add(Verify(transaction, i));
+                }
+
+                foreach (var task in tasks)
+                {
+                    if (!await task)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (FetchException)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> Verify(Transaction transaction, int inputIndex)
@@ -54,6 +60,15 @@ namespace BitcoinBook
             var sigHash = ComputeSigHashInternal(transaction, inputIndex, priorOutput);
 
             return evaluator.Evaluate(script.Commands, sigHash);
+        }
+
+        public async Task<byte[]> ComputeSigHash(Transaction transaction, int inputIndex)
+        {
+            CheckInputIndex(transaction, inputIndex);
+
+            var priorOutput = await fetcher.GetPriorOutput(transaction.Inputs[inputIndex]);
+
+            return ComputeSigHashInternal(transaction, inputIndex, priorOutput);
         }
 
         byte[] ComputeSigHashInternal(Transaction transaction, int inputIndex, TransactionOutput priorOutput)
