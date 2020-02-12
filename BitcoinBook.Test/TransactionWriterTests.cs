@@ -57,7 +57,7 @@ namespace BitcoinBook.Test
         {
             var bytes = Cipher.Hash256(Cipher.ToBytes(hex3));
             Array.Reverse(bytes);
-            Assert.Equal("4ea6e2222c4d59dea646e21a103d8b812a6db433f8ca331778a9408990fa17ee", Cipher.ToHex(bytes));
+            Assert.Equal("4ea6e2222c4d59dea646e21a103d8b812a6db433f8ca331778a9408990fa17ee", bytes.ToHex());
         }
 
         static string GetResult(Action<TransactionWriter> action)
@@ -66,7 +66,7 @@ namespace BitcoinBook.Test
             var writer = new TransactionWriter(stream);
             action(writer);
             var array = stream.ToArray();
-            return Cipher.ToHex(array);
+            return array.ToHex();
         }
 
         const string hex1 = "010000000456919960ac691763688d3d3bcea9ad6ecaf875df5339e" +

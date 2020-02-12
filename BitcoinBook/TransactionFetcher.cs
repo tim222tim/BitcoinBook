@@ -24,7 +24,7 @@ namespace BitcoinBook
 
         public Task<Transaction> Fetch(byte[] transactionId, bool fresh = false)
         {
-            return Fetch(Cipher.ToHex(transactionId), fresh);
+            return Fetch(transactionId.ToHex(), fresh);
         }
 
         public async Task<TransactionOutput[]> GetPriorOutputs(IEnumerable<TransactionInput> inputs)

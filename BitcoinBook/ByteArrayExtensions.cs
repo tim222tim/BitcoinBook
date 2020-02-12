@@ -11,5 +11,11 @@ namespace BitcoinBook
             b2.CopyTo(newBytes, b1.Length);
             return newBytes;
         }
+
+
+        public static string ToHex(this byte[] bytes)
+        {
+            return BitConverter.ToString(bytes).Replace("-", "").ToLower();
+        }
     }
 }

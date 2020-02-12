@@ -19,7 +19,7 @@ namespace BitcoinBook
 
         public override string ToString()
         {
-            return $"{Cipher.ToHex(PreviousTransaction)}:{PreviousIndex}";
+            return $"{PreviousTransaction.ToHex()}:{PreviousIndex}";
         }
 
         public TransactionInput Clone()

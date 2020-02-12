@@ -12,7 +12,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void DerTest()
         {
-            Assert.Equal(derString, Cipher.ToHex(new Signature(r, s).ToDer()));
+            Assert.Equal(derString, new Signature(r, s).ToDer().ToHex());
         }
 
         [Fact]

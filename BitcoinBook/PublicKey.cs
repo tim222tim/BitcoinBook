@@ -120,7 +120,7 @@ namespace BitcoinBook
 
         public string ToSecString(bool compressed = true)
         {
-            return Cipher.ToHex(ToSec(compressed));
+            return ToSec(compressed).ToHex();
         }
 
         public string ToAddress(bool compressed = true, bool testnet = false)

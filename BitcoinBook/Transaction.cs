@@ -31,7 +31,7 @@ namespace BitcoinBook
             writer.Write(this);
             var hash = Cipher.Hash256(stream.ToArray());
             Array.Reverse(hash);
-            return Cipher.ToHex(hash);
+            return hash.ToHex();
         }
 
         public Transaction Clone()

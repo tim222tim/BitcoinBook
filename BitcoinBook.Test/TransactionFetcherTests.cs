@@ -44,7 +44,7 @@ namespace BitcoinBook.Test
             Assert.Equal(1, transaction.Version);
             Assert.Equal(1, transaction.Inputs.Count);
             Assert.Equal("74e09a06fdf7dca73972629f129b51167483a040a3ac53bcdb1cd9a3a2e92abe", 
-                Cipher.ToHex(transaction.Inputs[0].PreviousTransaction));
+                transaction.Inputs[0].PreviousTransaction.ToHex());
             Assert.Equal(0, transaction.Inputs[0].PreviousIndex);
             Assert.Equal(4, transaction.Outputs.Count);
             Assert.Equal(000639022, transaction.Outputs[0].Amount);

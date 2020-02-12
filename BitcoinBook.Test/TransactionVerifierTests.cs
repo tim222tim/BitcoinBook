@@ -31,7 +31,7 @@ namespace BitcoinBook.Test
         {
             var sigHash = await verifier.ComputeSigHash(transaction, 0);
             Assert.Equal(BigInteger.Parse("63326093402361683501375285352199124474471992799478479955283731889684039098489"), Cipher.ToBigInteger(sigHash));
-            Assert.Equal("8c014c7778702072e30f15efd6884510f9cc04d3ac988aa16e024230f1586079", Cipher.ToHex(sigHash));
+            Assert.Equal("8c014c7778702072e30f15efd6884510f9cc04d3ac988aa16e024230f1586079", sigHash.ToHex());
         }
 
         [Fact]

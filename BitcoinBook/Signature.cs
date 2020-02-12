@@ -53,7 +53,7 @@ namespace BitcoinBook
 
         public string ToDerString()
         {
-            return Cipher.ToHex(ToDer());
+            return ToDer().ToHex();
         }
 
         public byte[] ToDer()

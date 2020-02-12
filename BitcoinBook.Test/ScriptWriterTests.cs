@@ -31,7 +31,7 @@ namespace BitcoinBook.Test
             var writer = new TransactionWriter(stream);
             action(writer);
             var array = stream.ToArray();
-            return Cipher.ToHex(array);
+            return array.ToHex();
         }
 
         const string unlockHex = "6a47304402204585bcdef85e6b1c6af5c2669d4830ff86e42dd205c0e089bc2a821657e951c002201024a10366077f87d6bce1f7100ad8cfa8a064b39d4e8fe4ea13a7b71aa8180f012102f0da57e85eec2934a82a585ea337ce2f4998b50ae699dd79f5880e253dafafb7";
