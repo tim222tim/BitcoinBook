@@ -135,8 +135,13 @@ namespace BitcoinBook
             switch (opCode)
             {
                 case OpCode.OP_CHECKSIG:
-                    var publicKey = PublicKey.FromSec(stack.Pop());
-                    var signature = Signature.FromDer(stack.Pop());
+                    var publicSec = stack.Pop();
+                    var publicKey = PublicKey.FromSec(publicSec);
+                    var sigDerWithHashType = stack.Pop();
+                    // last byte is hash type!
+                    var sigDer = new byte[sigDerWithHashType.Length - 1];
+                    Array.Copy(sigDerWithHashType, sigDer, sigDer.Length);
+                    var signature = Signature.FromDer(sigDer);
                     var result = publicKey.Verify(sigHash, signature);
                     return stack.Push(result);
                 default:

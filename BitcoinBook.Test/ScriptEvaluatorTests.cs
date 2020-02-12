@@ -90,7 +90,7 @@ namespace BitcoinBook.Test
         {
             var commands = new object[]
             {
-                signature.ToDer(), 
+                Cipher.Concat(signature.ToDer(), new byte[] {1}), 
                 publicKey.ToSec(), 
                 OpCode.OP_CHECKSIG
             };
@@ -105,7 +105,7 @@ namespace BitcoinBook.Test
         {
             var commands = new object[] 
             { 
-                signature.ToDer(), 
+                Cipher.Concat(signature.ToDer(), new byte[] {1}), 
                 publicKey.ToSec(), 
                 OpCode.OP_DUP, 
                 OpCode.OP_HASH160, 

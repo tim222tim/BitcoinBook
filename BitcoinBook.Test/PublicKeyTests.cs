@@ -35,6 +35,14 @@ namespace BitcoinBook.Test
                 signature));
         }
 
+        [Fact]
+        public void SignatureThreeTest()
+        {
+            var newKey = PublicKey.FromSec("0279fc02b440c755d18e80add59b5f1ec9452ab8348e75ced61e47c0750408e028");
+            var signature = Signature.FromDer("3044022035a874a246f4de3570295fa8e32ca48a3eb1cf3a4bea6cbea6d18f122f2da51a02204ee9fe995e4934445d381be89b5635bf16bcf9bd023d81e5dc54991d71249211");
+            Assert.True(newKey.Verify(BigInteger.Parse("63326093402361683501375285352199124474471992799478479955283731889684039098489"), signature));
+        }
+
         public static IEnumerable<object[]> SecUncompressedFormatTestData => new[]
         {
             new object[] { "04ffe558e388852f0120e46af2d1b370f85854a8eb0841811ece0e3e03d282d57c315dc72890a4f10a1481c031b03b351b0dc79901ca18a00cf009dbdb157a1d10", 
