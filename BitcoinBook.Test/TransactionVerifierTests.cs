@@ -76,7 +76,7 @@ namespace BitcoinBook.Test
         public async Task VerifyFalseWhenBadSig()
         {
             var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
-            ((byte[])trans.Inputs[0].SigScript.Commands[0])[0] = 7;
+            ((byte[])trans.Inputs[0].SigScript.Commands[0])[0] += 1;
             Assert.False(await verifier.Verify(trans));
         }
 
@@ -84,7 +84,7 @@ namespace BitcoinBook.Test
         public async Task VerifyFalseWhenBadSecondSig()
         {
             var trans = await fetcher.Fetch("874d0ad92528d8cb6cd9fa449cc6ef1f38a84fd23426b359e5a8e51ddf47892f");
-            ((byte[])trans.Inputs[1].SigScript.Commands[0])[0] = 7;
+            ((byte[])trans.Inputs[1].SigScript.Commands[0])[0] += 1;
             Assert.False(await verifier.Verify(trans));
         }
 
