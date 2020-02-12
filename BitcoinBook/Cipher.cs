@@ -44,10 +44,7 @@ namespace BitcoinBook
 
         static byte[] Hash256Prefix(byte[] bytes)
         {
-            var hash = Hash256(bytes);
-            var hashPrefix = new byte[4];
-            Array.Copy(hash, hashPrefix, 4);
-            return hashPrefix;
+            return Hash256(bytes).Copy(0, 4);
         }
 
         public static byte[] FromBase58(string base58)

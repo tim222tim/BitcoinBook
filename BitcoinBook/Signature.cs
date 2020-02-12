@@ -41,9 +41,7 @@ namespace BitcoinBook
             if (bytes[index] != 0x02) throw new FormatException("wrong number prefix");
             var length = bytes[index + 1];
             if (index + length > bytes.Length) throw new FormatException("value not long enough for number");
-            var intBytes = new byte[length];
-            Array.Copy(bytes, index + 2, intBytes, 0, length);
-            return intBytes;
+            return bytes.Copy(index + 2, length);
         }
 
         public override string ToString()

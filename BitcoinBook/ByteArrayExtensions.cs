@@ -5,6 +5,13 @@ namespace BitcoinBook
 {
     public static class ByteArrayExtensions
     {
+        public static byte[] Copy(this byte[] bytes, int index, int length)
+        {
+            var newBytes = new byte[length];
+            Array.Copy(bytes, index, newBytes, 0, length);
+            return newBytes;
+        }
+
         public static byte[] Concat(this byte[] bytes, params byte[] bytes2)
         {
             var newBytes = new byte[bytes.Length + bytes2.Length];

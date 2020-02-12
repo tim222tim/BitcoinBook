@@ -39,13 +39,11 @@ namespace BitcoinBook
                 throw new FormatException("Invalid SEC format");
             }
 
-            var xBytes = new byte[32];
-            Array.Copy(sec, 1, xBytes, 0, 32);
+            var xBytes = sec.Copy(1, 32);
             var xInt = xBytes.ToBigInteger();
             if (prefix == 0x04)
             {
-                var yBytes = new byte[32];
-                Array.Copy(sec, 33, yBytes, 0, 32);
+                var yBytes = sec.Copy(33, 32);
                 return new PublicKey(xInt, yBytes.ToBigInteger());
             }
 
