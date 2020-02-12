@@ -64,7 +64,7 @@ namespace BitcoinBook
                 result = result * 58 + value;
             }
 
-            return ToBytes(result);
+            return result.ToBigBytes();
         }
 
         public static byte[] Hash256(byte[] data)
@@ -117,30 +117,6 @@ namespace BitcoinBook
             return Hash160String(Encoding.UTF8.GetBytes(data));
         }
 
-        public static byte[] ToBytes(BigInteger i, int minLength = 0)
-        {
-            var rawBytes = i.ToByteArray();
-            var rawLength = rawBytes.Length;
-            if (rawBytes[rawLength - 1] == 0)
-            {
-                --rawLength;
-            }
-
-            var bytes = new byte[Math.Max(rawLength, minLength)];
-            var bx = bytes.Length - 1;
-            var rx = 0;
-            while (rx < rawLength)
-            {
-                bytes[bx--] = rawBytes[rx++];
-            }
-            while (bx >= 0)
-            {
-                bytes[bx--] = 0;
-            }
-            
-            return bytes;
-        }
-
         public static byte[] ToBytesSigned(BigInteger i)
         {
             var bytes = i.ToByteArray();
@@ -150,7 +126,7 @@ namespace BitcoinBook
 
         public static byte[] ToBytes32(BigInteger i)
         {
-            return ToBytes(i, 32);
+            return i.ToBigBytes(32);
         }
 
         public static byte[] ToBytes(string hex)
@@ -170,7 +146,7 @@ namespace BitcoinBook
 
         public static string ToHex(BigInteger i)
         {
-            return ToBytes(i).ToHex();
+            return i.ToBigBytes().ToHex();
         }
 
         public static string ToHex32(BigInteger i)
