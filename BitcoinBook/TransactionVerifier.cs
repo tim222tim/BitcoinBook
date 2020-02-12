@@ -7,11 +7,14 @@ namespace BitcoinBook
     public class TransactionVerifier
     {
         readonly ITransactionFetcher fetcher;
+
         readonly ScriptEvaluator evaluator = new ScriptEvaluator();
+        readonly FeeCalculator feeCalculator;
 
         public TransactionVerifier(ITransactionFetcher fetcher)
         {
             this.fetcher = fetcher;
+            feeCalculator = new FeeCalculator(fetcher);
         }
 
         public async Task<byte[]> ComputeSigHash(Transaction transaction, int inputIndex)
@@ -23,11 +26,29 @@ namespace BitcoinBook
             return ComputeSigHashInternal(transaction, inputIndex, priorOutput);
         }
 
+        public async Task<bool> Verify(Transaction transaction)
+        {
+            if (await feeCalculator.CalculateFeesAsync(transaction) < 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < transaction.Inputs.Count; i++)
+            {
+                if (! await Verify(transaction, i))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public async Task<bool> Verify(Transaction transaction, int inputIndex)
         {
             CheckInputIndex(transaction, inputIndex);
 
-            var input = transaction.Inputs[0];
+            var input = transaction.Inputs[inputIndex];
             var priorOutput = await fetcher.GetPriorOutput(input);
             var script = new Script(input.SigScript, priorOutput.ScriptPubKey);
             var sigHash = ComputeSigHashInternal(transaction, inputIndex, priorOutput);

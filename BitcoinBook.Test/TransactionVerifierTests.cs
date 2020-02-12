@@ -35,17 +35,31 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public async Task VerifyTest()
+        public async Task VerifyInputTest()
         {
             Assert.True(await verifier.Verify(transaction, 0));
         }
 
         [Fact]
-        public async Task VerifyAnother()
+        public async Task VerifyAnotherInputTest()
         {
             var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
             Assert.NotNull(trans);
             Assert.True(await verifier.Verify(trans, 0));
+        }
+
+        [Fact]
+        public async Task VerifyTest()
+        {
+            Assert.True(await verifier.Verify(transaction));
+        }
+
+        [Fact]
+        public async Task VerifyAnotherTest()
+        {
+            var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
+            Assert.NotNull(trans);
+            Assert.True(await verifier.Verify(trans));
         }
 
         const string rawTransaction =
