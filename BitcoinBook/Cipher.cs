@@ -132,16 +132,6 @@ namespace BitcoinBook
             return bytes;
         }
 
-        public static string ToHex(BigInteger i)
-        {
-            return i.ToBigBytes().ToHex();
-        }
-
-        public static string ToHex32(BigInteger i)
-        {
-            return i.ToBigBytes32().ToHex();
-        }
-
         static int CountZeros(byte[] bytes)
         {
             var index = 0;

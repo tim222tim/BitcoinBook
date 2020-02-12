@@ -142,7 +142,7 @@ namespace BitcoinBook
             return IsInfinity ? "Inf" : 
                 x.Field.Prime < 1000 ?
                     $"({x.Number},{y.Number})_{A.Number}_{B.Number} Field({x.Field.Prime})" :
-                    $"(0x{Cipher.ToHex32(X.Number)},0x{Cipher.ToHex32(Y.Number)})_S256)";
+                    $"(0x{X.Number.ToHex32()},0x{Y.Number.ToHex32()})_S256)";
         }
 
         static Point AddToSelf(Point p)
