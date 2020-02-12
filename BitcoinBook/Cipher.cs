@@ -39,7 +39,7 @@ namespace BitcoinBook
 
         public static string ToBase58Check(byte[] bytes)
         {
-            return ToBase58(Concat(bytes, Hash256Prefix(bytes)));
+            return ToBase58(bytes.Concat(Hash256Prefix(bytes)));
         }
 
         static byte[] Hash256Prefix(byte[] bytes)
@@ -196,14 +196,6 @@ namespace BitcoinBook
             }
 
             return i;
-        }
-
-        public static byte[] Concat(byte[] b1, byte[] b2)
-        {
-            var newBytes = new byte[b1.Length + b2.Length];
-            b1.CopyTo(newBytes, 0);
-            b2.CopyTo(newBytes, b1.Length);
-            return newBytes;
         }
 
         static int CountZeros(byte[] bytes)

@@ -71,7 +71,7 @@ namespace BitcoinBook
         byte[] ToPrefixedBytes(BigInteger i)
         {
             var bytes = Cipher.ToBytesSigned(i);
-            return Cipher.Concat(new byte[] {0x02, (byte) bytes.Length}, bytes);
+            return new byte[] {0x02, (byte) bytes.Length}.Concat(bytes);
         }
 
         public bool Equals(Signature other)
