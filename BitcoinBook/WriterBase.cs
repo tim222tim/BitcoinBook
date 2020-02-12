@@ -44,7 +44,7 @@ namespace BitcoinBook
 
         public void Write(ulong i, int length)
         {
-            var bytes = new BigInteger(i).ToByteArray();
+            var bytes = new BigInteger(i).ToLittleBytes();
             var bx = 0;
             var wx = 0;
             while (bx < bytes.Length && wx++ < length)

@@ -17,7 +17,7 @@ namespace BitcoinBook
 
         public bool Push(BigInteger i)
         {
-            return Push(i == 0 ? new byte[0] : i.ToByteArray());
+            return Push(i == 0 ? new byte[0] : i.ToLittleBytes());
         }
 
         public bool Push(bool b)

@@ -41,6 +41,11 @@ namespace BitcoinBook
             return i.ToBigBytes(32);
         }
 
+        public static byte[] ToLittleBytes(this BigInteger i)
+        {
+            return i.ToByteArray();
+        }
+
         public static string ToHex(this BigInteger i)
         {
             return i.ToBigBytes().ToHex();
