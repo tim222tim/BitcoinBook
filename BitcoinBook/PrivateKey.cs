@@ -59,7 +59,7 @@ namespace BitcoinBook
             var length = compressed ? 34 : 33;
             var bytes = new byte[length];
             bytes[0] = testnet ? (byte)'\xef' : (byte)'\x80';
-            Cipher.ToBytes32(Key).CopyTo(bytes, 1);
+            Key.ToBigBytes32().CopyTo(bytes, 1);
             if (compressed)
             {
                 bytes[length - 1] = 1;

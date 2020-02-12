@@ -98,8 +98,8 @@ namespace BitcoinBook
         {
             var bytes = new byte[1 + 32 + 32];
             bytes[0] = 4;
-            Cipher.ToBytes32(Key.X.Number).CopyTo(bytes, 1);
-            Cipher.ToBytes32(Key.Y.Number).CopyTo(bytes, 1 + 32);
+            Key.X.Number.ToBigBytes32().CopyTo(bytes, 1);
+            Key.Y.Number.ToBigBytes32().CopyTo(bytes, 1 + 32);
             return bytes;
         }
 
@@ -107,7 +107,7 @@ namespace BitcoinBook
         {
             var bytes = new byte[1 + 32];
             bytes[0] = Key.Y.Number.IsEven ? (byte)2 : (byte)3;
-            Cipher.ToBytes32(Key.X.Number).CopyTo(bytes, 1);
+            Key.X.Number.ToBigBytes32().CopyTo(bytes, 1);
             return bytes;
         }
 

@@ -117,11 +117,6 @@ namespace BitcoinBook
             return Hash160String(Encoding.UTF8.GetBytes(data));
         }
 
-        public static byte[] ToBytes32(BigInteger i)
-        {
-            return i.ToBigBytes(32);
-        }
-
         public static byte[] ToBytes(string hex)
         {
             if (hex.Length % 2 != 0)
@@ -144,7 +139,7 @@ namespace BitcoinBook
 
         public static string ToHex32(BigInteger i)
         {
-            return ToBytes32(i).ToHex();
+            return i.ToBigBytes32().ToHex();
         }
 
         static int CountZeros(byte[] bytes)

@@ -35,5 +35,10 @@ namespace BitcoinBook
             Array.Reverse(bytes);
             return bytes;
         }
+
+        public static byte[] ToBigBytes32(this BigInteger i)
+        {
+            return i.ToBigBytes(32);
+        }
     }
 }
