@@ -28,21 +28,7 @@ namespace BitcoinBook
                     return false;
                 }
 
-                var tasks = new List<Task<bool>>();
-                for (var i = 0; i < transaction.Inputs.Count; i++)
-                {
-                    tasks.Add(Verify(transaction, i));
-                }
-
-                foreach (var task in tasks)
-                {
-                    if (!await task)
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
+                return await transaction.Inputs.Select(i => Verify(transaction, i)).All();
             }
             catch (FetchException)
             {
@@ -53,11 +39,14 @@ namespace BitcoinBook
         public async Task<bool> Verify(Transaction transaction, int inputIndex)
         {
             CheckInputIndex(transaction, inputIndex);
+            return await Verify(transaction, transaction.Inputs[inputIndex]);
+        }
 
-            var input = transaction.Inputs[inputIndex];
+        async Task<bool> Verify(Transaction transaction, TransactionInput input)
+        {
             var priorOutput = await fetcher.GetPriorOutput(input);
             var script = new Script(input.SigScript, priorOutput.ScriptPubKey);
-            var sigHash = ComputeSigHashInternal(transaction, inputIndex, priorOutput);
+            var sigHash = ComputeSigHashInternal(transaction, input, priorOutput);
 
             return evaluator.Evaluate(script.Commands, sigHash);
         }
@@ -65,15 +54,18 @@ namespace BitcoinBook
         public async Task<byte[]> ComputeSigHash(Transaction transaction, int inputIndex)
         {
             CheckInputIndex(transaction, inputIndex);
-
-            var priorOutput = await fetcher.GetPriorOutput(transaction.Inputs[inputIndex]);
-
-            return ComputeSigHashInternal(transaction, inputIndex, priorOutput);
+            return await ComputeSigHash(transaction, transaction.Inputs[inputIndex]);
         }
 
-        byte[] ComputeSigHashInternal(Transaction transaction, int inputIndex, TransactionOutput priorOutput)
+        async Task<byte[]> ComputeSigHash(Transaction transaction, TransactionInput input)
         {
-            transaction = transaction.CloneWithReplacedSigScript(inputIndex, priorOutput.ScriptPubKey);
+            var priorOutput = await fetcher.GetPriorOutput(input);
+            return ComputeSigHashInternal(transaction, input, priorOutput);
+        }
+
+        byte[] ComputeSigHashInternal(Transaction transaction, TransactionInput input, TransactionOutput priorOutput)
+        {
+            transaction = transaction.CloneWithReplacedSigScript(input, priorOutput.ScriptPubKey);
             var stream = new MemoryStream();
             var writer = new TransactionWriter(stream);
             writer.Write(transaction);
