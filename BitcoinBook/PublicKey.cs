@@ -124,9 +124,8 @@ namespace BitcoinBook
         public string ToAddress(bool compressed = true, bool testnet = false)
         {
             var hash = Cipher.Hash160(ToSec(compressed));
-            var address = new byte[hash.Length + 1];
-            address[0] = testnet ? (byte) '\x6f' : (byte)0;
-            hash.CopyTo(address, 1);
+            var prefix = new[] {testnet ? (byte) '\x6f' : (byte)0};
+            var address = prefix.Concat(hash);
             return Cipher.ToBase58Check(address);
         }
 
