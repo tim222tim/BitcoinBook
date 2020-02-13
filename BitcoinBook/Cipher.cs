@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
@@ -65,6 +66,24 @@ namespace BitcoinBook
             }
 
             return result.ToBigBytes();
+        }
+
+        public static byte[] FromBase58Check(string base58)
+        {
+            var bytes = FromBase58(base58);
+            if (bytes.Length <= 4)
+            {
+                throw new FormatException("Value not long enough for check bytes");
+            }
+
+            var checkBytes = bytes.Copy(bytes.Length - 4, 4);
+            bytes = bytes.Copy(0, bytes.Length - 4);
+            if (!checkBytes.SequenceEqual(Hash256Prefix(bytes)))
+            {
+                throw new FormatException("Check bytes don't match");
+            }
+
+            return bytes;
         }
 
         public static byte[] Hash256(byte[] data)

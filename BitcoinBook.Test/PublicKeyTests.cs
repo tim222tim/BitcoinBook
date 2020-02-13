@@ -130,6 +130,20 @@ namespace BitcoinBook.Test
             Assert.Equal(expectedAddress, privateKey.PublicKey.ToAddress(compressed, testnet));
         }
 
+        public static IEnumerable<object[]> FromAddressTestData => new[]
+        {
+            new object[] { new PrivateKey(5002).PublicKey, "mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA"  },
+            new object[] { new PrivateKey(BigInteger.Pow(2020, 5)).PublicKey, "mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH" },
+            new object[] { new PrivateKey("012345deadbeef").PublicKey, "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1" },
+        };
+
+        [Theory]
+        [MemberData(nameof(FromAddressTestData))]
+        public void FromAddressTest(PublicKey publicKey, string address)
+        {
+            Assert.Equal(publicKey, PublicKey.FromAddress(address));
+        }
+
         [Fact]
         public void MyTestnetAddress()
         {
