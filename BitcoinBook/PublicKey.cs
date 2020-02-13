@@ -62,11 +62,6 @@ namespace BitcoinBook
             return FromSec(Cipher.ToBytes(sec ?? ""));
         }
 
-        public static PublicKey FromAddress(string address)
-        { 
-            throw new NotImplementedException();
-        }
-
         static int GetValidLength(byte prefix)
         {
             switch (prefix)
