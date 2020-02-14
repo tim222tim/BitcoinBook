@@ -72,7 +72,7 @@ namespace BitcoinBook
             var transaction = new TransactionReader(hex).ReadTransaction();
             if (transaction.Id != transactionId)
             {
-                throw new FetchException("Got wrong transaciton ID");
+                throw new FetchException("Got wrong transaction ID");
             }
 
             cache.Set(transactionId, transaction);
