@@ -12,7 +12,6 @@ namespace BitcoinBook
             {
                 index += bytes.Length;
             }
-
             if (length <= 0)
             {
                 length = bytes.Length - index + length;
