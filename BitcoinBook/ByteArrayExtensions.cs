@@ -5,8 +5,18 @@ namespace BitcoinBook
 {
     public static class ByteArrayExtensions
     {
-        public static byte[] Copy(this byte[] bytes, int index, int length)
+        public static byte[] Copy(this byte[] bytes, int index, int length = 0)
         {
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+            if (index < 0)
+            {
+                index += bytes.Length;
+            }
+
+            if (length <= 0)
+            {
+                length = bytes.Length - index + length;
+            }
             var newBytes = new byte[length];
             Array.Copy(bytes, index, newBytes, 0, length);
             return newBytes;

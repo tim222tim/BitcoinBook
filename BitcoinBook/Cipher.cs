@@ -76,7 +76,7 @@ namespace BitcoinBook
                 throw new FormatException("Value not long enough for check bytes");
             }
 
-            var checkBytes = bytes.Copy(bytes.Length - 4, 4);
+            var checkBytes = bytes.Copy(-4);
             bytes = bytes.Copy(0, bytes.Length - 4);
             if (!checkBytes.SequenceEqual(Hash256Prefix(bytes)))
             {

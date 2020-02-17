@@ -139,7 +139,7 @@ namespace BitcoinBook
                     var publicKey = PublicKey.FromSec(publicSec);
                     var sigDerWithHashType = stack.Pop();
                     // last byte is hash type!
-                    var sigDer = sigDerWithHashType.Copy(0, sigDerWithHashType.Length - 1);
+                    var sigDer = sigDerWithHashType.Copy(0, -1);
                     var signature = Signature.FromDer(sigDer);
                     var result = publicKey.Verify(sigHash, signature);
                     return stack.Push(result);
