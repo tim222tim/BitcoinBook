@@ -45,25 +45,35 @@ namespace BitcoinBook
             return new Point(curve);
         }
 
-        public bool Equals(Point other)
+        public bool Equals(Point p)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(x, other.x) && Equals(y, other.y) && Equals(Curve, other.Curve) && IsInfinity == other.IsInfinity;
+            if (ReferenceEquals(null, p)) return false;
+            if (ReferenceEquals(this, p)) return true;
+            if (A != p.A || B != p.B) return false;
+            if (IsInfinity != p.IsInfinity) return false;
+            if (IsInfinity && p.IsInfinity) return true;
+            return X == p.X && Y == p.Y;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj == null || obj.GetType() != GetType()) return false;
             return Equals((Point)obj);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(x, y, Curve, IsInfinity);
+            unchecked
+            {
+                var hashCode = x.GetHashCode();
+                hashCode = (hashCode * 397) ^ y.GetHashCode();
+                hashCode = (hashCode * 397) ^ A.GetHashCode();
+                hashCode = (hashCode * 397) ^ B.GetHashCode();
+                hashCode = (hashCode * 397) ^ IsInfinity.GetHashCode();
+                return hashCode;
+            }
         }
+
         public Point Add(Point p)
         {
             ThrowIfNotSameCurve(this, p);
