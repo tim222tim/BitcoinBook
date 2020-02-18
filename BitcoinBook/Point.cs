@@ -45,6 +45,25 @@ namespace BitcoinBook
             return new Point(curve);
         }
 
+        public bool Equals(Point other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(x, other.x) && Equals(y, other.y) && Equals(Curve, other.Curve) && IsInfinity == other.IsInfinity;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Point)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(x, y, Curve, IsInfinity);
+        }
         public Point Add(Point p)
         {
             ThrowIfNotSameCurve(this, p);
@@ -142,26 +161,6 @@ namespace BitcoinBook
         static FieldElement SlopeOfTangent(Point p)
         {
             return (p.X.Field.Element(3) * (p.X ^ 2) + p.A) / (p.X.Field.Element(2) * p.Y);
-        }
-
-        public bool Equals(Point other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(x, other.x) && Equals(y, other.y) && Equals(Curve, other.Curve) && IsInfinity == other.IsInfinity;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Point) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(x, y, Curve, IsInfinity);
         }
     }
 }
