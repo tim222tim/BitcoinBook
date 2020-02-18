@@ -45,33 +45,6 @@ namespace BitcoinBook
             return new Point(curve);
         }
 
-        public bool Equals(Point p)
-        {
-            if (A != p.A || B != p.B) return false;
-            if (IsInfinity != p.IsInfinity) return false;
-            if (IsInfinity && p.IsInfinity) return true;
-            return X == p.X && Y == p.Y;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || obj.GetType() != GetType()) return false;
-            return Equals((Point)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = x.GetHashCode();
-                hashCode = (hashCode * 397) ^ y.GetHashCode();
-                hashCode = (hashCode * 397) ^ A.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
-                hashCode = (hashCode * 397) ^ IsInfinity.GetHashCode();
-                return hashCode;
-            }
-        }
-
         public Point Add(Point p)
         {
             ThrowIfNotSameCurve(this, p);
@@ -115,8 +88,8 @@ namespace BitcoinBook
             return count;
         }
 
-        public static bool operator ==(Point a, Point b) => a.Equals(b);
-        public static bool operator !=(Point a, Point b) => !a.Equals(b);
+        public static bool operator ==(Point a, Point b) => a?.Equals(b) ?? ReferenceEquals(null, b);
+        public static bool operator !=(Point a, Point b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
         public static Point operator +(Point p1, Point p2) => p1.Add(p2);
         public static Point operator *(Point p1, BigInteger coefficient) => p1.MultiplyBy(coefficient);
 
@@ -169,6 +142,26 @@ namespace BitcoinBook
         static FieldElement SlopeOfTangent(Point p)
         {
             return (p.X.Field.Element(3) * (p.X ^ 2) + p.A) / (p.X.Field.Element(2) * p.Y);
+        }
+
+        public bool Equals(Point other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(x, other.x) && Equals(y, other.y) && Equals(Curve, other.Curve) && IsInfinity == other.IsInfinity;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Point) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(x, y, Curve, IsInfinity);
         }
     }
 }

@@ -73,7 +73,7 @@ namespace BitcoinBook
             }
         }
 
-        public static bool operator ==(Curve a, Curve b) => a.Equals(b);
-        public static bool operator !=(Curve a, Curve b) => !a.Equals(b);
+        public static bool operator ==(Curve a, Curve b) => a?.Equals(b) ?? ReferenceEquals(null, b);
+        public static bool operator !=(Curve a, Curve b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
     }
 }

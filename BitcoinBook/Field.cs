@@ -37,7 +37,7 @@ namespace BitcoinBook
             return Prime.GetHashCode();
         }
 
-        public static bool operator ==(Field a, Field b) => a.Equals(b);
-        public static bool operator !=(Field a, Field b) => !a.Equals(b);
+        public static bool operator ==(Field a, Field b) => a?.Equals(b) ?? ReferenceEquals(null, b);
+        public static bool operator !=(Field a, Field b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
     }
 }

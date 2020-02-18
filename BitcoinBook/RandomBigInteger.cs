@@ -15,7 +15,7 @@ namespace BitcoinBook
 
         public BigInteger NextBigInteger(BigInteger n)
         {
-            BigInteger result = 0;
+            BigInteger result;
             do
             {
                 int length = (int)Math.Ceiling(BigInteger.Log(n, 2));
