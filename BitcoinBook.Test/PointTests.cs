@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Globalization;
-using System.Numerics;
 using Xunit;
 
 namespace BitcoinBook.Test

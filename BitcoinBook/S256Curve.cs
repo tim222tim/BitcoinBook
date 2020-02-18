@@ -7,7 +7,7 @@ namespace BitcoinBook
     {
         public static Field Field { get; } = new Field(PrimeByPowers(256, 32, 9, 8, 7, 6, 4, 0));
         public static Curve Curve { get; } = new Curve(Field, 0, 7);
-        public static Point Generator = Curve.Point(
+        public static Point Generator { get; } = Curve.Point(
             "79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798", 
             "483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8");
         public static BigInteger Order { get; } = 
