@@ -26,13 +26,13 @@ namespace BitcoinBook.Test
         [InlineData(1)]
         public void ShouldThrowWhenInputOutOfRange(int inputIndex)
         {
-            Assert.ThrowsAsync<IndexOutOfRangeException>(async () => await hasher.ComputeSigHash(transaction, inputIndex));
+            Assert.ThrowsAsync<IndexOutOfRangeException>(async () => await hasher.ComputeSigHash(transaction, inputIndex, SigHashType.All));
         }
 
         [Fact]
         public async Task ComputeSigHashTest()
         {
-            var sigHash = await hasher.ComputeSigHash(transaction, 0);
+            var sigHash = await hasher.ComputeSigHash(transaction, 0, SigHashType.All);
             Assert.Equal(BigInteger.Parse("63326093402361683501375285352199124474471992799478479955283731889684039098489"), sigHash.ToBigInteger());
             Assert.Equal("8c014c7778702072e30f15efd6884510f9cc04d3ac988aa16e024230f1586079", sigHash.ToHex());
         }

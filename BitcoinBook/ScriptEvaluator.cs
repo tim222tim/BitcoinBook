@@ -138,7 +138,7 @@ namespace BitcoinBook
                     var publicSec = stack.Pop();
                     var publicKey = PublicKey.FromSec(publicSec);
                     var sigDerWithHashType = stack.Pop();
-                    // last byte is hash type!
+                    // last byte is hash type! -- should this be previously removed?
                     var sigDer = sigDerWithHashType.Copy(0, -1);
                     var signature = Signature.FromDer(sigDer);
                     var result = publicKey.Verify(sigHash, signature);

@@ -47,7 +47,7 @@ namespace BitcoinBook
         {
             var priorOutput = await fetcher.GetPriorOutput(input);
             var script = new Script(input.SigScript, priorOutput.ScriptPubKey);
-            var sigHash = hasher.ComputeSigHash(transaction, input, priorOutput);
+            var sigHash = hasher.ComputeSigHash(transaction, input, priorOutput, SigHashType.All);
 
             return evaluator.Evaluate(script.Commands, sigHash);
         }
