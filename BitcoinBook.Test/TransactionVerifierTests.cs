@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Numerics;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,6 +18,14 @@ namespace BitcoinBook.Test
         public TransactionVerifierTests()
         {
             verifier = new TransactionVerifier(fetcher);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(1)]
+        public void ShouldThrowWhenInputOutOfRange(int inputIndex)
+        {
+            Assert.ThrowsAsync<IndexOutOfRangeException>(async () => await verifier.Verify(transaction, inputIndex));
         }
 
         [Fact]
