@@ -123,10 +123,14 @@ namespace BitcoinBook
 
         public string ToAddress(bool compressed = true, bool testnet = false)
         {
-            var hash = Cipher.Hash160(ToSec(compressed));
             var prefix = new[] {testnet ? (byte) '\x6f' : (byte)0};
-            var address = prefix.Concat(hash);
+            var address = prefix.Concat(ToHash160(compressed));
             return Cipher.ToBase58Check(address);
+        }
+
+        public byte[] ToHash160(bool compressed = true)
+        {
+            return Cipher.Hash160(ToSec(compressed));
         }
 
         public override string ToString()

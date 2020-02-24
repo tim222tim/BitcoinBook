@@ -4,12 +4,10 @@ namespace BitcoinBook
 {
     public class PayToPublicKeyHashSigner : ITransactionSigner
     {
-        readonly ITransactionFetcher fetcher;
         readonly TransactionHasher hasher;
 
-        public PayToPublicKeyHashSigner(ITransactionFetcher fetcher, TransactionHasher hasher)
+        public PayToPublicKeyHashSigner(TransactionHasher hasher)
         {
-            this.fetcher = fetcher;
             this.hasher = hasher;
         }
 

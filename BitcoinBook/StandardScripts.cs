@@ -11,5 +11,10 @@
                 OpCode.OP_EQUALVERIFY, 
                 OpCode.OP_CHECKSIG);
         }
+
+        public static Script PayToPublicKeyHash(PublicKey publicKey)
+        {
+            return PayToPublicKeyHash(publicKey.ToHash160());
+        }
     }
 }
