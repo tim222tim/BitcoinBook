@@ -1,9 +1,10 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class PrivateKey
+    public class PrivateKey : IHashSigner
     {
         static readonly RandomBigInteger random = new RandomBigInteger();
 
@@ -25,7 +26,13 @@ namespace BitcoinBook
         {
         }
 
-        public Signature Sign(BigInteger hash)
+        public Signature Sign(byte[] hash)
+        {
+            if (hash == null) throw new ArgumentNullException(nameof(hash));
+            return Sign(hash.ToBigInteger());
+        }
+        
+        Signature Sign(BigInteger hash)
         {
             var k = GetK();
             var r = (S256Curve.Generator * k).X.Number;
@@ -43,14 +50,14 @@ namespace BitcoinBook
             return random.NextBigInteger(S256Curve.Field.Prime);
         }
 
-        public Signature Sign(byte[] data)
+        public Signature SignPreimage(byte[] data)
         {
-            return Sign(Cipher.Hash256Int(data));
+            return Sign(Cipher.Hash256(data));
         }
 
-        public Signature Sign(string data)
+        public Signature SignPreimage(string data)
         {
-            return Sign(Cipher.Hash256Int(data));
+            return Sign(Cipher.Hash256(data));
         }
 
         public string Wif(bool compressed = true, bool testnet = false)

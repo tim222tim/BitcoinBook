@@ -92,6 +92,11 @@ namespace BitcoinBook
             return sha256.ComputeHash(sha256.ComputeHash(data));
         }
 
+        public static byte[] Hash256(string data)
+        {
+            return Hash256(Encoding.UTF8.GetBytes(data));
+        }
+
         public static BigInteger Hash256Int(byte[] data)
         {
             return Hash256(data).ToBigInteger();
