@@ -1,7 +1,10 @@
-﻿namespace BitcoinBook
+﻿using System.Threading.Tasks;
+
+namespace BitcoinBook
 {
     public interface ITransactionSigner
     {
-        Script CreateSigScript(IHashSigner hashSigner, Transaction transaction, TransactionInput input, SigHashType sigHashType);
+        Task<Script> CreateSigScript(PrivateKey privateKey, Transaction transaction, TransactionInput input,
+            SigHashType sigHashType);
     }
 }

@@ -4,14 +4,12 @@
     {
         public static Script PayToPublicKeyHash(byte[] hash160)
         {
-            return new Script(new object[]
-            {
-                OpCode.OP_DUP,
-                OpCode.OP_HASH160,
-                hash160,
-                OpCode.OP_EQUALVERIFY,
-                OpCode.OP_CHECKSIG,
-            });
+            return new Script(
+                OpCode.OP_DUP, 
+                OpCode.OP_HASH160, 
+                hash160, 
+                OpCode.OP_EQUALVERIFY, 
+                OpCode.OP_CHECKSIG);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class PrivateKey : IHashSigner
+    public class PrivateKey
     {
         static readonly RandomBigInteger random = new RandomBigInteger();
 

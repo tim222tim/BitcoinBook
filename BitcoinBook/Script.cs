@@ -11,6 +11,11 @@ namespace BitcoinBook
         {
         }
 
+        public Script(params object[] commands) :
+            this(commands ?? throw new ArgumentNullException(nameof(commands)), new object[0])
+        {
+        }
+
         public Script(IEnumerable<object> commands) : 
             this(commands ?? throw new ArgumentNullException(nameof(commands)), new object[0])
         {

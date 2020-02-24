@@ -1,4 +1,6 @@
-﻿namespace BitcoinBook
+﻿using System.Threading.Tasks;
+
+namespace BitcoinBook
 {
     public class PayToPublicKeyHashSigner : ITransactionSigner
     {
@@ -11,9 +13,13 @@
             this.hasher = hasher;
         }
 
-        public Script CreateSigScript(IHashSigner hashSigner, Transaction transaction, TransactionInput input, SigHashType sigHashType)
+        public async Task<Script> CreateSigScript(PrivateKey privateKey, Transaction transaction,
+            TransactionInput input, SigHashType sigHashType)
         {
-            throw new System.NotImplementedException();
+            var hash = await hasher.ComputeSigHash(transaction, input, sigHashType);
+            var signature = privateKey.Sign(hash).ToDer().Concat((byte) sigHashType);
+            var sec = privateKey.PublicKey.ToSec();
+            return new Script(signature, sec);
         }
     }
 }
