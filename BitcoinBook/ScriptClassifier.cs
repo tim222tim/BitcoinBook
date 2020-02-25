@@ -9,6 +9,9 @@ namespace BitcoinBook
         readonly Dictionary<ScriptType, object[]> templates = new Dictionary<ScriptType, object[]>
         {
             {ScriptType.Empty, new object[0]},
+            {ScriptType.PayToPubKey, new object[] {
+                new[] {33, 65},
+                OpCode.OP_CHECKSIG}},
             {ScriptType.PayToPubKeyHash, new object[] {                
                 OpCode.OP_DUP,
                 OpCode.OP_HASH160,

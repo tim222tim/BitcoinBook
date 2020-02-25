@@ -23,10 +23,24 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public void PayToPublicKeyHashTest()
+        public void PayToPubKeyTest()
+        {
+            Assert.Equal(ScriptType.PayToPubKey, classifier.GetScriptType(
+                StandardScripts.PayToPubKey(new PrivateKey(12345).PublicKey)));
+        }
+
+        [Fact]
+        public void PayToPubKeyUncompressedTest()
+        {
+            Assert.Equal(ScriptType.PayToPubKey, classifier.GetScriptType(
+                StandardScripts.PayToPubKey(new PrivateKey(12345).PublicKey.ToSec(false))));
+        }
+
+        [Fact]
+        public void PayToPubKeyHashTest()
         {
             Assert.Equal(ScriptType.PayToPubKeyHash, classifier.GetScriptType(
-                StandardScripts.PayToPublicKeyHash(new PrivateKey(12345).PublicKey)));
+                StandardScripts.PayToPubKeyHash(new PrivateKey(12345).PublicKey)));
         }
     }
 }
