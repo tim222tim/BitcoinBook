@@ -157,5 +157,8 @@ namespace BitcoinBook
         {
             return (Key != null ? Key.GetHashCode() : 0);
         }
+
+        public static bool operator ==(PublicKey a, PublicKey b) => a?.Equals(b) ?? ReferenceEquals(null, b);
+        public static bool operator !=(PublicKey a, PublicKey b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
     }
 }
