@@ -6,7 +6,7 @@ using Xunit;
 
 namespace BitcoinBook.Test
 {
-    public class PayToPublicKeyHashSignerTests
+    public class PayToPubKeyHashSignerTests
     {
         readonly Mock<ITransactionFetcher> mockFetcher = new Mock<ITransactionFetcher>();
 
@@ -26,7 +26,7 @@ namespace BitcoinBook.Test
                 i.PreviousTransaction.SequenceEqual(input.PreviousTransaction) && 
                 i.PreviousIndex == input.PreviousIndex))).Returns(Task.FromResult(previousOutput));
 
-            var signer = new PayToPublicKeyHashSigner(new TransactionHasher(mockFetcher.Object));
+            var signer = new PayToPubKeyHashSigner(new TransactionHasher(mockFetcher.Object));
             var sigScript = await signer.CreateSigScript(privateKey, transaction, input, SigHashType.All);
 
             transaction = transaction.CloneWithReplacedSigScript(input, sigScript);

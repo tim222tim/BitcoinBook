@@ -25,7 +25,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void PayToPublicKeyHashTest()
         {
-            Assert.Equal(ScriptType.PayToPublicKeyHash, classifier.GetScriptType(
+            Assert.Equal(ScriptType.PayToPubKeyHash, classifier.GetScriptType(
                 StandardScripts.PayToPublicKeyHash(new PrivateKey(12345).PublicKey)));
         }
     }

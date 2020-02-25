@@ -2,9 +2,9 @@
 
 namespace BitcoinBook
 {
-    public class PayToPublicKeyHashSigner : TransactionSignerBase
+    public class PayToPubKeyHashSigner : TransactionSignerBase
     {
-        public PayToPublicKeyHashSigner(TransactionHasher hasher) : base(hasher)
+        public PayToPubKeyHashSigner(TransactionHasher hasher) : base(hasher)
         {
         }
 

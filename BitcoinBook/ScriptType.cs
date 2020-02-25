@@ -4,7 +4,7 @@
     {
         Unknown,
         Empty,
-        PayToPublicKey,
-        PayToPublicKeyHash,
+        PayToPubKey,
+        PayToPubKeyHash,
     }
 }
