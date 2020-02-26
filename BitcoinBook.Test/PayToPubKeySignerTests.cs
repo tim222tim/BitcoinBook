@@ -13,7 +13,7 @@ namespace BitcoinBook.Test
         readonly PrivateKey privateKey = new PrivateKey(8732874329871);
         readonly Transaction transaction;
         readonly TransactionInput input;
-        readonly PayToPubKeySigner signer;
+        readonly ITransactionSigner signer;
 
         public PayToPubKeySignerTests()
         {
@@ -47,15 +47,7 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public async Task SignWithBadWalletTest()
-        {
-            var wallet = new Wallet(new[] { new PrivateKey(8732873784), privateKey, new PrivateKey(9823498743), });
-            var sigScript = await signer.CreateSigScript(wallet, transaction, input, SigHashType.All);
-            await AssertSigScript(sigScript);
-        }
-
-        [Fact]
-        public async Task SignWithWrondWalletTest()
+        public async Task SignWithWrongWalletTest()
         {
             var wallet = new Wallet(new[] { new PrivateKey(8732873784), new PrivateKey(9823498743), });
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await signer.CreateSigScript(wallet, transaction, input, SigHashType.All));

@@ -16,9 +16,20 @@ namespace BitcoinBook
             return new Script(signature, sec);
         }
 
-        public override Task<Script> CreateSigScript(Wallet wallet, Transaction transaction, TransactionInput input, SigHashType sigHashType)
+        public override async Task<Script> CreateSigScript(Wallet wallet, Transaction transaction, TransactionInput input, SigHashType sigHashType)
         {
-            throw new NotImplementedException();
+            var priorOutput = await Fetcher.GetPriorOutput(input);
+            if (priorOutput.ScriptPubKey.Commands.Count <3 ||
+                !(priorOutput.ScriptPubKey.Commands[2] is byte[] hash))
+            {
+                throw new FormatException("Unexpected opcode in output script");
+            }
+            var privateKey = wallet.FindByHash(hash);
+            if (privateKey == null)
+            {
+                throw new InvalidOperationException("Key not found in wallet");
+            }
+            return await CreateSigScript(privateKey, transaction, input, sigHashType);
         }
     }
 }

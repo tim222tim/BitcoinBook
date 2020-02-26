@@ -18,7 +18,8 @@ namespace BitcoinBook
         public override async Task<Script> CreateSigScript(Wallet wallet, Transaction transaction, TransactionInput input, SigHashType sigHashType)
         {
             var priorOutput = await Fetcher.GetPriorOutput(input);
-            if (!(priorOutput.ScriptPubKey.Commands[0] is byte[] sec))
+            if (priorOutput.ScriptPubKey.Commands.Count < 1 || 
+                !(priorOutput.ScriptPubKey.Commands[0] is byte[] sec))
             {
                 throw new FormatException("Unexpected opcode in output script");
             }
