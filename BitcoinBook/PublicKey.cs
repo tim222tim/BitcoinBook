@@ -62,6 +62,11 @@ namespace BitcoinBook
             return FromSec(Cipher.ToBytes(sec ?? ""));
         }
 
+        public static byte[] HashFromAddress(string address)
+        {
+            return Cipher.FromBase58Check(address).Copy(1);
+        }
+
         static int GetValidLength(byte prefix)
         {
             switch (prefix)
