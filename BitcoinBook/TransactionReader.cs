@@ -25,6 +25,15 @@ namespace BitcoinBook
 
         IList<TransactionInput> ReadInputs(int count)
         {
+            if (count == 0)
+            {
+                if (ReadByte() != 1)
+                {
+                    throw new FormatException("Invalid segwit marker");
+                }
+
+                count = ReadVarInt();
+            }
             var inputs = new List<TransactionInput>();
             while (count-- > 0)
             {
