@@ -3,13 +3,16 @@
 namespace BitcoinBook
 {
     public abstract class TransactionSignerBase : ITransactionSigner
-    { 
+    {
         readonly TransactionHasher hasher;
 
-        protected TransactionSignerBase(TransactionHasher hasher)
+        protected TransactionSignerBase(ITransactionFetcher fetcher, TransactionHasher hasher)
         {
+            Fetcher = fetcher;
             this.hasher = hasher;
         }
+
+        protected ITransactionFetcher Fetcher { get; }
 
         public abstract Task<Script> CreateSigScript(PrivateKey privateKey, Transaction transaction, TransactionInput input, SigHashType sigHashType);
 

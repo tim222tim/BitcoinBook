@@ -26,7 +26,7 @@ namespace BitcoinBook.Test
                 i.PreviousTransaction.SequenceEqual(input.PreviousTransaction) && 
                 i.PreviousIndex == input.PreviousIndex))).Returns(Task.FromResult(previousOutput));
 
-            var signer = new PayToPubKeyHashSigner(new TransactionHasher(mockFetcher.Object));
+            var signer = new PayToPubKeyHashSigner(mockFetcher.Object, new TransactionHasher(mockFetcher.Object));
             var sigScript = await signer.CreateSigScript(privateKey, transaction, input, SigHashType.All);
 
             transaction = transaction.CloneWithReplacedSigScript(input, sigScript);

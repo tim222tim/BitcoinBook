@@ -4,7 +4,7 @@ namespace BitcoinBook
 {
     public class PayToPubKeySigner : TransactionSignerBase
     {
-        public PayToPubKeySigner(TransactionHasher hasher) : base(hasher)
+        public PayToPubKeySigner(ITransactionFetcher fetcher, TransactionHasher hasher) : base(fetcher, hasher)
         {
         }
 
