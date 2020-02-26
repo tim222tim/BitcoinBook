@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Moq;
@@ -9,14 +10,16 @@ namespace BitcoinBook.Test
     public class PayToPubKeySignerTests
     {
         readonly Mock<ITransactionFetcher> mockFetcher = new Mock<ITransactionFetcher>();
+        readonly PrivateKey privateKey = new PrivateKey(8732874329871);
+        readonly Transaction transaction;
+        readonly TransactionInput input;
+        readonly PayToPubKeySigner signer;
 
-        [Fact]
-        public async Task SignTest()
+        public PayToPubKeySignerTests()
         {
-            var privateKey = new PrivateKey(8732874329871);
             var previousId = new BigInteger(12345).ToLittleBytes();
-            var input = new TransactionInput(previousId, 0, new Script(), 0);
-            var transaction = new Transaction(1,
+            input = new TransactionInput(previousId, 0, new Script(), 0);
+            transaction = new Transaction(1,
                 new[] { input },
                 new[] { new TransactionOutput(100, new Script()), },
                 0);
@@ -25,13 +28,44 @@ namespace BitcoinBook.Test
             mockFetcher.Setup(f => f.GetPriorOutput(It.Is<TransactionInput>(i =>
                 i.PreviousTransaction.SequenceEqual(input.PreviousTransaction) &&
                 i.PreviousIndex == input.PreviousIndex))).Returns(Task.FromResult(previousOutput));
+            signer = new PayToPubKeySigner(mockFetcher.Object, new TransactionHasher(mockFetcher.Object));
+        }
 
-            var signer = new PayToPubKeySigner(mockFetcher.Object, new TransactionHasher(mockFetcher.Object));
+        [Fact]
+        public async Task SignWithKeyTest()
+        {
             var sigScript = await signer.CreateSigScript(privateKey, transaction, input, SigHashType.All);
+            await AssertSigScript(sigScript);
+        }
 
-            transaction = transaction.CloneWithReplacedSigScript(input, sigScript);
+        [Fact]
+        public async Task SignWithWalletTest()
+        {
+            var wallet = new Wallet(new [] {new PrivateKey(8732873784), privateKey, new PrivateKey(9823498743), });
+            var sigScript = await signer.CreateSigScript(wallet, transaction, input, SigHashType.All);
+            await AssertSigScript(sigScript);
+        }
+
+        [Fact]
+        public async Task SignWithBadWalletTest()
+        {
+            var wallet = new Wallet(new[] { new PrivateKey(8732873784), privateKey, new PrivateKey(9823498743), });
+            var sigScript = await signer.CreateSigScript(wallet, transaction, input, SigHashType.All);
+            await AssertSigScript(sigScript);
+        }
+
+        [Fact]
+        public async Task SignWithWrondWalletTest()
+        {
+            var wallet = new Wallet(new[] { new PrivateKey(8732873784), new PrivateKey(9823498743), });
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await signer.CreateSigScript(wallet, transaction, input, SigHashType.All));
+        }
+
+        async Task AssertSigScript(Script sigScript)
+        {
+            var signedTransaction = transaction.CloneWithReplacedSigScript(input, sigScript);
             var verifier = new TransactionVerifier(mockFetcher.Object);
-            Assert.True(await verifier.Verify(transaction, 0));
+            Assert.True(await verifier.Verify(signedTransaction, 0));
         }
     }
 }

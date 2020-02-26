@@ -15,6 +15,7 @@ namespace BitcoinBook
         protected ITransactionFetcher Fetcher { get; }
 
         public abstract Task<Script> CreateSigScript(PrivateKey privateKey, Transaction transaction, TransactionInput input, SigHashType sigHashType);
+        public abstract Task<Script> CreateSigScript(Wallet wallet, Transaction transaction, TransactionInput input, SigHashType sigHashType);
 
         protected async Task<byte[]> ComputeSignatureBytes(PrivateKey privateKey, Transaction transaction, TransactionInput input, SigHashType sigHashType)
         {

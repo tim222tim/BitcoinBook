@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace BitcoinBook
 {
@@ -13,6 +14,11 @@ namespace BitcoinBook
             var signature = await ComputeSignatureBytes(privateKey, transaction, input, sigHashType);
             var sec = privateKey.PublicKey.ToSec();
             return new Script(signature, sec);
+        }
+
+        public override Task<Script> CreateSigScript(Wallet wallet, Transaction transaction, TransactionInput input, SigHashType sigHashType)
+        {
+            throw new NotImplementedException();
         }
     }
 }
