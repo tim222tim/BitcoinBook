@@ -23,8 +23,7 @@ namespace BitcoinBook.Test
                 }, 
                 0, true);
 
-            var hash = Cipher.Hash256(Encoding.ASCII.GetBytes("Tim's testnet address"));
-            var privateKey = new PrivateKey(hash.ToBigInteger());
+            var privateKey = new PrivateKey(Cipher.Hash256(Encoding.ASCII.GetBytes("Tim's testnet address")).ToBigInteger());
             var wallet = new Wallet(new [] { privateKey });
             var fetcher = new TransactionFetcher(new HttpClient { BaseAddress = new Uri("http://testnet.programmingbitcoin.com") });
             var hasher = new TransactionHasher(fetcher);
@@ -35,7 +34,7 @@ namespace BitcoinBook.Test
 
             var broadcaster = new TransactionBroadcaster(new HttpClient
                 {BaseAddress = new Uri("https://live.blockcypher.com/btc/pushtx")});
-            await broadcaster.Broadcast(transacion);
+            await broadcaster.Broadcast(signedTranaction);
         }
 
         [Fact]
