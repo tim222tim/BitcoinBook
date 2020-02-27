@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,8 @@ namespace BitcoinBook.Test
 
             var signedTranaction = transacion.CloneWithReplacedSigScript(transacion.Inputs[0], sigScript);
 
-            var broadcaster = new TransactionBroadcaster(new HttpClient
+            var handler = new HttpClientHandler {CookieContainer = new CookieContainer()};
+            var broadcaster = new TransactionBroadcaster(new HttpClient(handler)
                 {BaseAddress = new Uri("https://live.blockcypher.com/btc/pushtx")});
             await broadcaster.Broadcast(signedTranaction);
         }

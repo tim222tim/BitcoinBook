@@ -21,10 +21,11 @@ namespace BitcoinBook
             writer.Write(transaction);
             var hex = stream.ToArray().ToHex();
 
-            var response = await httpClient.PutAsync("/btc/pushtx/", new StringContent(hex));
+            await httpClient.GetAsync("/btc-testnet/pushtx/");
+            var response = await httpClient.PutAsync("/btc-testnet/pushtx/", new StringContent(hex));
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                throw new BroadcastException($"Received {response.StatusCode} broadcasting transaction");
+                throw new BroadcastException($"Received {response.StatusCode} broadcasting transaction. Message: " + await response.Content.ReadAsStringAsync());
             }
         }
     }
