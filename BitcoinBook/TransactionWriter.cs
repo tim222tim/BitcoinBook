@@ -28,7 +28,6 @@ namespace BitcoinBook
             {
                 WriteWitness(transaction.Inputs);
             }
-
             Write(transaction.LockTime, 4);
         }
 
