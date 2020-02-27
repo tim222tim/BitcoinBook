@@ -64,10 +64,6 @@ namespace BitcoinBook
 
             var hex = await response.Content.ReadAsStringAsync();
             hex = hex.Trim();
-            if (hex.Substring(8, 2) == "00")
-            {
-                hex = hex.Substring(0, 8) + hex.Substring(12); // cut out two bytes?
-            }
 
             var transaction = new TransactionReader(hex).ReadTransaction();
             if (transaction.Id != transactionId)

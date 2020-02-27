@@ -20,12 +20,10 @@ namespace BitcoinBook
 
         public Transaction ReadTransaction()
         {
-            return new Transaction(ReadInt(4), ReadInputs(ReadVarInt()), ReadOutputs(ReadVarInt()), ReadUnsignedInt(4));
-        }
-
-        IList<TransactionInput> ReadInputs(int count)
-        {
-            if (count == 0)
+            var version = ReadInt(4);
+            var count = ReadVarInt();
+            var segwit = count == 0;
+            if (segwit)
             {
                 if (ReadByte() != 1)
                 {
@@ -34,6 +32,11 @@ namespace BitcoinBook
 
                 count = ReadVarInt();
             }
+            return new Transaction(version, segwit, ReadInputs(count), ReadOutputs(ReadVarInt()), ReadUnsignedInt(4));
+        }
+
+        IList<TransactionInput> ReadInputs(int count)
+        {
             var inputs = new List<TransactionInput>();
             while (count-- > 0)
             {

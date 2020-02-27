@@ -17,6 +17,11 @@ namespace BitcoinBook
         public void Write(Transaction transaction)
         {
             Write(transaction.Version, 4);
+            if (transaction.Segwit)
+            {
+                Write((byte) 0);
+                Write(1);
+            }
             Write(transaction.Inputs);
             Write(transaction.Outputs);
             Write(transaction.LockTime, 4);

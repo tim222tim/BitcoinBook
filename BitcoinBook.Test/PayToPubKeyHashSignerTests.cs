@@ -19,7 +19,7 @@ namespace BitcoinBook.Test
         {
             var previousId = new BigInteger(12345).ToLittleBytes();
             input = new TransactionInput(previousId, 0, new Script(), 0);
-            transaction = new Transaction(1,
+            transaction = new Transaction(1, true,
                 new[] { input },
                 new[] { new TransactionOutput(100, new Script()), },
                 0);
