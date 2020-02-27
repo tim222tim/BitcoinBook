@@ -24,7 +24,7 @@ namespace BitcoinBook
             var response = await httpClient.PutAsync("/btc/pushtx/", new StringContent(hex));
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                throw new BroadcastException($"Received {response.StatusCode} fetching transaction");
+                throw new BroadcastException($"Received {response.StatusCode} broadcasting transaction");
             }
         }
     }

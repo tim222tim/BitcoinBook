@@ -87,7 +87,7 @@ namespace BitcoinBook.Test
         {
             var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
             var input = trans.Inputs[0];
-            trans.Inputs[0] = new TransactionInput(input.PreviousTransaction, 999, input.SigScript, input.Sequence);
+            trans.Inputs[0] = new TransactionInput(input.PreviousTransaction, 999, input.SigScript, new Script(), input.Sequence);
             Assert.False(await verifier.Verify(trans));
         }
     }
