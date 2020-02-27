@@ -44,7 +44,7 @@ namespace BitcoinBook
                     {
                         if (length != 0)
                         {
-                            throw new FormatException("Invalid length");
+                            throw new FormatException("Invalid value, should be 0");
                         }
                         Write((byte)0);
                     }
@@ -52,7 +52,7 @@ namespace BitcoinBook
                     {
                         if (!(command is byte[] bytes))
                         {
-                            throw new FormatException("Invalid command type");
+                            throw new FormatException("Invalid command type, should be byte[]");
                         }
                         WriteVarBytes(bytes);
                     }
