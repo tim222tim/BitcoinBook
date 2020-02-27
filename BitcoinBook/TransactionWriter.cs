@@ -24,7 +24,40 @@ namespace BitcoinBook
             }
             Write(transaction.Inputs);
             Write(transaction.Outputs);
+            if (transaction.Segwit)
+            {
+                WriteWitness(transaction.Inputs);
+            }
+
             Write(transaction.LockTime, 4);
+        }
+
+        void WriteWitness(IEnumerable<TransactionInput> inputs)
+        {
+            foreach (var input in inputs)
+            {
+                var commands = input.Witness.Commands;
+                WriteVar(commands.Count);
+                foreach (var command in commands)
+                {
+                    if (command is int length)
+                    {
+                        if (length != 0)
+                        {
+                            throw new FormatException("Invalid length");
+                        }
+                        Write((byte)0);
+                    }
+                    else
+                    {
+                        if (!(command is byte[] bytes))
+                        {
+                            throw new FormatException("Invalid command type");
+                        }
+                        WriteVarBytes(bytes);
+                    }
+                }
+            }
         }
 
         void Write(ICollection<TransactionInput> inputs)
