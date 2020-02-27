@@ -31,6 +31,15 @@ namespace BitcoinBook
             Write(transaction.LockTime, 4);
         }
 
+        void Write(ICollection<TransactionInput> inputs)
+        {
+            WriteVar((ulong) inputs.Count);
+            foreach (var input in inputs)
+            {
+                Write(input);
+            }
+        }
+
         void WriteWitness(IEnumerable<TransactionInput> inputs)
         {
             foreach (var input in inputs)
@@ -56,15 +65,6 @@ namespace BitcoinBook
                         WriteVarBytes(bytes);
                     }
                 }
-            }
-        }
-
-        void Write(ICollection<TransactionInput> inputs)
-        {
-            WriteVar((ulong) inputs.Count);
-            foreach (var input in inputs)
-            {
-                Write(input);
             }
         }
 
