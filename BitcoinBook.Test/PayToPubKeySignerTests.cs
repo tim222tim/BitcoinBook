@@ -50,7 +50,7 @@ namespace BitcoinBook.Test
         public async Task SignWithWrongWalletTest()
         {
             var wallet = new Wallet(new[] { new PrivateKey(8732873784), new PrivateKey(9823498743), });
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await signer.CreateSigScript(wallet, transaction, input, SigHashType.All));
+            await Assert.ThrowsAsync<PrivateKeyNotFoundException>(async () => await signer.CreateSigScript(wallet, transaction, input, SigHashType.All));
         }
 
         async Task AssertSigScript(Script sigScript)

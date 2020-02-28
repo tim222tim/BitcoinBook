@@ -26,7 +26,7 @@ namespace BitcoinBook
             var privateKey = wallet.FindBy(PublicKey.FromSec(sec));
             if (privateKey == null)
             {
-                throw new InvalidOperationException("Key not found in wallet");
+                throw new PrivateKeyNotFoundException("Key not found in wallet");
             }
             return await CreateSigScript(privateKey, transaction, input, sigHashType);
         }
