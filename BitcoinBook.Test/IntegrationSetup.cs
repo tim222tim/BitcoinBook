@@ -5,7 +5,7 @@ namespace BitcoinBook.Test
 {
     public static class IntegrationSetup
     {
-
+        // needs mainnet and testnet version
         public static TransactionFetcher Fetcher { get; } = new TransactionFetcher(new HttpClient
             {BaseAddress = new Uri("http://testnet.programmingbitcoin.com")});
         public static TransactionHasher Hasher { get; }
