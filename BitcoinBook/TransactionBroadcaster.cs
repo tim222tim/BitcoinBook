@@ -17,13 +17,8 @@ namespace BitcoinBook
         // This broadcaster does not work -- not an API
         public async Task Broadcast(Transaction transaction)
         {
-            var stream = new MemoryStream();
-            var writer = new TransactionWriter(stream);
-            writer.Write(transaction);
-            var hex = stream.ToArray().ToHex();
-
             await httpClient.GetAsync("/btc-testnet/pushtx/");
-            var response = await httpClient.PutAsync("/btc-testnet/pushtx/", new StringContent(hex));
+            var response = await httpClient.PutAsync("/btc-testnet/pushtx/", new StringContent(transaction.ToHex()));
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 throw new BroadcastException($"Received {response.StatusCode} broadcasting transaction. Message: " + await response.Content.ReadAsStringAsync());
