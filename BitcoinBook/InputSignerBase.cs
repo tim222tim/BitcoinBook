@@ -2,11 +2,11 @@
 
 namespace BitcoinBook
 {
-    public abstract class TransactionSignerBase : ITransactionSigner
+    public abstract class InputSignerBase : IInputSigner
     {
         readonly TransactionHasher hasher;
 
-        protected TransactionSignerBase(ITransactionFetcher fetcher, TransactionHasher hasher)
+        protected InputSignerBase(ITransactionFetcher fetcher, TransactionHasher hasher)
         {
             Fetcher = fetcher;
             this.hasher = hasher;

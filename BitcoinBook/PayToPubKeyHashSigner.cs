@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace BitcoinBook
 {
-    public class PayToPubKeyHashSigner : TransactionSignerBase
+    public class PayToPubKeyHashSigner : InputSignerBase
     {
         public PayToPubKeyHashSigner(ITransactionFetcher fetcher, TransactionHasher hasher) : base(fetcher, hasher)
         {

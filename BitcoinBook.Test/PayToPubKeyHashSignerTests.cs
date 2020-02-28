@@ -13,7 +13,7 @@ namespace BitcoinBook.Test
         readonly PrivateKey privateKey = new PrivateKey(8732874329871);
         readonly Transaction transaction;
         readonly TransactionInput input;
-        readonly ITransactionSigner signer;
+        readonly IInputSigner signer;
 
         public PayToPubKeyHashSignerTests()
         {
