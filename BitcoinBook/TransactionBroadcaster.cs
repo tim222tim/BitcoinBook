@@ -14,6 +14,7 @@ namespace BitcoinBook
             this.httpClient = httpClient;
         }
 
+        // This broadcaster does not work -- not an API
         public async Task Broadcast(Transaction transaction)
         {
             var stream = new MemoryStream();

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,13 +8,14 @@ namespace BitcoinBook.Test
 {
     public class TransactionBroadcasterTests
     {
+        // this works, but can't easily be tested
         [Fact]
         public async Task FirstTestnetTransactionTest()
         {
             var previousId = "b7773b4204686925e0cf607fb03250f0a18ce35cda48ac3ca8c004c33a9c3841";
             var targetHash = PublicKey.HashFromAddress("mwJn1YPMq7y5F8J3LkC5Hxg9PHyZ5K4cFv");
             var changeHash = PublicKey.HashFromAddress("mvzHKaHbDMaLdNbDrPuiSbGV91o6ADjCAK");
-            var transacion = new Transaction(1, true,
+            var transacion = new Transaction(1, false,
                 new []{ new TransactionInput(Cipher.ToBytes(previousId), 1, new Script(), new Script(), 0) },
                 new []
                 {
@@ -32,31 +32,13 @@ namespace BitcoinBook.Test
             var sigScript = await signer.CreateSigScript(wallet, transacion, transacion.Inputs[0], SigHashType.All);
 
             var signedTranaction = transacion.CloneWithReplacedSigScript(transacion.Inputs[0], sigScript);
+            Assert.NotNull(signedTranaction.ToHex());
 
-            var handler = new HttpClientHandler {CookieContainer = new CookieContainer()};
-            var broadcaster = new TransactionBroadcaster(new HttpClient(handler)
-                {BaseAddress = new Uri("https://live.blockcypher.com/btc/pushtx")});
-            await broadcaster.Broadcast(signedTranaction);
-        }
-
-        [Fact]
-        public void FindTheHash()
-        {
-            Assert.Equal("b7773b4204686925e0cf607fb03250f0a18ce35cda48ac3ca8c004c33a9c3841", ToId("020000000209c06e8f02709bbd24df4601aaf7aec0622dc054ccf1efdef05c2496cc2bda360100000017160014920824945937eea43c243e24c396516da1297a27feffffff1f84bc94408b4629e817241bb510b0270750521d067d36bb134dbbbace5827890000000017160014b4eb55d256755ac15b9331a46d29a874cac6130efeffffff02d65715000000000017a9147edc432af47075df934929131c67afe121c759488740420f00000000001976a914a9b50000d3ffa8d58cafd00f192ea9730315f4f588ac94641900"));
-        }
-
-        string ToId(string transactionHex)
-        {
-            var hash = Cipher.Hash256(Cipher.ToBytes(transactionHex));
-            Array.Reverse(hash);
-            return hash.ToHex();
-        }
-
-        [Fact]
-        public void SameTest()
-        {
-            Assert.Equal("0200000000010209c06e8f02709bbd24df4601aaf7aec0622dc054ccf1efdef05c2496cc2bda360100000017160014920824945937eea43c243e24c396516da1297a27feffffff1f84bc94408b4629e817241bb510b0270750521d067d36bb134dbbbace5827890000000017160014b4eb55d256755ac15b9331a46d29a874cac6130efeffffff02d65715000000000017a9147edc432af47075df934929131c67afe121c759488740420f00000000001976a914a9b50000d3ffa8d58cafd00f192ea9730315f4f588ac02473044",
-                         "0200000000010209c06e8f02709bbd24df4601aaf7aec0622dc054ccf1efdef05c2496cc2bda360100000017160014920824945937eea43c243e24c396516da1297a27feffffff1f84bc94408b4629e817241bb510b0270750521d067d36bb134dbbbace5827890000000017160014b4eb55d256755ac15b9331a46d29a874cac6130efeffffff02d65715000000000017a9147edc432af47075df934929131c67afe121c759488740420f00000000001976a914a9b50000d3ffa8d58cafd00f192ea9730315f4f588ac02473044");
+            // Broadcaster is not an API
+            // var handler = new HttpClientHandler {CookieContainer = new CookieContainer()};
+            // var broadcaster = new TransactionBroadcaster(new HttpClient(handler)
+            //     {BaseAddress = new Uri("https://live.blockcypher.com/btc-testnet/pushtx")});
+            // await broadcaster.Broadcast(signedTranaction);
         }
     }
 }

@@ -37,6 +37,19 @@ namespace BitcoinBook
             return hash.ToHex();
         }
 
+        public byte[] ToBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new TransactionWriter(stream);
+            writer.Write(this);
+            return stream.ToArray();
+        }
+
+        public string ToHex()
+        {
+            return ToBytes().ToHex();
+        }
+
         public Transaction Clone()
         {
             return new Transaction(Version, Segwit, Inputs.Select(i => i.Clone()), 
