@@ -21,7 +21,6 @@ namespace BitcoinBook
             foreach (var input in transaction.Inputs)
             {
                 var priorOutput = await fetcher.GetPriorOutput(input);
-
                 var scriptType = scriptClassifier.GetScriptType(priorOutput.ScriptPubKey);
                 var signer = signerMap[scriptType];
                 if (signer != null)

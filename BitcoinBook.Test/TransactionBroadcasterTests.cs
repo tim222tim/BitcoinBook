@@ -26,13 +26,9 @@ namespace BitcoinBook.Test
 
             var privateKey = new PrivateKey(Cipher.Hash256(Encoding.ASCII.GetBytes("Tim's testnet address")).ToBigInteger());
             var wallet = new Wallet(new [] { privateKey });
-            var fetcher = new TransactionFetcher(new HttpClient { BaseAddress = new Uri("http://testnet.programmingbitcoin.com") });
-            var hasher = new TransactionHasher(fetcher);
-            var signer = new PayToPubKeyHashSigner(fetcher, hasher);
-            var sigScript = await signer.CreateSigScript(wallet, transacion, transacion.Inputs[0], SigHashType.All);
 
-            var signedTranaction = transacion.CloneWithReplacedSigScript(transacion.Inputs[0], sigScript);
-            Assert.NotNull(signedTranaction.ToHex());
+            var signedTransaction = await IntegrationSetup.TransactionSigner.SignTransaction(wallet, transacion, SigHashType.All);
+            Assert.NotNull(signedTransaction.ToHex());
 
             // Broadcaster is not an API
             // var handler = new HttpClientHandler {CookieContainer = new CookieContainer()};
