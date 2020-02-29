@@ -75,8 +75,7 @@ namespace BitcoinBook.Test
         [Fact]
         public async Task FetchForRealTest()
         {
-            var realFetcher = new TransactionFetcher(new HttpClient {BaseAddress = new Uri("http://mainnet.programmingbitcoin.com")});
-            var transaction = await realFetcher.Fetch("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c");
+            var transaction = await IntegrationSetup.Mainnet.Fetcher.Fetch("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c");
             Assert.Equal(1, transaction.Inputs.Count);
             Assert.Equal(2, transaction.Outputs.Count);
             Assert.Equal(0005897938, transaction.Outputs[0].Amount);

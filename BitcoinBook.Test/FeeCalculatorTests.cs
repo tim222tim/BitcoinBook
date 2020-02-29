@@ -7,12 +7,11 @@ namespace BitcoinBook.Test
 {
     public class FeeCalculatorTests
     {
-        readonly TransactionFetcher fetcher = new TransactionFetcher(new HttpClient { BaseAddress = new Uri("http://mainnet.programmingbitcoin.com") });
         readonly FeeCalculator calculator;
 
         public FeeCalculatorTests()
         {
-            calculator = new FeeCalculator(fetcher);
+            calculator = new FeeCalculator(IntegrationSetup.Mainnet.Fetcher);
         }
 
         [Theory]
@@ -20,7 +19,7 @@ namespace BitcoinBook.Test
         [InlineData(0, "01cbd3888987dd2b590609dd31c89116852e1ffbf4ef245f851056057b6b17c6")]
         public async Task ShouldCaculateFees(long expected, string transactionId)
         {
-            var transaction = await fetcher.Fetch(transactionId);
+            var transaction = await IntegrationSetup.Mainnet.Fetcher.Fetch(transactionId);
             Assert.Equal(expected, await calculator.CalculateFeesAsync(transaction));
         }
     }
