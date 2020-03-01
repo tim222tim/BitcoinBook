@@ -39,6 +39,18 @@ namespace BitcoinBook
             return await FetchOutput(new OutputPoint(input.PreviousTransaction, input.PreviousIndex));
         }
 
+        public async Task<TransactionOutput[]> FetchOutputs(IEnumerable<OutputPoint> outputPoints)
+        {
+            var priorTasks = outputPoints.Select(async p => await FetchOutput(p));
+            return await Task.WhenAll(priorTasks);
+        }
+
+        public async Task<TransactionOutput[]> FetchOutputs(IEnumerable<string> outputPoints)
+        {
+            var priorTasks = outputPoints.Select(async p => await FetchOutput(p));
+            return await Task.WhenAll(priorTasks);
+        }
+
         public async Task<TransactionOutput> FetchOutput(string outputPoint)
         {
             return await FetchOutput(new OutputPoint(outputPoint));

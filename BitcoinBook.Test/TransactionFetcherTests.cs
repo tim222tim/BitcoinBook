@@ -84,6 +84,14 @@ namespace BitcoinBook.Test
             Assert.Equal(0005897938, output.Amount);
         }
 
+        [Fact]
+        public async Task FetchOutputPointsForRealTest()
+        {
+            var outputs = await IntegrationSetup.Mainnet.Fetcher.FetchOutputs(new [] { "0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c:0", "0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c:1" });
+            Assert.Equal(2, outputs.Length);
+            Assert.Equal(0005897938, outputs[0].Amount);
+        }
+
         void ExpectStatusCode(string id, HttpStatusCode statusCode)
         {
             ExpectResponse(id, new HttpResponseMessage
