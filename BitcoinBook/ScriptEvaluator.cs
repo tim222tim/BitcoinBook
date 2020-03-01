@@ -179,7 +179,7 @@ namespace BitcoinBook
                         signature = Signature.FromDer(stack.Pop().Copy(0, -1));
                         result &= publicKeys.Any(k => k.Verify(sigHash, signature));
                     }
-                    stack.PopInt(); // off by one
+                    stack.PopInt(); // Satoshi off by one
 
                     return stack.Push(result);
                 default:
