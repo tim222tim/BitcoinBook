@@ -20,7 +20,7 @@ namespace BitcoinBook
         {
             foreach (var input in transaction.Inputs)
             {
-                var priorOutput = await fetcher.GetPriorOutput(input);
+                var priorOutput = await fetcher.FetchPriorOutput(input);
                 var scriptType = scriptClassifier.GetScriptType(priorOutput.ScriptPubKey);
                 var signer = signerMap[scriptType];
                 if (signer != null)

@@ -27,18 +27,18 @@ namespace BitcoinBook
             return Fetch(transactionId.ToHex(), fresh);
         }
 
-        public async Task<TransactionOutput[]> GetPriorOutputs(IEnumerable<TransactionInput> inputs)
+        public async Task<TransactionOutput[]> FetchPriorOutputs(IEnumerable<TransactionInput> inputs)
         {
-            var priorTasks = inputs.Select(async i => await GetPriorOutput(i));
+            var priorTasks = inputs.Select(async i => await FetchPriorOutput(i));
             return await Task.WhenAll(priorTasks);
         }
 
-        public async Task<TransactionOutput> GetPriorOutput(TransactionInput input)
+        public async Task<TransactionOutput> FetchPriorOutput(TransactionInput input)
         {
-            return await GetOutput(input.PreviousTransaction, input.PreviousIndex);
+            return await FetchOutput(input.PreviousTransaction, input.PreviousIndex);
         }
 
-        public async Task<TransactionOutput> GetOutput(byte[] transactionId, int index)
+        public async Task<TransactionOutput> FetchOutput(byte[] transactionId, int index)
         {
             var transaction = await Fetch(transactionId) ??
                               throw new FetchException($"Transaction {transactionId} not found");

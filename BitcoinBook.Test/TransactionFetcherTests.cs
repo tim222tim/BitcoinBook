@@ -42,7 +42,7 @@ namespace BitcoinBook.Test
             var transaction = await fetcher.Fetch(transactionId);
             Assert.NotNull(transaction);
             Assert.Equal(1, transaction.Version);
-            Assert.Equal(1, transaction.Inputs.Count);
+            Assert.Single(transaction.Inputs);
             Assert.Equal("74e09a06fdf7dca73972629f129b51167483a040a3ac53bcdb1cd9a3a2e92abe", 
                 transaction.Inputs[0].PreviousTransaction.ToHex());
             Assert.Equal(0, transaction.Inputs[0].PreviousIndex);
@@ -65,7 +65,16 @@ namespace BitcoinBook.Test
         public async Task FetchForRealTest()
         {
             var transaction = await IntegrationSetup.Mainnet.Fetcher.Fetch("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c");
-            Assert.Equal(1, transaction.Inputs.Count);
+            Assert.Single(transaction.Inputs);
+            Assert.Equal(2, transaction.Outputs.Count);
+            Assert.Equal(0005897938, transaction.Outputs[0].Amount);
+        }
+
+        [Fact]
+        public async Task FetchOutputForRealTest()
+        {
+            var transaction = await IntegrationSetup.Mainnet.Fetcher.Fetch("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c");
+            Assert.Single(transaction.Inputs);
             Assert.Equal(2, transaction.Outputs.Count);
             Assert.Equal(0005897938, transaction.Outputs[0].Amount);
         }

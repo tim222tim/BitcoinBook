@@ -89,7 +89,7 @@ namespace BitcoinBook
 
         async Task<bool> InternalVerify(Transaction transaction, TransactionInput input)
         {
-            var priorOutput = await fetcher.GetPriorOutput(input);
+            var priorOutput = await fetcher.FetchPriorOutput(input);
             var script = new Script(input.SigScript, priorOutput.ScriptPubKey);
             var sigHash = hasher.ComputeSigHash(transaction, input, priorOutput, SigHashType.All);
 

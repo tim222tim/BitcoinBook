@@ -25,7 +25,7 @@ namespace BitcoinBook.Test
                 0);
             var previousOutput = new TransactionOutput(2, StandardScripts.PayToPubKeyHash(privateKey.PublicKey));
 
-            mockFetcher.Setup(f => f.GetPriorOutput(It.Is<TransactionInput>(i =>
+            mockFetcher.Setup(f => f.FetchPriorOutput(It.Is<TransactionInput>(i =>
                 i.PreviousTransaction.SequenceEqual(input.PreviousTransaction) &&
                 i.PreviousIndex == input.PreviousIndex))).Returns(Task.FromResult(previousOutput));
             signer = new PayToPubKeyHashSigner(mockFetcher.Object, new TransactionHasher(mockFetcher.Object));
