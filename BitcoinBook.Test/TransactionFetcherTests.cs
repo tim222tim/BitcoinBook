@@ -73,10 +73,15 @@ namespace BitcoinBook.Test
         [Fact]
         public async Task FetchOutputForRealTest()
         {
-            var transaction = await IntegrationSetup.Mainnet.Fetcher.Fetch("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c");
-            Assert.Single(transaction.Inputs);
-            Assert.Equal(2, transaction.Outputs.Count);
-            Assert.Equal(0005897938, transaction.Outputs[0].Amount);
+            var output = await IntegrationSetup.Mainnet.Fetcher.FetchOutput(new OutputPoint(Cipher.ToBytes("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c"), 0));
+            Assert.Equal(0005897938, output.Amount);
+        }
+
+        [Fact]
+        public async Task FetchOutputPointForRealTest()
+        {
+            var output = await IntegrationSetup.Mainnet.Fetcher.FetchOutput("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c:0");
+            Assert.Equal(0005897938, output.Amount);
         }
 
         void ExpectStatusCode(string id, HttpStatusCode statusCode)

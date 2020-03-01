@@ -9,6 +9,7 @@ namespace BitcoinBook
         Task<Transaction> Fetch(byte[] transactionId, bool fresh = false);
         Task<TransactionOutput[]> FetchPriorOutputs(IEnumerable<TransactionInput> inputs);
         Task<TransactionOutput> FetchPriorOutput(TransactionInput input);
-        Task<TransactionOutput> FetchOutput(byte[] transactionId, int index);
+        Task<TransactionOutput> FetchOutput(string outputPoint);
+        Task<TransactionOutput> FetchOutput(OutputPoint outputPoint);
     }
 }

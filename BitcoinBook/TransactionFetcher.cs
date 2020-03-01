@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
@@ -35,11 +36,18 @@ namespace BitcoinBook
 
         public async Task<TransactionOutput> FetchPriorOutput(TransactionInput input)
         {
-            return await FetchOutput(input.PreviousTransaction, input.PreviousIndex);
+            return await FetchOutput(new OutputPoint(input.PreviousTransaction, input.PreviousIndex));
         }
 
-        public async Task<TransactionOutput> FetchOutput(byte[] transactionId, int index)
+        public async Task<TransactionOutput> FetchOutput(string outputPoint)
         {
+            return await FetchOutput(new OutputPoint(outputPoint));
+        }
+
+        public async Task<TransactionOutput> FetchOutput(OutputPoint outputPoint)
+        {
+            var transactionId = outputPoint.TransactionId;
+            var index = outputPoint.Index;
             var transaction = await Fetch(transactionId) ??
                               throw new FetchException($"Transaction {transactionId} not found");
 
