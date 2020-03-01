@@ -64,7 +64,7 @@ namespace BitcoinBook.Test
         public async Task VerifyFalseWhenNegativeFees()
         {
             var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
-            trans.Outputs[0] = new TransactionOutput(trans.Outputs[0].Amount + 100, trans.Outputs[0].ScriptPubKey);
+            trans = trans.CloneWithReplacedOutput(trans.Outputs[0], new TransactionOutput(trans.Outputs[0].Amount + 100, trans.Outputs[0].ScriptPubKey));
             Assert.False(await verifier.Verify(trans));
         }
 
@@ -88,8 +88,7 @@ namespace BitcoinBook.Test
         public async Task VerifyFalseWhenBadPrevious()
         {
             var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
-            var input = trans.Inputs[0];
-            trans.Inputs[0] = new TransactionInput(input.PreviousTransaction, 999, input.SigScript, new Script(), input.Sequence);
+            trans = trans.CloneWithReplacedInput(trans.Inputs[0], new TransactionInput(trans.Inputs[0].PreviousTransaction, 999, trans.Inputs[0].SigScript, new Script(), trans.Inputs[0].Sequence));
             Assert.False(await verifier.Verify(trans));
         }
     }
