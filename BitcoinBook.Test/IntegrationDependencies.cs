@@ -8,7 +8,7 @@ namespace BitcoinBook.Test
         public TransactionFetcher Fetcher { get; }
         public TransactionHasher Hasher { get; }
         public SignerMap SignerMap { get; }
-        public TransactionSigner TransactionSigner { get; }
+        public TransactionSigner Signer { get; }
 
         public IntegrationDependencies(string fetcherBaseAddress) : 
             this(new TransactionFetcher(new HttpClient { BaseAddress = new Uri(fetcherBaseAddress) }))
@@ -20,7 +20,7 @@ namespace BitcoinBook.Test
             Fetcher = fetcher;
             Hasher = new TransactionHasher(Fetcher);
             SignerMap = new SignerMap(new PayToPubKeySigner(Fetcher, Hasher), new PayToPubKeyHashSigner(Fetcher, Hasher));
-            TransactionSigner = new TransactionSigner(Fetcher, new ScriptClassifier(), SignerMap);
+            Signer = new TransactionSigner(Fetcher, new ScriptClassifier(), SignerMap);
         }
     }
 }

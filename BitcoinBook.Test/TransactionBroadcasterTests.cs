@@ -27,7 +27,7 @@ namespace BitcoinBook.Test
             var privateKey = new PrivateKey(Cipher.Hash256(Encoding.ASCII.GetBytes("Tim's testnet address")).ToBigInteger());
             var wallet = new Wallet(new [] { privateKey });
 
-            var signedTransaction = await IntegrationSetup.Testnet.TransactionSigner.SignTransaction(wallet, transacion, SigHashType.All);
+            var signedTransaction = await IntegrationSetup.Testnet.Signer.SignTransaction(wallet, transacion, SigHashType.All);
             Assert.NotNull(signedTransaction.ToHex());
 
             // Broadcaster is not an API
