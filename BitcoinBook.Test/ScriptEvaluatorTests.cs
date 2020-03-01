@@ -5,6 +5,8 @@ namespace BitcoinBook.Test
 {
     public class ScriptEvaluatorTests
     {
+        const string goodHash = "ec208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60";
+        const string badHash = "ff208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60";
         readonly ScriptEvaluator evaluator = new ScriptEvaluator();
         readonly byte[] emptyHash = new byte[0];
 
@@ -15,6 +17,8 @@ namespace BitcoinBook.Test
         readonly Signature signature = new Signature(
             "0ac8d1c87e51d0d441be8b3dd5b05c8795b48875dffe00b7ffcfac23010d3a395",
             "068342ceff8935ededd102dd876ffd6ba72d6a427a3edb13d26eb0781cb423c4");
+
+        readonly PrivateKey privateKey2 = new PrivateKey(8989349843893);
 
         [Fact]
         public void NullThrows()
@@ -84,8 +88,8 @@ namespace BitcoinBook.Test
         }
 
         [Theory]
-        [InlineData(true, "ec208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60")]
-        [InlineData(false, "ff208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60")]
+        [InlineData(true, goodHash)]
+        [InlineData(false, badHash)]
         public void P2PK_Test(bool expected, string hashString)
         {
             var commands = new object[]
@@ -98,10 +102,10 @@ namespace BitcoinBook.Test
         }
 
         [Theory]
-        [InlineData(true, "ec208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60", "c0acbcf383132d76998d67ac0d2d81d85c07b0a2")]
-        [InlineData(false, "ff208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60", "c0acbcf383132d76998d67ac0d2d81d85c07b0a2")]
-        [InlineData(false, "ec208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60", "ffacbcf383132d76998d67ac0d2d81d85c07b0a2")]
-        public void P2PKH_Test(bool expected, string sigHash, string keyHash)
+        [InlineData(true, goodHash, "c0acbcf383132d76998d67ac0d2d81d85c07b0a2")]
+        [InlineData(false, badHash, "c0acbcf383132d76998d67ac0d2d81d85c07b0a2")]
+        [InlineData(false, goodHash, "ffacbcf383132d76998d67ac0d2d81d85c07b0a2")]
+        public void P2PKH_Test(bool expected, string hashString, string keyHash)
         {
             var commands = new object[] 
             { 
@@ -113,7 +117,7 @@ namespace BitcoinBook.Test
                 OpCode.OP_EQUALVERIFY, 
                 OpCode.OP_CHECKSIG
             };
-            Assert.Equal(expected, evaluator.Evaluate(commands, Cipher.ToBytes(sigHash)));
+            Assert.Equal(expected, evaluator.Evaluate(commands, Cipher.ToBytes(hashString)));
         }
 
         [Fact]
@@ -153,6 +157,69 @@ namespace BitcoinBook.Test
                 OpCode.OP_EQUAL,
             };
             Assert.Equal(expected, evaluator.Evaluate(commands));
+        }
+
+        [Fact]
+        public void BareMultisigTest()
+        {
+            var commands = new object[]
+            {
+                OpCode.OP_0,
+                signature.ToDer().Concat(1),
+                OpCode.OP_1,
+                privateKey2.PublicKey.ToSec(),
+                publicKey.ToSec(),
+                OpCode.OP_2,
+                OpCode.OP_CHECKMULTISIG
+            };
+            Assert.True(evaluator.Evaluate(commands, Cipher.ToBytes(goodHash)));
+        }
+
+        [Fact]
+        public void BareMultisigReversedTest()
+        {
+            var commands = new object[]
+            {
+                OpCode.OP_0,
+                signature.ToDer().Concat(1),
+                OpCode.OP_1,
+                publicKey.ToSec(),
+                privateKey2.PublicKey.ToSec(),
+                OpCode.OP_2,
+                OpCode.OP_CHECKMULTISIG
+            };
+            Assert.True(evaluator.Evaluate(commands, Cipher.ToBytes(goodHash)));
+        }
+
+        [Fact]
+        public void BareMultisigBadTest()
+        {
+            var commands = new object[]
+            {
+                OpCode.OP_0,
+                signature.ToDer().Concat(1),
+                OpCode.OP_1,
+                publicKey.ToSec(),
+                privateKey2.PublicKey.ToSec(),
+                OpCode.OP_2,
+                OpCode.OP_CHECKMULTISIG
+            };
+            Assert.False(evaluator.Evaluate(commands, Cipher.ToBytes(badHash)));
+        }
+
+        [Fact]
+        public void BareShortStackTest()
+        {
+            var commands = new object[]
+            {
+                signature.ToDer().Concat(1),
+                OpCode.OP_1,
+                publicKey.ToSec(),
+                privateKey2.PublicKey.ToSec(),
+                OpCode.OP_2,
+                OpCode.OP_CHECKMULTISIG
+            };
+            Assert.False(evaluator.Evaluate(commands, Cipher.ToBytes(goodHash)));
         }
     }
 }

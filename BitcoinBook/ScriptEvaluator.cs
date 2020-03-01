@@ -157,11 +157,30 @@ namespace BitcoinBook
                 case OpCode.OP_CHECKSIG:
                     var publicSec = stack.Pop();
                     var publicKey = PublicKey.FromSec(publicSec);
-                    var sigDerWithHashType = stack.Pop();
                     // last byte is hash type! -- should this be previously removed?
-                    var sigDer = sigDerWithHashType.Copy(0, -1);
-                    var signature = Signature.FromDer(sigDer);
+                    var signature = Signature.FromDer(stack.Pop().Copy(0, -1));
                     var result = publicKey.Verify(sigHash, signature);
+                    return stack.Push(result);
+                case OpCode.OP_CHECKMULTISIG:
+                    var n = stack.PopInt();
+                    var publicKeys = new List<PublicKey>();
+                    while (n-- > 0)
+                    {
+                        publicSec = stack.Pop();
+                        publicKey = PublicKey.FromSec(publicSec);
+                        publicKeys.Add(publicKey);
+                    }
+
+                    var m = stack.PopInt();
+                    result = true;
+                    while (m-- > 0)
+                    {
+                        // last byte is hash type! -- should this be previously removed?
+                        signature = Signature.FromDer(stack.Pop().Copy(0, -1));
+                        result &= publicKeys.Any(k => k.Verify(sigHash, signature));
+                    }
+                    stack.PopInt(); // off by one
+
                     return stack.Push(result);
                 default:
                     throw new NotImplementedException();

@@ -32,7 +32,7 @@ namespace BitcoinBook
 
         public BigInteger PopInt()
         {
-            return new BigInteger(Pop());
+            return GetBigInteger(Pop());
         }
 
         public byte[] Peek()
@@ -42,7 +42,12 @@ namespace BitcoinBook
 
         public BigInteger PeekInt()
         {
-            return new BigInteger(Peek());
+            return GetBigInteger(Peek());
+        }
+
+        BigInteger GetBigInteger(byte[] bytes)
+        {
+            return bytes.Length == 0 ? 0 : new BigInteger(bytes);
         }
     }
 }
