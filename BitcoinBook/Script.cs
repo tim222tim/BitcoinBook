@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BitcoinBook
 {
@@ -36,12 +37,17 @@ namespace BitcoinBook
 
         public Script Clone()
         {
-            return new Script(Commands);
+            return new Script(Commands.Select(Clone));
         }
 
         object ICloneable.Clone()
         {
             return Clone();
+        }
+
+        object Clone(object o)
+        {
+            return o is byte[] bytes ? bytes.Clone() : o;
         }
     }
 }

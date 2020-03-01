@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 
 namespace BitcoinBook
 {
     public class ScriptEvaluator
     {
+        readonly bool throwOnFailure;
+
+        public ScriptEvaluator(bool throwOnFailure = false)
+        {
+            this.throwOnFailure = throwOnFailure;
+        }
+
         public bool Evaluate(IEnumerable<object> scriptCommands, byte[] sigHash = null)
         {
             if (scriptCommands == null) throw new ArgumentNullException(nameof(scriptCommands));
@@ -41,14 +49,26 @@ namespace BitcoinBook
                                 break;
                         }
                     }
-                    catch (FormatException)
+                    catch (FormatException ex)
                     {
+                        if (throwOnFailure)
+                        {
+                            throw new VerificationException("Bad format", ex);
+                        }
                     }
-                    catch (InvalidOperationException)
+                    catch (InvalidOperationException ex)
                     {
+                        if (throwOnFailure)
+                        {
+                            throw new VerificationException("Bad operation", ex);
+                        }
                     }
                     if (!result)
                     {
+                        if (throwOnFailure)
+                        {
+                            throw new VerificationException("Script evaluation false");
+                        }
                         return false;
                     }
                 }

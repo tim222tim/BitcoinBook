@@ -19,7 +19,7 @@ namespace BitcoinBook
 
         public async Task<Transaction> Fetch(string transactionId, bool fresh = false)
         {
-            return (fresh ? null : cache.Get<Transaction>(transactionId)) ?? await InternalFetch(transactionId);
+            return (fresh ? null : cache.Get<Transaction>(transactionId))?.Clone() ?? await InternalFetch(transactionId);
         }
 
         public Task<Transaction> Fetch(byte[] transactionId, bool fresh = false)
@@ -45,7 +45,7 @@ namespace BitcoinBook
 
             return transaction.Outputs.Count > index
                 ? transaction.Outputs[index]
-                : throw new FetchException($"Transaction output {transactionId}:{index} does not exist");
+                : throw new FetchException($"Transaction output {transactionId.ToHex()}:{index} does not exist");
         }
 
         async Task<Transaction> InternalFetch(string transactionId)
@@ -72,7 +72,7 @@ namespace BitcoinBook
             }
 
             cache.Set(transactionId, transaction);
-            return transaction;
+            return transaction.Clone();
         }
     }
 }
