@@ -164,42 +164,41 @@ namespace BitcoinBook
             }
         }
 
+        bool Evaluate(OpCode opCode, ScriptStack stack, Stack<object> commands)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool Evaluate(OpCode opCode, ScriptStack stack, ScriptStack altStack)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool CheckSig(ScriptStack stack, byte[] sigHash)
+        {
+            var publicKey = stack.PopPublicKey();
+            var signature = stack.PopSignature();
+            var result = publicKey.Verify(sigHash, signature);
+            return result;
+        }
+
         bool CheckMultiSig(ScriptStack stack, byte[] sigHash)
         {
             var publicKeys = PopKeys(stack, stack.PopInt());
             var signatures = PopSignatures(stack, stack.PopInt());
             stack.PopInt(); // Satoshi off-by-one
 
-            var result = true;
             foreach (var signature in signatures)
             {
                 var foundKey = publicKeys.FirstOrDefault(k => k.Verify(sigHash, signature));
+                if (foundKey == null)
+                {
+                    return false;
+                }
                 publicKeys.Remove(foundKey);
-                result &= foundKey != null;
             }
 
-            return result;
-        }
-
-        bool CheckSig(ScriptStack stack, byte[] sigHash)
-        {
-            var publicKey = PopPublicKey(stack);
-            var signature = PopSignature(stack);
-            var result = publicKey.Verify(sigHash, signature);
-            return result;
-        }
-
-        PublicKey PopPublicKey(ScriptStack stack)
-        {
-            var publicKey = PublicKey.FromSec(stack.Pop());
-            return publicKey;
-        }
-
-        Signature PopSignature(ScriptStack stack)
-        {
-            // last byte is hash type! -- should this be previously removed?
-            var signature = Signature.FromDer(stack.Pop().Copy(0, -1));
-            return signature;
+            return true;
         }
 
         IList<PublicKey> PopKeys(ScriptStack stack, BigInteger count)
@@ -207,7 +206,7 @@ namespace BitcoinBook
             var publicKeys = new List<PublicKey>();
             while (count-- > 0)
             {
-                publicKeys.Add(PopPublicKey(stack));
+                publicKeys.Add(stack.PopPublicKey());
             }
 
             return publicKeys;
@@ -218,20 +217,10 @@ namespace BitcoinBook
             var signatures = new List<Signature>();
             while (count-- > 0)
             {
-                signatures.Add(PopSignature(stack));
+                signatures.Add(stack.PopSignature());
             }
 
             return signatures;
-        }
-
-        bool Evaluate(OpCode opCode, ScriptStack stack, Stack<object> commands)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool Evaluate(OpCode opCode, ScriptStack stack, ScriptStack altStack)
-        {
-            throw new NotImplementedException();
         }
 
         OpertationType GetOpertationType(OpCode opCode)

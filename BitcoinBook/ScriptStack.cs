@@ -35,6 +35,19 @@ namespace BitcoinBook
             return GetBigInteger(Pop());
         }
 
+        public PublicKey PopPublicKey()
+        {
+            var publicKey = PublicKey.FromSec(Pop());
+            return publicKey;
+        }
+
+        public Signature PopSignature()
+        {
+            // last byte is hash type! -- should this be previously removed?
+            var signature = Signature.FromDer(Pop().Copy(0, -1));
+            return signature;
+        }
+
         public byte[] Peek()
         {
             return stack.Peek();
