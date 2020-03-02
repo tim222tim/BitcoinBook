@@ -156,28 +156,50 @@ namespace BitcoinBook
             switch (opCode)
             {
                 case OpCode.OP_CHECKSIG:
-                    var publicKey = PublicKey.FromSec(stack.Pop());
-                    // last byte is hash type! -- should this be previously removed?
-                    var signature = Signature.FromDer(stack.Pop().Copy(0, -1));
-                    var result = publicKey.Verify(sigHash, signature);
-                    return stack.Push(result);
+                    return stack.Push(CheckSig(stack, sigHash));
                 case OpCode.OP_CHECKMULTISIG:
-                    var publicKeys = PopKeys(stack, stack.PopInt());
-                    var signatures = PopSignatures(stack, stack.PopInt());
-                    stack.PopInt(); // Satoshi off-by-one
-
-                    result = true;
-                    foreach (var sig in signatures)
-                    {
-                        var key = publicKeys.FirstOrDefault(k => k.Verify(sigHash, sig));
-                        publicKeys.Remove(key);
-                        result &= key != null;
-                    }
-
-                    return stack.Push(result);
+                    return stack.Push(CheckMultiSig(stack, sigHash));
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        bool CheckMultiSig(ScriptStack stack, byte[] sigHash)
+        {
+            var publicKeys = PopKeys(stack, stack.PopInt());
+            var signatures = PopSignatures(stack, stack.PopInt());
+            stack.PopInt(); // Satoshi off-by-one
+
+            var result = true;
+            foreach (var signature in signatures)
+            {
+                var foundKey = publicKeys.FirstOrDefault(k => k.Verify(sigHash, signature));
+                publicKeys.Remove(foundKey);
+                result &= foundKey != null;
+            }
+
+            return result;
+        }
+
+        bool CheckSig(ScriptStack stack, byte[] sigHash)
+        {
+            var publicKey = PopPublicKey(stack);
+            var signature = PopSignature(stack);
+            var result = publicKey.Verify(sigHash, signature);
+            return result;
+        }
+
+        PublicKey PopPublicKey(ScriptStack stack)
+        {
+            var publicKey = PublicKey.FromSec(stack.Pop());
+            return publicKey;
+        }
+
+        Signature PopSignature(ScriptStack stack)
+        {
+            // last byte is hash type! -- should this be previously removed?
+            var signature = Signature.FromDer(stack.Pop().Copy(0, -1));
+            return signature;
         }
 
         IList<PublicKey> PopKeys(ScriptStack stack, BigInteger count)
@@ -185,8 +207,7 @@ namespace BitcoinBook
             var publicKeys = new List<PublicKey>();
             while (count-- > 0)
             {
-                var publicKey = PublicKey.FromSec(stack.Pop());
-                publicKeys.Add(publicKey);
+                publicKeys.Add(PopPublicKey(stack));
             }
 
             return publicKeys;
@@ -197,9 +218,7 @@ namespace BitcoinBook
             var signatures = new List<Signature>();
             while (count-- > 0)
             {
-                // last byte is hash type! -- should this be previously removed?
-                var signature = Signature.FromDer(stack.Pop().Copy(0, -1));
-                signatures.Add(signature);
+                signatures.Add(PopSignature(stack));
             }
 
             return signatures;
