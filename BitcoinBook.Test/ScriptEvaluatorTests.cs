@@ -19,6 +19,14 @@ namespace BitcoinBook.Test
             "068342ceff8935ededd102dd876ffd6ba72d6a427a3edb13d26eb0781cb423c4");
 
         readonly PrivateKey privateKey2 = new PrivateKey(8989349843893);
+        readonly Signature signature2;
+
+        readonly PrivateKey privateKey3 = new PrivateKey(28974387478934);
+
+        public ScriptEvaluatorTests()
+        {
+            signature2 = privateKey2.Sign(Cipher.ToBytes(goodHash));
+        }
 
         [Fact]
         public void NullThrows()
@@ -160,7 +168,7 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public void BareMultisigTest()
+        public void BareMultisigOneOfTwoTest()
         {
             var commands = new object[]
             {
@@ -176,7 +184,7 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public void BareMultisigReversedTest()
+        public void BareMultisigOneOfTwoReversedTest()
         {
             var commands = new object[]
             {
@@ -217,6 +225,42 @@ namespace BitcoinBook.Test
                 publicKey.ToSec(),
                 privateKey2.PublicKey.ToSec(),
                 OpCode.OP_2,
+                OpCode.OP_CHECKMULTISIG
+            };
+            Assert.False(evaluator.Evaluate(commands, Cipher.ToBytes(goodHash)));
+        }
+
+        [Fact]
+        public void BareMultisigTwoOfThreeTest()
+        {
+            var commands = new object[]
+            {
+                OpCode.OP_0,
+                signature2.ToDer().Concat(1),
+                signature.ToDer().Concat(1),
+                OpCode.OP_2,
+                privateKey3.PublicKey.ToSec(),
+                privateKey2.PublicKey.ToSec(),
+                publicKey.ToSec(),
+                OpCode.OP_3,
+                OpCode.OP_CHECKMULTISIG
+            };
+            Assert.True(evaluator.Evaluate(commands, Cipher.ToBytes(goodHash)));
+        }
+
+        [Fact]
+        public void BareMultisigTwoOfThreeWithSameSigTwiceTest()
+        {
+            var commands = new object[]
+            {
+                OpCode.OP_0,
+                signature2.ToDer().Concat(1),
+                signature2.ToDer().Concat(1),
+                OpCode.OP_2,
+                privateKey3.PublicKey.ToSec(),
+                privateKey2.PublicKey.ToSec(),
+                publicKey.ToSec(),
+                OpCode.OP_3,
                 OpCode.OP_CHECKMULTISIG
             };
             Assert.False(evaluator.Evaluate(commands, Cipher.ToBytes(goodHash)));

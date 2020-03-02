@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Security;
 
 namespace BitcoinBook
@@ -155,36 +156,53 @@ namespace BitcoinBook
             switch (opCode)
             {
                 case OpCode.OP_CHECKSIG:
-                    var publicSec = stack.Pop();
-                    var publicKey = PublicKey.FromSec(publicSec);
+                    var publicKey = PublicKey.FromSec(stack.Pop());
                     // last byte is hash type! -- should this be previously removed?
                     var signature = Signature.FromDer(stack.Pop().Copy(0, -1));
                     var result = publicKey.Verify(sigHash, signature);
                     return stack.Push(result);
                 case OpCode.OP_CHECKMULTISIG:
-                    var n = stack.PopInt();
-                    var publicKeys = new List<PublicKey>();
-                    while (n-- > 0)
-                    {
-                        publicSec = stack.Pop();
-                        publicKey = PublicKey.FromSec(publicSec);
-                        publicKeys.Add(publicKey);
-                    }
+                    var publicKeys = PopKeys(stack, stack.PopInt());
+                    var signatures = PopSignatures(stack, stack.PopInt());
+                    stack.PopInt(); // Satoshi off-by-one
 
-                    var m = stack.PopInt();
                     result = true;
-                    while (m-- > 0)
+                    foreach (var sig in signatures)
                     {
-                        // last byte is hash type! -- should this be previously removed?
-                        signature = Signature.FromDer(stack.Pop().Copy(0, -1));
-                        result &= publicKeys.Any(k => k.Verify(sigHash, signature));
+                        var key = publicKeys.FirstOrDefault(k => k.Verify(sigHash, sig));
+                        publicKeys.Remove(key);
+                        result &= key != null;
                     }
-                    stack.PopInt(); // Satoshi off by one
 
                     return stack.Push(result);
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        IList<PublicKey> PopKeys(ScriptStack stack, BigInteger count)
+        {
+            var publicKeys = new List<PublicKey>();
+            while (count-- > 0)
+            {
+                var publicKey = PublicKey.FromSec(stack.Pop());
+                publicKeys.Add(publicKey);
+            }
+
+            return publicKeys;
+        }
+
+        IList<Signature> PopSignatures(ScriptStack stack, BigInteger count)
+        {
+            var signatures = new List<Signature>();
+            while (count-- > 0)
+            {
+                // last byte is hash type! -- should this be previously removed?
+                var signature = Signature.FromDer(stack.Pop().Copy(0, -1));
+                signatures.Add(signature);
+            }
+
+            return signatures;
         }
 
         bool Evaluate(OpCode opCode, ScriptStack stack, Stack<object> commands)
