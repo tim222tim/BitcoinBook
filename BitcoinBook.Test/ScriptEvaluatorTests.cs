@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Xunit;
 
 namespace BitcoinBook.Test
@@ -264,6 +265,40 @@ namespace BitcoinBook.Test
                 OpCode.OP_CHECKMULTISIG
             };
             Assert.False(evaluator.Evaluate(commands, Cipher.ToBytes(goodHash)));
+        }
+
+        [Fact]
+        public void PayToScriptHashTrueTest()
+        {
+            var redeemBytes = new Script(OpCode.OP_ADD, OpCode.OP_7, OpCode.OP_EQUALVERIFY).ToBytes().Copy(1);
+
+            var commands = new object[]
+            {
+                OpCode.OP_3,
+                OpCode.OP_4,
+                redeemBytes,
+                OpCode.OP_HASH160,
+                Cipher.Hash160(redeemBytes),
+                OpCode.OP_EQUAL
+            };
+            Assert.True(evaluator.Evaluate(commands));
+        }
+
+        [Fact]
+        public void PayToScriptHashFalseTest()
+        {
+            var redeemBytes = new Script(OpCode.OP_ADD, OpCode.OP_7, OpCode.OP_EQUALVERIFY).ToBytes().Copy(1);
+
+            var commands = new object[]
+            {
+                OpCode.OP_1,
+                OpCode.OP_4,
+                redeemBytes,
+                OpCode.OP_HASH160,
+                Cipher.Hash160(redeemBytes),
+                OpCode.OP_EQUAL
+            };
+            Assert.False(evaluator.Evaluate(commands));
         }
     }
 }

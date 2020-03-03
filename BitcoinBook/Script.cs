@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace BitcoinBook
@@ -35,6 +36,14 @@ namespace BitcoinBook
             this((scriptSig ?? throw new ArgumentNullException(nameof(scriptSig))).Commands, 
                 (scriptPubKey ?? throw new ArgumentNullException(nameof(scriptPubKey))).Commands)
         {
+        }
+
+        public byte[] ToBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new TransactionWriter(stream);
+            writer.Write(this);
+            return stream.ToArray();
         }
 
         public Script Clone()
