@@ -53,6 +53,7 @@ namespace BitcoinBook.Test
         [Theory]
         [InlineData("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea")]
         [InlineData("874d0ad92528d8cb6cd9fa449cc6ef1f38a84fd23426b359e5a8e51ddf47892f")]
+        [InlineData("e176d870966ccc9e0649042bd87b8e5604982f15dc61bcb383a96d862b88a13c")]
         public async Task VerifyOnline(string transactionId)
         {
             var trans = await fetcher.Fetch(transactionId);
