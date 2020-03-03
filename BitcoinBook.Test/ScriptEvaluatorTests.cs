@@ -270,7 +270,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void PayToScriptHashTrueTest()
         {
-            var redeemBytes = new Script(OpCode.OP_ADD, OpCode.OP_7, OpCode.OP_EQUALVERIFY).ToBytes().Copy(1);
+            var redeemBytes = new Script(OpCode.OP_ADD, OpCode.OP_7, OpCode.OP_EQUAL).ToBytes().Copy(1);
 
             var commands = new object[]
             {
@@ -285,9 +285,9 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public void PayToScriptHashFalseTest()
+        public void PayToScriptHashRedeemKeyFalseTest()
         {
-            var redeemBytes = new Script(OpCode.OP_ADD, OpCode.OP_7, OpCode.OP_EQUALVERIFY).ToBytes().Copy(1);
+            var redeemBytes = new Script(OpCode.OP_ADD, OpCode.OP_7, OpCode.OP_EQUAL).ToBytes().Copy(1);
 
             var commands = new object[]
             {
@@ -296,6 +296,23 @@ namespace BitcoinBook.Test
                 redeemBytes,
                 OpCode.OP_HASH160,
                 Cipher.Hash160(redeemBytes),
+                OpCode.OP_EQUAL
+            };
+            Assert.False(evaluator.Evaluate(commands));
+        }
+
+        [Fact]
+        public void PayToScriptHashBadHashTest()
+        {
+            var redeemBytes = new Script(OpCode.OP_ADD, OpCode.OP_7, OpCode.OP_EQUAL).ToBytes().Copy(1);
+
+            var commands = new object[]
+            {
+                OpCode.OP_1,
+                OpCode.OP_4,
+                redeemBytes,
+                OpCode.OP_HASH160,
+                Cipher.Hash160(Cipher.ToBytes(badHash)),
                 OpCode.OP_EQUAL
             };
             Assert.False(evaluator.Evaluate(commands));
