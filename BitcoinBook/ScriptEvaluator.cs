@@ -17,14 +17,11 @@ namespace BitcoinBook
 
         public bool Evaluate(IEnumerable<object> scriptCommands, byte[] sigHash = null)
         {
-            if (scriptCommands == null) throw new ArgumentNullException(nameof(scriptCommands));
-            var commands = new Stack<object>(scriptCommands.Reverse());
+            var commands = scriptCommands?.ToList() ?? throw new ArgumentNullException(nameof(scriptCommands));
             var stack = new ScriptStack();
             var altStack = new ScriptStack();
-
-            while (commands.Count > 0)
+            foreach (var command in commands)
             {
-                var command = commands.Pop();
                 if (command is byte[] bytes)
                 {
                     stack.Push(bytes);
@@ -164,7 +161,7 @@ namespace BitcoinBook
             }
         }
 
-        bool Evaluate(OpCode opCode, ScriptStack stack, Stack<object> commands)
+        bool Evaluate(OpCode opCode, ScriptStack stack, IEnumerable<object> commands)
         {
             throw new NotImplementedException();
         }
