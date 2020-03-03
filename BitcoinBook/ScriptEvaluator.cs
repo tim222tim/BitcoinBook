@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,8 +19,7 @@ namespace BitcoinBook
 
         public bool Evaluate(IEnumerable<object> scriptCommands, byte[] sigHash = null)
         {
-            if (scriptCommands == null) throw new ArgumentNullException(nameof(scriptCommands));
-            var commands = new Stack<object>(scriptCommands.Reverse());
+            var commands = new Queue<object>(scriptCommands ?? throw new ArgumentNullException(nameof(scriptCommands)));
             var stack = new ScriptStack();
             var altStack = new ScriptStack();
 
@@ -27,10 +27,11 @@ namespace BitcoinBook
             {
                 if (IsPayToScriptHash(commands))
                 {
-                    commands = DecodeRedeemScript((byte[]) commands.Pop());
+                    var redeemScript = DecodeRedeemScript((byte[]) commands.Dequeue());
+                    commands = new Queue<object>(redeemScript.Commands);
                 }
 
-                var command = commands.Pop();
+                var command = commands.Dequeue();
                 if (command is byte[] bytes)
                 {
                     stack.Push(bytes);
@@ -88,14 +89,7 @@ namespace BitcoinBook
             return stack.Count > 0 && stack.Pop().Length > 0;
         }
 
-        Stack<object> DecodeRedeemScript(byte[] scriptBytes)
-        {
-            var reader = new TransactionReader(new MemoryStream(scriptBytes));
-            var script = reader.ReadScript(scriptBytes.Length);
-            return new Stack<object>(script.Commands.Reverse());
-        }
-
-        bool IsPayToScriptHash(Stack<object> commands)
+        bool IsPayToScriptHash(Queue<object> commands)
         {
             if (commands.Count != 4)
             {
@@ -107,6 +101,12 @@ namespace BitcoinBook
                    array[2] is byte[] scriptHash && scriptHash.Length == 20 &&
                    array[3] is OpCode equalCode && equalCode == OpCode.OP_EQUAL &&
                    Cipher.Hash160(redeemBytes).SequenceEqual(scriptHash);
+        }
+
+        Script DecodeRedeemScript(byte[] scriptBytes)
+        {
+            var reader = new TransactionReader(new MemoryStream(scriptBytes));
+            return reader.ReadScript(scriptBytes.Length);
         }
 
         bool Evaluate(OpCode opCode, ScriptStack stack)
