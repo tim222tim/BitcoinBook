@@ -31,8 +31,8 @@ namespace BitcoinBook
             var pointsList = previousOutputPoints.ToList();
             var previousOutputs = await fetcher.FetchOutputs(pointsList);
 
-            var targetHash = Cipher.HashFromAddress(targetAddress);
-            var changeHash = Cipher.HashFromAddress(changeAddress);
+            var targetHash = Address.HashFromAddress(targetAddress);
+            var changeHash = Address.HashFromAddress(changeAddress);
             var totalInputAmount = previousOutputs.Sum(o => o.Amount);
 
             var transacion = new Transaction(1, false,

@@ -13,8 +13,8 @@ namespace BitcoinBook.Test
         public async Task FirstTestnetTransactionTest()
         {
             var previousId = "b7773b4204686925e0cf607fb03250f0a18ce35cda48ac3ca8c004c33a9c3841";
-            var targetHash = Cipher.HashFromAddress("mwJn1YPMq7y5F8J3LkC5Hxg9PHyZ5K4cFv");
-            var changeHash = Cipher.HashFromAddress("mvzHKaHbDMaLdNbDrPuiSbGV91o6ADjCAK");
+            var targetHash = Address.HashFromAddress("mwJn1YPMq7y5F8J3LkC5Hxg9PHyZ5K4cFv");
+            var changeHash = Address.HashFromAddress("mvzHKaHbDMaLdNbDrPuiSbGV91o6ADjCAK");
             var transacion = new Transaction(1, false,
                 new []{ new TransactionInput(Cipher.ToBytes(previousId), 1, new Script(), new Script(), 0) },
                 new []
