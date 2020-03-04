@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
@@ -19,7 +20,7 @@ namespace BitcoinBook
 
         public async Task<Transaction> Fetch(string transactionId, bool fresh = false)
         {
-            return (fresh ? null : cache.Get<Transaction>(transactionId)) ?? await InternalFetch(transactionId);
+            return (fresh ? null : cache.Get<Transaction>(transactionId))?.Clone() ?? await InternalFetch(transactionId);
         }
 
         public Task<Transaction> Fetch(byte[] transactionId, bool fresh = false)
@@ -27,25 +28,44 @@ namespace BitcoinBook
             return Fetch(transactionId.ToHex(), fresh);
         }
 
-        public async Task<TransactionOutput[]> GetPriorOutputs(IEnumerable<TransactionInput> inputs)
+        public async Task<TransactionOutput[]> FetchPriorOutputs(IEnumerable<TransactionInput> inputs)
         {
-            var priorTasks = inputs.Select(async i => await GetPriorOutput(i));
+            var priorTasks = inputs.Select(async i => await FetchPriorOutput(i));
             return await Task.WhenAll(priorTasks);
         }
 
-        public async Task<TransactionOutput> GetPriorOutput(TransactionInput input)
+        public async Task<TransactionOutput> FetchPriorOutput(TransactionInput input)
         {
-            return await GetOutput(input.PreviousTransaction, input.PreviousIndex);
+            return await FetchOutput(new OutputPoint(input.PreviousTransaction, input.PreviousIndex));
         }
 
-        public async Task<TransactionOutput> GetOutput(byte[] transactionId, int index)
+        public async Task<TransactionOutput[]> FetchOutputs(IEnumerable<OutputPoint> outputPoints)
         {
+            var priorTasks = outputPoints.Select(async p => await FetchOutput(p));
+            return await Task.WhenAll(priorTasks);
+        }
+
+        public async Task<TransactionOutput[]> FetchOutputs(IEnumerable<string> outputPoints)
+        {
+            var priorTasks = outputPoints.Select(async p => await FetchOutput(p));
+            return await Task.WhenAll(priorTasks);
+        }
+
+        public async Task<TransactionOutput> FetchOutput(string outputPoint)
+        {
+            return await FetchOutput(new OutputPoint(outputPoint));
+        }
+
+        public async Task<TransactionOutput> FetchOutput(OutputPoint outputPoint)
+        {
+            var transactionId = outputPoint.TransactionId;
+            var index = outputPoint.Index;
             var transaction = await Fetch(transactionId) ??
                               throw new FetchException($"Transaction {transactionId} not found");
 
             return transaction.Outputs.Count > index
                 ? transaction.Outputs[index]
-                : throw new FetchException($"Transaction output {transactionId}:{index} does not exist");
+                : throw new FetchException($"Transaction output {transactionId.ToHex()}:{index} does not exist");
         }
 
         async Task<Transaction> InternalFetch(string transactionId)
@@ -64,10 +84,6 @@ namespace BitcoinBook
 
             var hex = await response.Content.ReadAsStringAsync();
             hex = hex.Trim();
-            if (hex.Substring(8, 2) == "00")
-            {
-                hex = hex.Substring(0, 8) + hex.Substring(12); // cut out two bytes?
-            }
 
             var transaction = new TransactionReader(hex).ReadTransaction();
             if (transaction.Id != transactionId)
@@ -76,7 +92,7 @@ namespace BitcoinBook
             }
 
             cache.Set(transactionId, transaction);
-            return transaction;
+            return transaction.Clone();
         }
     }
 }

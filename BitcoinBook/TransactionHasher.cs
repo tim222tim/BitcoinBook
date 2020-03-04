@@ -21,7 +21,7 @@ namespace BitcoinBook
 
         public async Task<byte[]> ComputeSigHash(Transaction transaction, TransactionInput input, SigHashType sigHashType)
         {
-            var priorOutput = await fetcher.GetPriorOutput(input);
+            var priorOutput = await fetcher.FetchPriorOutput(input);
             return ComputeSigHash(transaction, input, priorOutput, sigHashType);
         }
 

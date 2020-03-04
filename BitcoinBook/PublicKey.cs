@@ -123,10 +123,12 @@ namespace BitcoinBook
 
         public string ToAddress(bool compressed = true, bool testnet = false)
         {
-            var hash = Cipher.Hash160(ToSec(compressed));
-            var prefix = new[] {testnet ? (byte) '\x6f' : (byte)0};
-            var address = prefix.Concat(hash);
-            return Cipher.ToBase58Check(address);
+            return Address.ToPayToPublicKeyHashAddress(ToHash160(compressed), testnet);
+        }
+
+        public byte[] ToHash160(bool compressed = true)
+        {
+            return Cipher.Hash160(ToSec(compressed));
         }
 
         public override string ToString()
@@ -153,5 +155,8 @@ namespace BitcoinBook
         {
             return (Key != null ? Key.GetHashCode() : 0);
         }
+
+        public static bool operator ==(PublicKey a, PublicKey b) => a?.Equals(b) ?? ReferenceEquals(null, b);
+        public static bool operator !=(PublicKey a, PublicKey b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
     }
 }

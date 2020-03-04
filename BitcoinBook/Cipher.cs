@@ -65,7 +65,7 @@ namespace BitcoinBook
                 result = result * 58 + value;
             }
 
-            return result.ToBigBytes();
+            return result.ToBigBytes(25);
         }
 
         public static byte[] FromBase58Check(string base58)
@@ -78,7 +78,8 @@ namespace BitcoinBook
 
             var checkBytes = bytes.Copy(-4);
             bytes = bytes.Copy(0, bytes.Length - 4);
-            if (!checkBytes.SequenceEqual(Hash256Prefix(bytes)))
+            var hash256Prefix = Hash256Prefix(bytes);
+            if (!checkBytes.SequenceEqual(hash256Prefix))
             {
                 throw new FormatException("Check bytes don't match");
             }
@@ -90,6 +91,11 @@ namespace BitcoinBook
         {
             using var sha256 = SHA256.Create();
             return sha256.ComputeHash(sha256.ComputeHash(data));
+        }
+
+        public static byte[] Hash256(string data)
+        {
+            return Hash256(Encoding.UTF8.GetBytes(data));
         }
 
         public static BigInteger Hash256Int(byte[] data)

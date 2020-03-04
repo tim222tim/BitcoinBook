@@ -1,21 +1,37 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Security;
 
 namespace BitcoinBook
 {
     public class ScriptEvaluator
     {
+        readonly bool throwOnFailure;
+
+        public ScriptEvaluator(bool throwOnFailure = false)
+        {
+            this.throwOnFailure = throwOnFailure;
+        }
+
         public bool Evaluate(IEnumerable<object> scriptCommands, byte[] sigHash = null)
         {
-            if (scriptCommands == null) throw new ArgumentNullException(nameof(scriptCommands));
-            var commands = new Stack<object>(scriptCommands.Reverse());
+            var commands = new Queue<object>(scriptCommands ?? throw new ArgumentNullException(nameof(scriptCommands)));
             var stack = new ScriptStack();
             var altStack = new ScriptStack();
 
             while (commands.Count > 0)
             {
-                var command = commands.Pop();
+                if (IsPayToScriptHash(commands))
+                {
+                    var redeemScript = DecodeRedeemScript((byte[]) commands.Dequeue());
+                    commands = new Queue<object>(redeemScript.Commands);
+                }
+
+                var command = commands.Dequeue();
                 if (command is byte[] bytes)
                 {
                     stack.Push(bytes);
@@ -41,14 +57,26 @@ namespace BitcoinBook
                                 break;
                         }
                     }
-                    catch (FormatException)
+                    catch (FormatException ex)
                     {
+                        if (throwOnFailure)
+                        {
+                            throw new VerificationException("Bad format", ex);
+                        }
                     }
-                    catch (InvalidOperationException)
+                    catch (InvalidOperationException ex)
                     {
+                        if (throwOnFailure)
+                        {
+                            throw new VerificationException("Bad operation", ex);
+                        }
                     }
                     if (!result)
                     {
+                        if (throwOnFailure)
+                        {
+                            throw new VerificationException("Script evaluation false");
+                        }
                         return false;
                     }
                 }
@@ -59,6 +87,26 @@ namespace BitcoinBook
             }
 
             return stack.Count > 0 && stack.Pop().Length > 0;
+        }
+
+        bool IsPayToScriptHash(Queue<object> commands)
+        {
+            if (commands.Count != 4)
+            {
+                return false;
+            }
+            var array = commands.ToArray();
+            return array[0] is byte[] redeemBytes &&
+                   array[1] is OpCode hashCode && hashCode == OpCode.OP_HASH160 &&
+                   array[2] is byte[] scriptHash && scriptHash.Length == 20 &&
+                   array[3] is OpCode equalCode && equalCode == OpCode.OP_EQUAL &&
+                   Cipher.Hash160(redeemBytes).SequenceEqual(scriptHash);
+        }
+
+        Script DecodeRedeemScript(byte[] scriptBytes)
+        {
+            var reader = new TransactionReader(new MemoryStream(scriptBytes));
+            return reader.ReadScript(scriptBytes.Length);
         }
 
         bool Evaluate(OpCode opCode, ScriptStack stack)
@@ -135,20 +183,15 @@ namespace BitcoinBook
             switch (opCode)
             {
                 case OpCode.OP_CHECKSIG:
-                    var publicSec = stack.Pop();
-                    var publicKey = PublicKey.FromSec(publicSec);
-                    var sigDerWithHashType = stack.Pop();
-                    // last byte is hash type! -- should this be previously removed?
-                    var sigDer = sigDerWithHashType.Copy(0, -1);
-                    var signature = Signature.FromDer(sigDer);
-                    var result = publicKey.Verify(sigHash, signature);
-                    return stack.Push(result);
+                    return stack.Push(CheckSig(stack, sigHash));
+                case OpCode.OP_CHECKMULTISIG:
+                    return stack.Push(CheckMultiSig(stack, sigHash));
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        bool Evaluate(OpCode opCode, ScriptStack stack, Stack<object> commands)
+        bool Evaluate(OpCode opCode, ScriptStack stack, IEnumerable<object> commands)
         {
             throw new NotImplementedException();
         }
@@ -156,6 +199,55 @@ namespace BitcoinBook
         bool Evaluate(OpCode opCode, ScriptStack stack, ScriptStack altStack)
         {
             throw new NotImplementedException();
+        }
+
+        bool CheckSig(ScriptStack stack, byte[] sigHash)
+        {
+            var publicKey = stack.PopPublicKey();
+            var signature = stack.PopSignature();
+            var result = publicKey.Verify(sigHash, signature);
+            return result;
+        }
+
+        bool CheckMultiSig(ScriptStack stack, byte[] sigHash)
+        {
+            var publicKeys = PopKeys(stack, stack.PopInt());
+            var signatures = PopSignatures(stack, stack.PopInt());
+            stack.PopInt(); // Satoshi off-by-one
+
+            foreach (var signature in signatures)
+            {
+                var foundKey = publicKeys.FirstOrDefault(k => k.Verify(sigHash, signature));
+                if (foundKey == null)
+                {
+                    return false;
+                }
+                publicKeys.Remove(foundKey);
+            }
+
+            return true;
+        }
+
+        IList<PublicKey> PopKeys(ScriptStack stack, BigInteger count)
+        {
+            var publicKeys = new List<PublicKey>();
+            while (count-- > 0)
+            {
+                publicKeys.Add(stack.PopPublicKey());
+            }
+
+            return publicKeys;
+        }
+
+        IList<Signature> PopSignatures(ScriptStack stack, BigInteger count)
+        {
+            var signatures = new List<Signature>();
+            while (count-- > 0)
+            {
+                signatures.Add(stack.PopSignature());
+            }
+
+            return signatures;
         }
 
         OpertationType GetOpertationType(OpCode opCode)

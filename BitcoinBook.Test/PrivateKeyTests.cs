@@ -10,7 +10,7 @@ namespace BitcoinBook.Test
         public void SignHashTest()
         {
             var privateKey = new PrivateKey();
-            var hash = 2384234;
+            var hash = new BigInteger(2384234).ToBigBytes32();
             var signature = privateKey.Sign(hash);
             Assert.True(privateKey.PublicKey.Verify(hash, signature));
         }
@@ -20,7 +20,7 @@ namespace BitcoinBook.Test
         {
             var privateKey = new PrivateKey(12345);
             var data = "Programming Bitcoin!";
-            var signature = privateKey.Sign(data);
+            var signature = privateKey.SignPreimage(data);
             Assert.True(privateKey.PublicKey.Verify(data, signature));
         }
 

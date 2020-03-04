@@ -17,8 +17,17 @@ namespace BitcoinBook
         public void Write(Transaction transaction)
         {
             Write(transaction.Version, 4);
+            if (transaction.Segwit)
+            {
+                Write((byte) 0);
+                Write(1);
+            }
             Write(transaction.Inputs);
             Write(transaction.Outputs);
+            if (transaction.Segwit)
+            {
+                WriteWitness(transaction.Inputs);
+            }
             Write(transaction.LockTime, 4);
         }
 
@@ -28,6 +37,34 @@ namespace BitcoinBook
             foreach (var input in inputs)
             {
                 Write(input);
+            }
+        }
+
+        void WriteWitness(IEnumerable<TransactionInput> inputs)
+        {
+            foreach (var input in inputs)
+            {
+                var commands = input.Witness.Commands;
+                WriteVar(commands.Count);
+                foreach (var command in commands)
+                {
+                    if (command is int length)
+                    {
+                        if (length != 0)
+                        {
+                            throw new FormatException("Invalid value, should be 0");
+                        }
+                        Write((byte)0);
+                    }
+                    else
+                    {
+                        if (!(command is byte[] bytes))
+                        {
+                            throw new FormatException("Invalid command type, should be byte[]");
+                        }
+                        WriteVarBytes(bytes);
+                    }
+                }
             }
         }
 

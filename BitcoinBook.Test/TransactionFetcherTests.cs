@@ -42,7 +42,7 @@ namespace BitcoinBook.Test
             var transaction = await fetcher.Fetch(transactionId);
             Assert.NotNull(transaction);
             Assert.Equal(1, transaction.Version);
-            Assert.Equal(1, transaction.Inputs.Count);
+            Assert.Single(transaction.Inputs);
             Assert.Equal("74e09a06fdf7dca73972629f129b51167483a040a3ac53bcdb1cd9a3a2e92abe", 
                 transaction.Inputs[0].PreviousTransaction.ToHex());
             Assert.Equal(0, transaction.Inputs[0].PreviousIndex);
@@ -51,17 +51,6 @@ namespace BitcoinBook.Test
             Assert.Equal(000123640, transaction.Outputs[1].Amount);
             Assert.Equal(318444117, transaction.Outputs[2].Amount);
             Assert.Equal(001022351, transaction.Outputs[3].Amount);
-        }
-
-        [Fact]
-        public async Task FetchFromCache()
-        {
-            ExpectContent(transactionId, rawTransaction);
-            var transaction = await fetcher.Fetch(transactionId);
-            for (var i = 0; i < 10; i++)
-            {
-                Assert.Same(transaction, await fetcher.Fetch(transactionId));
-            }
         }
 
         [Fact]
@@ -75,11 +64,32 @@ namespace BitcoinBook.Test
         [Fact]
         public async Task FetchForRealTest()
         {
-            var realFetcher = new TransactionFetcher(new HttpClient {BaseAddress = new Uri("http://mainnet.programmingbitcoin.com")});
-            var transaction = await realFetcher.Fetch("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c");
-            Assert.Equal(1, transaction.Inputs.Count);
+            var transaction = await IntegrationSetup.Mainnet.Fetcher.Fetch("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c");
+            Assert.Single(transaction.Inputs);
             Assert.Equal(2, transaction.Outputs.Count);
             Assert.Equal(0005897938, transaction.Outputs[0].Amount);
+        }
+
+        [Fact]
+        public async Task FetchOutputForRealTest()
+        {
+            var output = await IntegrationSetup.Mainnet.Fetcher.FetchOutput(new OutputPoint(Cipher.ToBytes("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c"), 0));
+            Assert.Equal(0005897938, output.Amount);
+        }
+
+        [Fact]
+        public async Task FetchOutputPointForRealTest()
+        {
+            var output = await IntegrationSetup.Mainnet.Fetcher.FetchOutput("0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c:0");
+            Assert.Equal(0005897938, output.Amount);
+        }
+
+        [Fact]
+        public async Task FetchOutputPointsForRealTest()
+        {
+            var outputs = await IntegrationSetup.Mainnet.Fetcher.FetchOutputs(new [] { "0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c:0", "0683c48ed57aad50b3c611366d522b11830c58f069de33bf5ceca7cafd44d98c:1" });
+            Assert.Equal(2, outputs.Length);
+            Assert.Equal(0005897938, outputs[0].Amount);
         }
 
         void ExpectStatusCode(string id, HttpStatusCode statusCode)

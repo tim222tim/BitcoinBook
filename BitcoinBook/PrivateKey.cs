@@ -1,9 +1,10 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class PrivateKey
+    public class PrivateKey : IEquatable<PrivateKey>
     {
         static readonly RandomBigInteger random = new RandomBigInteger();
 
@@ -25,7 +26,13 @@ namespace BitcoinBook
         {
         }
 
-        public Signature Sign(BigInteger hash)
+        public Signature Sign(byte[] hash)
+        {
+            if (hash == null) throw new ArgumentNullException(nameof(hash));
+            return Sign(hash.ToBigInteger());
+        }
+        
+        Signature Sign(BigInteger hash)
         {
             var k = GetK();
             var r = (S256Curve.Generator * k).X.Number;
@@ -43,14 +50,14 @@ namespace BitcoinBook
             return random.NextBigInteger(S256Curve.Field.Prime);
         }
 
-        public Signature Sign(byte[] data)
+        public Signature SignPreimage(byte[] data)
         {
-            return Sign(Cipher.Hash256Int(data));
+            return Sign(Cipher.Hash256(data));
         }
 
-        public Signature Sign(string data)
+        public Signature SignPreimage(string data)
         {
-            return Sign(Cipher.Hash256Int(data));
+            return Sign(Cipher.Hash256(data));
         }
 
         public string Wif(bool compressed = true, bool testnet = false)
@@ -66,5 +73,28 @@ namespace BitcoinBook
 
             return Cipher.ToBase58Check(bytes);
         }
+
+        public bool Equals(PrivateKey other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Key.Equals(other.Key);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((PrivateKey) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Key.GetHashCode();
+        }
+
+        public static bool operator ==(PrivateKey a, PrivateKey b) => a?.Equals(b) ?? ReferenceEquals(null, b);
+        public static bool operator !=(PrivateKey a, PrivateKey b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
     }
 }

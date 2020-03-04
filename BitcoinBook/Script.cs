@@ -1,13 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 
 namespace BitcoinBook
 {
     public class Script : ICloneable
     {
-        public IList<object> Commands { get; }
+        readonly List<object> commands;
+
+        public ReadOnlyCollection<object> Commands => commands.AsReadOnly();
 
         public Script() : this (new object[0])
+        {
+        }
+
+        public Script(params object[] commands) :
+            this(commands ?? throw new ArgumentNullException(nameof(commands)), new object[0])
         {
         }
 
@@ -18,9 +28,8 @@ namespace BitcoinBook
 
         public Script(IEnumerable<object> commands1, IEnumerable<object> commands2)
         {
-            var commands = new List<object>(commands1 ?? throw new ArgumentNullException(nameof(commands1)));
+            commands = new List<object>(commands1 ?? throw new ArgumentNullException(nameof(commands1)));
             commands.AddRange(commands2 ??  throw new ArgumentNullException(nameof(commands2)));
-            Commands = commands;
         }
 
         public Script(Script scriptSig, Script scriptPubKey) : 
@@ -29,14 +38,27 @@ namespace BitcoinBook
         {
         }
 
+        public byte[] ToBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new TransactionWriter(stream);
+            writer.Write(this);
+            return stream.ToArray();
+        }
+
         public Script Clone()
         {
-            return new Script(Commands);
+            return new Script(Commands.Select(Clone));
         }
 
         object ICloneable.Clone()
         {
             return Clone();
+        }
+
+        object Clone(object o)
+        {
+            return o is byte[] bytes ? bytes.Clone() : o;
         }
     }
 }

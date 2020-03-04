@@ -14,7 +14,7 @@ namespace BitcoinBook
 
         public async Task<long> CalculateFeesAsync(Transaction transaction)
         {
-            var priorOutputs = await fetcher.GetPriorOutputs(transaction.Inputs);
+            var priorOutputs = await fetcher.FetchPriorOutputs(transaction.Inputs);
             var inputAmounts = priorOutputs.Sum(o => o.Amount);
             var outputAmounts = transaction.Outputs.Sum(o => o.Amount);
             return inputAmounts - outputAmounts;

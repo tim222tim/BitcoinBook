@@ -20,7 +20,31 @@ namespace BitcoinBook
 
         public Transaction ReadTransaction()
         {
-            return new Transaction(ReadInt(4), ReadInputs(ReadVarInt()), ReadOutputs(ReadVarInt()), ReadUnsignedInt(4));
+            var version = ReadInt(4);
+            var count = ReadVarInt();
+            var segwit = count == 0;
+            if (segwit)
+            {
+                if (ReadByte() != 1)
+                {
+                    throw new FormatException("Invalid segwit marker");
+                }
+
+                count = ReadVarInt();
+            }
+
+            var inputs = ReadInputs(count);
+            var outputs = ReadOutputs(ReadVarInt());
+
+            if (segwit)
+            {
+                for (int i = 0; i < inputs.Count; i++)
+                {
+                    inputs[i] = inputs[i].CloneWithWitness(ReadWitness());
+                }
+            }
+            var lockTime = ReadUnsignedInt(4);
+            return new Transaction(version, segwit, inputs, outputs, lockTime);
         }
 
         IList<TransactionInput> ReadInputs(int count)
@@ -36,7 +60,7 @@ namespace BitcoinBook
 
         TransactionInput ReadInput()
         {
-            return new TransactionInput(ReadBytesReverse(32), ReadInt(4), ReadScript(), ReadUnsignedInt(4));
+            return new TransactionInput(ReadBytesReverse(32), ReadInt(4), ReadScript(), new Script(), ReadUnsignedInt(4));
         }
 
         IList<TransactionOutput> ReadOutputs(int count)
@@ -57,8 +81,7 @@ namespace BitcoinBook
 
         public Script ReadScript()
         {
-            var length = ReadVarInt();
-            return ReadScript(length);
+            return ReadScript(ReadVarInt());
         }
 
         public Script ReadScript(int length)
@@ -95,6 +118,23 @@ namespace BitcoinBook
             if (count != length)
             {
                 throw new FormatException("Script parsing ended at wrong length");
+            }
+
+            return new Script(commands);
+        }
+
+        public Script ReadWitness()
+        {
+            return ReadWitness(ReadVarInt());
+        }
+
+        public Script ReadWitness(int count)
+        {
+            var commands = new List<object>();
+            while (count-- > 0)
+            {
+                var length = ReadVarInt();
+                commands.Add(length == 0 ? (object) 0 : ReadBytes(length));
             }
 
             return new Script(commands);
