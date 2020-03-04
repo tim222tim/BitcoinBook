@@ -156,6 +156,16 @@ namespace BitcoinBook
             return bytes;
         }
 
+        public static string ToAddress(byte prefix, byte[] hash)
+        {
+            return ToBase58Check(new[] { prefix }.Concat(hash));
+        }
+
+        public static byte[] HashFromAddress(string address)
+        {
+            return FromBase58Check(address).Copy(1);
+        }
+
         static int CountZeros(byte[] bytes)
         {
             var index = 0;

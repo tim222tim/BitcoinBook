@@ -62,11 +62,6 @@ namespace BitcoinBook
             return FromSec(Cipher.ToBytes(sec ?? ""));
         }
 
-        public static byte[] HashFromAddress(string address)
-        {
-            return Cipher.FromBase58Check(address).Copy(1);
-        }
-
         static int GetValidLength(byte prefix)
         {
             switch (prefix)
@@ -128,9 +123,7 @@ namespace BitcoinBook
 
         public string ToAddress(bool compressed = true, bool testnet = false)
         {
-            var prefix = new[] {testnet ? (byte) '\x6f' : (byte)0};
-            var address = prefix.Concat(ToHash160(compressed));
-            return Cipher.ToBase58Check(address);
+            return Cipher.ToAddress(testnet ? (byte) '\x6f' : (byte) 0, ToHash160(compressed));
         }
 
         public byte[] ToHash160(bool compressed = true)
