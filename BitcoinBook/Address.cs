@@ -11,7 +11,12 @@ namespace BitcoinBook
 
         public static string ToPayToPublicKeyHashAddress(byte[] hash, bool testnet = false)
         {
-            return ToAddress(PublicKeyPrefix(testnet), hash);
+            return ToAddress(PublicKeyHashPrefix(testnet), hash);
+        }
+
+        public static string ToPayToScriptHashAddress(byte[] hash, bool testnet = false)
+        {
+            return ToAddress(ScriptHashPrefix(testnet), hash);
         }
 
         public static byte[] HashFromAddress(string address)
@@ -31,12 +36,22 @@ namespace BitcoinBook
 
         public static byte[] FromPayToPublicKeyHashAddress(string address, bool testnet = false)
         {
-            return HashFromAddress(PublicKeyPrefix(testnet), address);
+            return HashFromAddress(PublicKeyHashPrefix(testnet), address);
         }
 
-        static byte PublicKeyPrefix(bool testnet)
+        public static byte[] FromPayToScriptHashAddress(string address, bool testnet = false)
         {
-            return testnet ? (byte)'\x6f' : (byte)0;
+            return HashFromAddress(ScriptHashPrefix(testnet), address);
+        }
+
+        static byte PublicKeyHashPrefix(bool testnet)
+        {
+            return testnet ? (byte)'\x6f' : (byte)'\x00';
+        }
+
+        static byte ScriptHashPrefix(bool testnet)
+        {
+            return testnet ? (byte)'\xc4' : (byte)'\x05';
         }
     }
 }
