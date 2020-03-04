@@ -123,8 +123,7 @@ namespace BitcoinBook
 
         public string ToAddress(bool compressed = true, bool testnet = false)
         {
-            byte[] hash = ToHash160(compressed);
-            return Address.ToAddress(testnet ? (byte) '\x6f' : (byte) 0, hash);
+            return Address.ToPayToPublicKeyHashAddress(ToHash160(compressed), testnet);
         }
 
         public byte[] ToHash160(bool compressed = true)
