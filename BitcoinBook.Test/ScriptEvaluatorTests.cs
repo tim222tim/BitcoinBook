@@ -249,6 +249,24 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
+        public void BareMultisigTwoOfThreeBadOrderTest()
+        {
+            var commands = new object[]
+            {
+                OpCode.OP_0,
+                signature.ToDer().Concat(1),
+                signature2.ToDer().Concat(1),
+                OpCode.OP_2,
+                privateKey3.PublicKey.ToSec(),
+                privateKey2.PublicKey.ToSec(),
+                publicKey.ToSec(),
+                OpCode.OP_3,
+                OpCode.OP_CHECKMULTISIG
+            };
+            Assert.False(evaluator.Evaluate(commands, Cipher.ToBytes(goodHash)));
+        }
+
+        [Fact]
         public void BareMultisigTwoOfThreeWithSameSigTwiceTest()
         {
             var commands = new object[]
