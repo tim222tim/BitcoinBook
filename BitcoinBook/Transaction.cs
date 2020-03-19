@@ -15,7 +15,8 @@ namespace BitcoinBook
         public bool Segwit { get; }
         public int Version { get; }
         public ReadOnlyCollection<TransactionInput> Inputs => inputs.AsReadOnly();
-        public ReadOnlyCollection<TransactionOutput> Outputs => outputs.AsReadOnly();public uint LockTime { get; }
+        public ReadOnlyCollection<TransactionOutput> Outputs => outputs.AsReadOnly();
+        public uint LockTime { get; }
         public bool Testnet { get; }
 
         public Transaction(int version, bool segwit, IEnumerable<TransactionInput> inputs, IEnumerable<TransactionOutput> outputs, uint lockTime, bool testnet = false)
