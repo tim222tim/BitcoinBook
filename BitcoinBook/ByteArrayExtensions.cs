@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Numerics;
+using System.Security.Cryptography;
 
 namespace BitcoinBook
 {
     public static class ByteArrayExtensions
     {
-        public static byte[] Copy(this byte[] bytes, int index, int length = 0)
+        public static byte[] Copy(this byte[] bytes, int index = 0, int length = 0)
         {
             if (bytes == null) throw new ArgumentNullException(nameof(bytes));
             if (index < 0)
@@ -29,9 +30,21 @@ namespace BitcoinBook
             return newBytes;
         }
 
+        public static byte[] Reverse(this byte[] bytes)
+        {
+            var newBytes = bytes.Copy();
+            Array.Reverse(newBytes);
+            return newBytes;
+        }
+
         public static string ToHex(this byte[] bytes)
         {
             return BitConverter.ToString(bytes).Replace("-", "").ToLower();
+        }
+
+        public static string ToReverseHex(this byte[] bytes)
+        {
+            return bytes.Reverse().ToHex();
         }
 
         public static BigInteger ToBigInteger(this byte[] bytes)

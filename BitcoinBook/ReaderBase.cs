@@ -72,9 +72,7 @@ namespace BitcoinBook
 
         protected byte[] ReadBytesReverse(int count)
         {
-            var bytes = reader.ReadBytes(count);
-            Array.Reverse(bytes);
-            return bytes;
+            return reader.ReadBytes(count).Reverse();
         }
 
         protected byte[] ReadVarBytes()

@@ -31,9 +31,7 @@ namespace BitcoinBook
 
         public static byte[] ToSignedBigBytes(this BigInteger i)
         {
-            var bytes = i.ToByteArray();
-            Array.Reverse(bytes);
-            return bytes;
+            return i.ToByteArray().Reverse();
         }
 
         public static byte[] ToBigBytes32(this BigInteger i)

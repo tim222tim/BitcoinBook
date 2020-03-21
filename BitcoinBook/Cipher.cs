@@ -95,9 +95,7 @@ namespace BitcoinBook
 
         public static byte[] ReverseHash256(byte[] data)
         {
-            var hash = Hash256(data);
-            Array.Reverse(hash);
-            return hash;
+            return Hash256(data).Reverse();
         }
 
         public static byte[] Hash256(string data)
@@ -166,9 +164,7 @@ namespace BitcoinBook
 
         public static byte[] ToReverseBytes(string hex)
         {
-            var bytes = ToBytes(hex);
-            Array.Reverse(bytes);
-            return bytes;
+            return ToBytes(hex).Reverse();
         }
 
         static int CountZeros(byte[] bytes)

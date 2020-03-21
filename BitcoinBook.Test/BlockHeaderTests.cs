@@ -16,6 +16,17 @@ namespace BitcoinBook.Test
             0x5cfc9955);
 
         [Fact]
+        public void PropertiesTest()
+        {
+            Assert.Equal(0x20000000U, header.Version);
+            Assert.Equal("0000000000000000007962066dcd6675830883516bcf40047d42740a85eb2919", header.PreviousBlock);
+            Assert.Equal("31951c69428a95a46b517ffb0de12fec1bd0b2392aec07b64573e03ded31621f", header.MerkleRoot);
+            Assert.Equal(1513622125U, header.Timestamp);
+            Assert.Equal(0x18009645U, header.Bits);
+            Assert.Equal(0x5cfc9955U, header.Nonce);
+        }
+
+        [Fact]
         public void ToBytesTest()
         {
             Assert.Equal(rawBlockHeader, header.ToBytes().ToHex());

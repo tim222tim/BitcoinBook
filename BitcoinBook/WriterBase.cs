@@ -80,9 +80,7 @@ namespace BitcoinBook
 
         protected void WriteReverse(byte[] bytes)
         {
-            var newBytes = (byte[])bytes.Clone();
-            Array.Reverse(newBytes);
-            writer.Write(newBytes);
+            writer.Write(bytes.Reverse());
         }
 
         int GetVarLength(ulong i)

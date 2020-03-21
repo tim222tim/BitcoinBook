@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 
 namespace BitcoinBook
 {
@@ -11,8 +10,8 @@ namespace BitcoinBook
 
         public string Id => id.ToHex();
         public uint Version { get; }
-        public string PreviousBlock => previousBlock.ToHex(); // TODO should be reversed
-        public string MerkleRoot => merkleRoot.ToHex(); // TODO should be reversed
+        public string PreviousBlock => previousBlock.ToReverseHex();
+        public string MerkleRoot => merkleRoot.ToReverseHex();
         public uint Timestamp { get; }
         public uint Bits { get; }
         public uint Nonce { get; }
