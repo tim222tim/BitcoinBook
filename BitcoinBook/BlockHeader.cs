@@ -17,7 +17,6 @@ namespace BitcoinBook
         public uint Bits { get; }
         public uint Nonce { get; }
 
-
         public BlockHeader(uint version, string previousBlock, string merkleRoot, uint timestamp, uint bits, uint nonce)
         {
             Version = version;
