@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-
-namespace BitcoinBook.Test
+﻿namespace BitcoinBook.Test
 {
     public static class IntegrationSetup
     {

@@ -33,8 +33,8 @@ namespace BitcoinBook
 
         byte[] ComputeId()
         {
-            var hash = Cipher.Hash256(Cipher.Hash256(ToBytes()));
-            // Array.Reverse(hash);
+            var hash = Cipher.Hash256(ToBytes());
+            Array.Reverse(hash);
             return hash;
         }
 
@@ -56,11 +56,6 @@ namespace BitcoinBook
             bytes[++index] = (byte)(value >> 8);
             bytes[++index] = (byte)(value >> 0x10);
             bytes[++index] = (byte)(value >> 0x18);
-
-            // bytes[index] = (byte)(value >> 0x18);
-            // bytes[++index] = (byte)(value >> 0x10);
-            // bytes[++index] = (byte)(value >> 8);
-            // bytes[++index] = (byte)value;
         }
     }
 }
