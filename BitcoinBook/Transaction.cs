@@ -33,12 +33,7 @@ namespace BitcoinBook
         string ComputeId()
         {
             var transaction = Segwit ? CloneNonMalleable() : this;
-            var stream = new MemoryStream();
-            var writer = new TransactionWriter(stream);
-            writer.Write(transaction);
-            var hash = Cipher.Hash256(stream.ToArray());
-            Array.Reverse(hash);
-            return hash.ToHex();
+            return Cipher.ReverseHash256(transaction.ToBytes()).ToHex();
         }
 
         public byte[] ToBytes()

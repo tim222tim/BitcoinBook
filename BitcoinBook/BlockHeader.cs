@@ -11,8 +11,8 @@ namespace BitcoinBook
 
         public string Id => id.ToHex();
         public uint Version { get; }
-        public string PreviousBlock => previousBlock.ToHex();
-        public string MerkleRoot => merkleRoot.ToHex();
+        public string PreviousBlock => previousBlock.ToHex(); // TODO should be reversed
+        public string MerkleRoot => merkleRoot.ToHex(); // TODO should be reversed
         public uint Timestamp { get; }
         public uint Bits { get; }
         public uint Nonce { get; }
@@ -21,10 +21,8 @@ namespace BitcoinBook
         public BlockHeader(uint version, string previousBlock, string merkleRoot, uint timestamp, uint bits, uint nonce)
         {
             Version = version;
-            this.previousBlock = Cipher.ToBytes(previousBlock);
-            Array.Reverse(this.previousBlock);
-            this.merkleRoot = Cipher.ToBytes(merkleRoot);
-            Array.Reverse(this.merkleRoot);
+            this.previousBlock = Cipher.ToReverseBytes(previousBlock);
+            this.merkleRoot = Cipher.ToReverseBytes(merkleRoot);
             Timestamp = timestamp;
             Bits = bits;
             Nonce = nonce;
@@ -33,9 +31,7 @@ namespace BitcoinBook
 
         byte[] ComputeId()
         {
-            var hash = Cipher.Hash256(ToBytes());
-            Array.Reverse(hash);
-            return hash;
+            return Cipher.ReverseHash256(ToBytes());
         }
 
         public byte[] ToBytes()
