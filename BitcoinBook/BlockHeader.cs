@@ -27,6 +27,17 @@ namespace BitcoinBook
             id = ComputeId();
         }
 
+        public static BlockHeader Parse(byte[] bytes)
+        {
+            return new BlockHeader(
+                BitConverter.ToUInt32(bytes, 0),
+                bytes.Copy(4, 32).ToReverseHex(),
+                bytes.Copy(36, 32).ToReverseHex(),
+                BitConverter.ToUInt32(bytes, 68),
+                BitConverter.ToUInt32(bytes, 72),
+                BitConverter.ToUInt32(bytes, 76));
+        }
+
         byte[] ComputeId()
         {
             return Cipher.ReverseHash256(ToBytes());
