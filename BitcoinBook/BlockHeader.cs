@@ -10,7 +10,7 @@ namespace BitcoinBook
         readonly byte[] merkleRoot;
 
         public string Id => id.ToHex();
-        public BigInteger Target => GetTarget();
+        public BigInteger Target => (Bits & 0x00FFFFFF) * BigInteger.Pow(256, (int)(Bits >> 0x18) - 3);
 
         public uint Version { get; }
         public string PreviousBlock => previousBlock.ToReverseHex();
@@ -64,22 +64,11 @@ namespace BitcoinBook
         {
             switch (bip)
             {
-                case 9:
-                    return Version >> 29 == 1;
-                case 91:
-                    return (Version >> 4 & 1) == 1;
-                case 141:
-                    return (Version >> 1 & 1) == 1;
-                default:
-                    throw new NotImplementedException();
+                case 9:  return Version >> 29 == 1;
+                case 91:  return (Version >> 4 & 1) == 1;
+                case 141:  return (Version >> 1 & 1) == 1;
+                default:  throw new NotImplementedException();
             }
-        }
-
-        BigInteger GetTarget()
-        {
-            var exponent = (int)Bits & 0xFF;
-            var coefficient = BitConverter.ToUInt32(BitConverter.GetBytes(Bits & 0xFFFFFF00).Reverse());
-            return coefficient * BigInteger.Pow(256, exponent - 3);
         }
 
         void CopyBytes(uint value, byte[] bytes, int index)

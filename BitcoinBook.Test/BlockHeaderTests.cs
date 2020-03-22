@@ -78,7 +78,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void TargetTest()
         {
-            var header = GetHeaderWithBits(0xe93c0118);
+            var header = GetHeaderWithBits(0x18013ce9);
             Assert.Equal("0000000000000000013ce9000000000000000000000000000000000000000000", header.Target.ToHex32());
         }
 
@@ -86,8 +86,6 @@ namespace BitcoinBook.Test
         public void ProofOfWorkTest()
         {
             var proof = BigInteger.Parse(header500K.Id, NumberStyles.HexNumber);
-            var id = header500K.Id;
-            var target = header500K.Target.ToHex32();
             Assert.True(proof < header500K.Target);
         }
 
