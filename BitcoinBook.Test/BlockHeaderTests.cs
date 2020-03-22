@@ -1,4 +1,7 @@
-﻿using Xunit;
+﻿using System;
+using System.Globalization;
+using System.Numerics;
+using Xunit;
 // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
 
 namespace BitcoinBook.Test
@@ -49,5 +52,66 @@ namespace BitcoinBook.Test
         {
             Assert.Equal(blockId, header500K.Id);
         }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(999)]
+        public void IsBipThrowsNotImplementedTest(int bip)
+        {
+            Assert.Throws<NotImplementedException>(() => header500K.IsBip(bip));
+        }
+
+        [Theory]
+        [InlineData(false, 9, 0x10000000)]
+        [InlineData(true, 9, 0x20000000)]
+        [InlineData(true, 9, 0x30000000)]
+        [InlineData(false, 9, 0x40000000)]
+        [InlineData(false, 91, 0x20000000)]
+        [InlineData(true, 91, 0x00000010)]
+        [InlineData(false, 141, 0x20000000)]
+        [InlineData(true, 141, 0x00000002)]
+        public void IsBipTest(bool expected, int bip, uint version)
+        {
+            Assert.Equal(expected, GetHeaderWithVersion(version).IsBip(bip));
+        }
+
+        [Fact]
+        public void TargetTest()
+        {
+            var header = GetHeaderWithBits(0xe93c0118);
+            Assert.Equal("0000000000000000013ce9000000000000000000000000000000000000000000", header.Target.ToHex32());
+        }
+
+        [Fact]
+        public void ProofOfWorkTest()
+        {
+            var proof = BigInteger.Parse(header500K.Id, NumberStyles.HexNumber);
+            var id = header500K.Id;
+            var target = header500K.Target.ToHex32();
+            Assert.True(proof < header500K.Target);
+        }
+
+        BlockHeader GetHeaderWithVersion(uint version)
+        {
+            return new BlockHeader(
+                version,
+                "0000000000000000007962066dcd6675830883516bcf40047d42740a85eb2919",
+                "31951c69428a95a46b517ffb0de12fec1bd0b2392aec07b64573e03ded31621f",
+                1513622125,
+                0x18009645,
+                0x5cfc9955);
+        }
+
+        BlockHeader GetHeaderWithBits(uint bits)
+        {
+            return new BlockHeader(
+                0x20000000,
+                "0000000000000000007962066dcd6675830883516bcf40047d42740a85eb2919",
+                "31951c69428a95a46b517ffb0de12fec1bd0b2392aec07b64573e03ded31621f",
+                1513622125,
+                bits,
+                0x5cfc9955);
+        }
+
     }
 }

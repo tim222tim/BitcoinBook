@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace BitcoinBook
 {
@@ -9,6 +10,8 @@ namespace BitcoinBook
         readonly byte[] merkleRoot;
 
         public string Id => id.ToHex();
+        public BigInteger Target => GetTarget();
+
         public uint Version { get; }
         public string PreviousBlock => previousBlock.ToReverseHex();
         public string MerkleRoot => merkleRoot.ToReverseHex();
@@ -29,6 +32,8 @@ namespace BitcoinBook
 
         public static BlockHeader Parse(byte[] bytes)
         {
+            if (bytes.Length != 80) throw new FormatException("must be 80 bytes");
+
             return new BlockHeader(
                 BitConverter.ToUInt32(bytes, 0),
                 bytes.Copy(4, 32).ToReverseHex(),
@@ -53,6 +58,28 @@ namespace BitcoinBook
             CopyBytes(Bits, bytes, 72);
             CopyBytes(Nonce, bytes, 76);
             return bytes;
+        }
+
+        public bool IsBip(int bip)
+        {
+            switch (bip)
+            {
+                case 9:
+                    return Version >> 29 == 1;
+                case 91:
+                    return (Version >> 4 & 1) == 1;
+                case 141:
+                    return (Version >> 1 & 1) == 1;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        BigInteger GetTarget()
+        {
+            var exponent = (int)Bits & 0xFF;
+            var coefficient = BitConverter.ToUInt32(BitConverter.GetBytes(Bits & 0xFFFFFF00).Reverse());
+            return coefficient * BigInteger.Pow(256, exponent - 3);
         }
 
         void CopyBytes(uint value, byte[] bytes, int index)
