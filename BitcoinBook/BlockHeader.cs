@@ -10,7 +10,8 @@ namespace BitcoinBook
         readonly byte[] merkleRoot;
 
         public string Id => id.ToHex();
-        public BigInteger Target => (Bits & 0x00FFFFFF) * BigInteger.Pow(256, (int)(Bits >> 0x18) - 3);
+        public BigInteger Target => (Bits & 0x00ffffff) * BigInteger.Pow(256, (int)(Bits >> 0x18) - 3);
+        public double Difficulty => 0xffff * Math.Pow(256,0x1d - 3) / (double)Target;
 
         public uint Version { get; }
         public string PreviousBlock => previousBlock.ToReverseHex();
@@ -58,6 +59,11 @@ namespace BitcoinBook
             CopyBytes(Bits, bytes, 72);
             CopyBytes(Nonce, bytes, 76);
             return bytes;
+        }
+
+        public bool IsValidProofOfWork()
+        {
+            return id.ToBigInteger() < Target;
         }
 
         public bool IsBip(int bip)

@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Numerics;
 using Xunit;
+using Xunit.Sdk;
+
 // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
 
 namespace BitcoinBook.Test
@@ -85,8 +87,20 @@ namespace BitcoinBook.Test
         [Fact]
         public void ProofOfWorkTest()
         {
-            var proof = BigInteger.Parse(header500K.Id, NumberStyles.HexNumber);
-            Assert.True(proof < header500K.Target);
+            Assert.True(header500K.IsValidProofOfWork());
+        }
+
+        [Fact]
+        public void ProofOfWorkBadTest()
+        {
+            Assert.False(GetHeaderWithBits(0x19013ce9).IsValidProofOfWork());
+        }
+
+        [Fact]
+        public void DifficultyTest()
+        {
+            var difficulty = GetHeaderWithBits(0x18013ce9).Difficulty;
+            Assert.Equal(888171856257.3206, difficulty);
         }
 
         BlockHeader GetHeaderWithVersion(uint version)
