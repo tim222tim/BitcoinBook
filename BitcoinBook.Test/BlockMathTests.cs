@@ -15,7 +15,8 @@ namespace BitcoinBook.Test
                 "000000203471101bbda3fe307664b3283a9ef0e97d9a38a7eacd8800000000000000000010c8aba8479bbaa5e0848152fd3c2289ca50e1c3e58c9a4faaafbdf5803c5448ddb845597e8b0118e43a81d3"));
             Assert.Equal("0000000000000000012a85f9010f0e2cf696408300918f4b5df8ddd8809102a2",
                 block471744.Id);
-            Assert.Equal("x", BlockMath.ComputeNewTarget(block471744, block473759).ToHex32());
+            var newTarget = BlockMath.ComputeNewTarget(block471744, block473759);
+            Assert.Equal((uint)0x18018d30, BlockMath.TargetToBits(newTarget));
         }
 
         [Fact]
