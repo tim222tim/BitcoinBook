@@ -1,19 +1,20 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
+using System.Text;
 
 namespace BitcoinBook
 {
-    public class WriterBase
+    public class ByteWriter
     {
         readonly BinaryWriter writer;
 
-        public WriterBase(BinaryWriter writer)
+        public ByteWriter(BinaryWriter writer)
         {
             this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
-        public WriterBase(Stream stream) : this(new BinaryWriter(stream ?? throw new ArgumentNullException(nameof(stream))))
+        public ByteWriter(Stream stream) : this(new BinaryWriter(stream ?? throw new ArgumentNullException(nameof(stream))))
         {
         }
 
@@ -27,12 +28,12 @@ namespace BitcoinBook
             Write((ulong)i, length);
         }
 
-        protected void Write(byte b)
+        public void Write(byte b)
         {
             writer.Write(b);
         }
 
-        protected void Write(byte[] bytes)
+        public void Write(byte[] bytes)
         {
             writer.Write(bytes);
         }
@@ -81,6 +82,11 @@ namespace BitcoinBook
         protected void WriteReverse(byte[] bytes)
         {
             writer.Write(bytes.Reverse());
+        }
+
+        public void Write(string s, int length)
+        {
+            Write(Encoding.ASCII.GetBytes(s.PadRight(length, '\0')));
         }
 
         int GetVarLength(ulong i)

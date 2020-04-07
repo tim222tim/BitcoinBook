@@ -5,6 +5,8 @@ namespace BitcoinBook.Test
 {
     public class NetworkEnvelopeTests
     {
+        const string noPayloadHex = "f9beb4d976657261636b000000000000000000005df6e0e2";
+
         [Fact]
         public void ToStringTest()
         {
@@ -30,10 +32,26 @@ namespace BitcoinBook.Test
         [Fact]
         public void ParseTest()
         {
-            var envelope = NetworkEnvelope.Parse(Cipher.ToBytes("f9beb4d976657261636b000000000000000000005df6e0e2"), false);
+            var envelope = NetworkEnvelope.Parse(Cipher.ToBytes(noPayloadHex), false);
             Assert.Equal("verack", envelope.Command);
             Assert.Empty(envelope.Payload);
             Assert.False(envelope.Testnet);
+        }
+
+        [Fact]
+        public void ToBytesTest()
+        {
+            var envelope = NetworkEnvelope.Parse(Cipher.ToBytes(noPayloadHex), false);
+            Assert.Equal(noPayloadHex, envelope.ToBytes().ToHex());
+        }
+
+        [Fact]
+        public void ToBytesWithPayloadTest()
+        {
+            var envelope = new NetworkEnvelope("anything", new byte[] {1, 2, 3, 4, 5}, false);
+            var envelope2 = NetworkEnvelope.Parse(envelope.ToBytes(), false);
+            Assert.Equal(envelope.Command, envelope2.Command);
+            Assert.Equal(envelope.Payload, envelope2.Payload);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace BitcoinBook
 {
-    public class TransactionWriter : WriterBase
+    public class TransactionWriter : ByteWriter
     {
         public TransactionWriter(BinaryWriter writer) : base(writer)
         {
