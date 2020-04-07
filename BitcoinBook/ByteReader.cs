@@ -1,22 +1,27 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace BitcoinBook
 {
-    public class ReaderBase
+    public class ByteReader
     {
         readonly BinaryReader reader;
 
-        protected ReaderBase(BinaryReader reader)
+        public ByteReader(BinaryReader reader)
         {
             this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
 
-        protected ReaderBase(Stream stream) : this(new BinaryReader(stream ?? throw new ArgumentNullException(nameof(stream))))
+        public ByteReader(Stream stream) : this(new BinaryReader(stream ?? throw new ArgumentNullException(nameof(stream))))
         {
         }
 
-        protected ReaderBase(string hex) : this(new MemoryStream(Cipher.ToBytes(hex ?? throw new ArgumentNullException(nameof(hex)))))
+        public ByteReader(byte[] bytes) : this(new MemoryStream(bytes))
+        {
+        }
+
+        public ByteReader(string hex) : this(Cipher.ToBytes(hex ?? throw new ArgumentNullException(nameof(hex))))
         {
         }
 
@@ -25,7 +30,7 @@ namespace BitcoinBook
             return reader.ReadByte();
         }
 
-        protected byte[] ReadBytes(int count)
+        public byte[] ReadBytes(int count)
         {
             return reader.ReadBytes(count);
         }
@@ -78,6 +83,13 @@ namespace BitcoinBook
         protected byte[] ReadVarBytes()
         {
             return reader.ReadBytes(ReadVarInt());
+        }
+
+        public string ReadString(int length)
+        {
+            var builder = new StringBuilder();
+            builder.Append(reader.ReadChars(length));
+            return builder.ToString().TrimEnd('\0');
         }
 
         protected int GetVarLength(long i)

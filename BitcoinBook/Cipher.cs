@@ -43,7 +43,7 @@ namespace BitcoinBook
             return ToBase58(bytes.Concat(Hash256Prefix(bytes)));
         }
 
-        static byte[] Hash256Prefix(byte[] bytes)
+        public static byte[] Hash256Prefix(byte[] bytes)
         {
             return Hash256(bytes).Copy(0, 4);
         }

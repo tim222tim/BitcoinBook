@@ -4,7 +4,7 @@ using System.IO;
 
 namespace BitcoinBook
 {
-    public class TransactionReader : ReaderBase
+    public class TransactionReader : ByteReader
     {
         public TransactionReader(BinaryReader reader) : base(reader)
         {
