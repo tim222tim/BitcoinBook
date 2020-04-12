@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace BitcoinBook
@@ -45,12 +47,12 @@ namespace BitcoinBook
             return (int) ReadUnsignedLong(length);
         }
 
-        protected long ReadLong(int length)
+        public long ReadLong(int length)
         {
             return (long) ReadUnsignedLong(length);
         }
 
-        protected ulong ReadUnsignedLong(int length)
+        public ulong ReadUnsignedLong(int length)
         {
             ulong i = 0L;
             ulong factor = 1L;
@@ -92,6 +94,11 @@ namespace BitcoinBook
             return builder.ToString().TrimEnd('\0');
         }
 
+        public string ReadString()
+        {
+            return ReadString(ReadVarInt());
+        }
+
         protected int GetVarLength(long i)
         {
             switch (i)
@@ -105,6 +112,21 @@ namespace BitcoinBook
                 default:
                     return 1;
             }
+        }
+
+        public IPAddress ReadAddress()
+        {
+            var bytesZero = reader.ReadBytes(10);
+            if (bytesZero.Any(b => b != 0) || ReadInt(2) != 0xffff)
+            {
+                throw new FormatException("Expected IPv4 prefix");
+            }
+            return new IPAddress(reader.ReadBytes(4));
+        }
+
+        public bool ReadBool()
+        {
+            return reader.ReadByte() != 0;
         }
     }
 }

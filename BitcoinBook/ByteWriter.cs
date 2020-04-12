@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Numerics;
 using System.Text;
 
@@ -97,6 +98,30 @@ namespace BitcoinBook
         byte GetVarPrefix(ulong i)
         {
             return i < 0x10000 ? (byte)0xfd : i < 0x100000000 ? (byte)0xfe : (byte)0xff;
+        }
+
+        public void Write(IPAddress receiverAddress)
+        {
+            var bytes = receiverAddress.GetAddressBytes();
+            if (bytes.Length != 4)
+            {
+                throw new FormatException("Expecting IPv4");
+            }
+
+            Write(0, 10);
+            Write(0xffff, 2);
+            Write(bytes);
+        }
+
+        public void Write(string str)
+        {
+            var bytes = Encoding.ASCII.GetBytes(str);
+            WriteVarBytes(bytes);
+        }
+
+        public void Write(bool b)
+        {
+            Write(b ? 1 : 0, 1);
         }
     }
 }
