@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Security.Cryptography;
 
 namespace BitcoinBook
 {
-    public class VersionMessage
+    public class VersionMessage : IMessage
     {
         public const int DefaultVersion = 70015;
 
@@ -39,6 +38,8 @@ namespace BitcoinBook
             Height = height;
             Flag = flag;
         }
+
+        public string Command => "version";
 
         public static VersionMessage Parse(byte[] bytes)
         {

@@ -10,14 +10,18 @@ namespace BitcoinBook
         public byte[] Payload { get; }
         public bool Testnet { get; }
 
-        public NetworkEnvelope(string command, byte[] payload, bool testnet)
+        public NetworkEnvelope(string command, byte[] payload, bool testnet = false)
         {
             Command = command ?? throw new ArgumentNullException(nameof(command));
             Payload = payload ?? throw new ArgumentNullException(nameof(payload));
             Testnet = testnet;
         }
 
-        public static NetworkEnvelope Parse(byte[] bytes, bool testnet)
+        public NetworkEnvelope(IMessage message, bool testnet) : this(message?.Command, message?.ToBytes(), testnet)
+        {
+        }
+
+        public static NetworkEnvelope Parse(byte[] bytes, bool testnet = false)
         {
             var reader = new ByteReader(bytes);
             try
