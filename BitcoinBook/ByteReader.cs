@@ -34,7 +34,12 @@ namespace BitcoinBook
 
         public byte[] ReadBytes(int count)
         {
-            return reader.ReadBytes(count);
+            var bytes = reader.ReadBytes(count);
+            if (bytes.Length != count)
+            {
+                throw new EndOfStreamException($"Could not read {count} bytes");
+            }
+            return bytes;
         }
 
         public uint ReadUnsignedInt(int length)

@@ -23,7 +23,12 @@ namespace BitcoinBook
 
         public static NetworkEnvelope Parse(byte[] bytes, bool testnet = false)
         {
-            var reader = new ByteReader(bytes);
+            return Parse(new MemoryStream(bytes));
+        }
+
+        public static NetworkEnvelope Parse(Stream stream, bool testnet = false)
+        {
+            var reader = new ByteReader(stream);
             try
             {
                 var magic = reader.ReadUnsignedInt(4);
@@ -47,6 +52,7 @@ namespace BitcoinBook
                 throw new FormatException("Read past end of data", ex);
             }
         }
+
 
         public byte[] ToBytes()
         {
