@@ -27,12 +27,15 @@ namespace BitcoinBook
             Version = version;
             Services = services;
             Timestamp = timestamp;
+
             ReceiverServices = receiverServices;
             ReceiverAddress = receiverAddress;
             ReceiverPort = receiverPort;
+
             SenderServices = senderServices;
             SenderAddress = senderAddress;
             SenderPort = senderPort;
+
             Nonce = nonce;
             UserAgent = userAgent;
             Height = height;
@@ -50,12 +53,15 @@ namespace BitcoinBook
                     reader.ReadInt(4),
                     reader.ReadLong(8),
                     reader.ReadLong(8),
+
                     reader.ReadLong(8),
                     reader.ReadAddress(),
                     (ushort)reader.ReadInt(2),
+
                     reader.ReadLong(8),
                     reader.ReadAddress(),
                     (ushort)reader.ReadInt(2),
+
                     reader.ReadUnsignedLong(8),
                     reader.ReadString(),
                     reader.ReadInt(4),
@@ -74,12 +80,15 @@ namespace BitcoinBook
             writer.Write(Version, 4);
             writer.Write(Services, 8);
             writer.Write(Timestamp, 8);
+
             writer.Write(ReceiverServices, 8);
             writer.Write(ReceiverAddress);
             writer.Write(ReceiverPort, 2);
+
             writer.Write(SenderServices, 8);
             writer.Write(SenderAddress);
             writer.Write(SenderPort, 2);
+
             writer.Write(Nonce, 8);
             writer.Write(UserAgent);
             writer.Write(Height, 4);

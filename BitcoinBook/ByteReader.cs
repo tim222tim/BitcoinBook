@@ -122,11 +122,16 @@ namespace BitcoinBook
         public IPAddress ReadAddress()
         {
             var bytesZero = reader.ReadBytes(10);
-            if (bytesZero.Any(b => b != 0) || ReadInt(2) != 0xffff)
+            var marker = ReadInt(2);
+            var addressBytes = reader.ReadBytes(4);
+            if (bytesZero.Any(b => b != 0) || marker != 0xffff)
             {
-                throw new FormatException("Expected IPv4 prefix");
+                return new IPAddress(0);
+                // throw new FormatException("Expected IPv4 prefix");
             }
-            return new IPAddress(reader.ReadBytes(4));
+
+            var address = new IPAddress(addressBytes);
+            return address;
         }
 
         public bool ReadBool()

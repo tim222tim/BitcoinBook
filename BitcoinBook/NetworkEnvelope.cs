@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Windows.Input;
 
 namespace BitcoinBook
 {
@@ -8,6 +9,7 @@ namespace BitcoinBook
     {
         public string Command { get; }
         public byte[] Payload { get; }
+        public IMessage Message { get; }
         public bool Testnet { get; }
 
         public NetworkEnvelope(string command, byte[] payload, bool testnet = false)
@@ -15,6 +17,7 @@ namespace BitcoinBook
             Command = command ?? throw new ArgumentNullException(nameof(command));
             Payload = payload ?? throw new ArgumentNullException(nameof(payload));
             Testnet = testnet;
+            Message = ParseMessage(Command, Payload);
         }
 
         public NetworkEnvelope(IMessage message, bool testnet) : this(message?.Command, message?.ToBytes(), testnet)
@@ -53,22 +56,39 @@ namespace BitcoinBook
             }
         }
 
-
         public byte[] ToBytes()
         {
             var stream = new MemoryStream();
+            WriteTo(stream);
+            return stream.ToArray();
+        }
+
+        public void WriteTo(Stream stream)
+        {
             var writer = new ByteWriter(stream);
             writer.Write(Magic(Testnet), 4);
             writer.Write(Command, 12);
             writer.Write(Payload.Length, 4);
             writer.Write(Cipher.Hash256Prefix(Payload));
             writer.Write(Payload);
-            return stream.ToArray();
         }
 
         public override string ToString()
         {
             return string.Format($"{Command}: {Payload.ToHex()}");
+        }
+
+        IMessage ParseMessage(string commandName, byte[] payload)
+        {
+            switch (commandName)
+            {
+                case "version":
+                    return VersionMessage.Parse(payload);
+                case "verack":
+                    return VerAckMessage.Parse(payload);
+                default:
+                    return null;
+            }
         }
 
         static uint Magic(bool testnet)

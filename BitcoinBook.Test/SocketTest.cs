@@ -23,26 +23,33 @@ namespace BitcoinBook.Test
 
         void SendVersion(IPAddress ipAddress, bool testnet)
         {
+            var gotVerAck = false;
+            string agent = null;
+
             var socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(new IPEndPoint(ipAddress, testnet ? 18333 : 8333));
+            var port = (ushort) (testnet ? 18333 : 8333);
+            socket.Connect(new IPEndPoint(ipAddress, port));
 
             try
             {
-                var message = new VersionMessage(VersionMessage.DefaultVersion, 0, DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                    0, new IPAddress(new byte[] {0, 0, 0, 0}), 18333,
-                    0, new IPAddress(new byte[] {0, 0, 0, 0}), 18333,
+                var message = new VersionMessage(VersionMessage.DefaultVersion, 0,
+                    DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    0, new IPAddress(new byte[] {0, 0, 0, 0}), port,
+                    0, new IPAddress(new byte[] {0, 0, 0, 0}), port,
                     0xa127ec40a4d7a8f6, "/rossitertest:0.1/", 0, true);
                 var envelope = new NetworkEnvelope(message, testnet);
 
-                var envelopeBytes = envelope.ToBytes();
-                var bytesSent = socket.Send(envelopeBytes);
+                var stream = new NetworkStream(socket);
+                envelope.WriteTo(stream);
 
-                // var bytes = new byte[16384];
-                // var bytesReceived = socket.Receive(bytes);
+                while (agent == null && !gotVerAck)
+                {
+                    var responseEnvelope = NetworkEnvelope.Parse(stream, testnet);
+                    agent = (responseEnvelope.Message as VersionMessage)?.UserAgent;
+                    gotVerAck = responseEnvelope.Message is VerAckMessage;
+                }
 
-                var responseEnvelope = NetworkEnvelope.Parse(new NetworkStream(socket), testnet);
-                Assert.Equal("version", responseEnvelope.Command);
-                var responseMessage = VersionMessage.Parse(responseEnvelope.Payload);
+                Assert.StartsWith("/Satoshi", agent ?? "");
             }
             finally
             {
