@@ -1,24 +1,24 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 using Xunit;
 
 namespace BitcoinBook.Test
 {
     public class SocketTest
     {
-        [Fact]
-        public void SendMessageProgrammingBitcoinTestnet()
+        public static IEnumerable<object[]> HandshakeData => new[]
         {
-            var hostEntry = Dns.GetHostEntry("testnet.programmingbitcoin.com");
+            new object[] { Dns.GetHostEntry("testnet.programmingbitcoin.com").AddressList[0], true },
+            new object[] { new IPAddress(new byte[] { 104, 62, 47, 181 }), false},
+        };
 
-            SendVersion(hostEntry.AddressList[0], true);
-        }
-
-        [Fact]
-        public void SendMessageTimsIsland()
+        [Theory]
+        [MemberData(nameof(HandshakeData))]
+        public void HandshakeTest(IPAddress ipAddress, bool testnet)
         {
-            SendVersion(new IPAddress(new byte[] { 104, 62, 47, 181 }), false);
+            SendVersion(ipAddress, testnet);
         }
 
         void SendVersion(IPAddress ipAddress, bool testnet)
