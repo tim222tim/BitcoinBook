@@ -32,15 +32,8 @@ namespace BitcoinBook.Test
 
             try
             {
-                var message = new VersionMessage(VersionMessage.DefaultVersion, 0,
-                    DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                    0, new IPAddress(new byte[] {0, 0, 0, 0}), port,
-                    0, new IPAddress(new byte[] {0, 0, 0, 0}), port,
-                    0xa127ec40a4d7a8f6, "/rossitertest:0.1/", 0, true);
-                var envelope = new NetworkEnvelope(message, testnet);
-
                 var stream = new NetworkStream(socket);
-                envelope.WriteTo(stream);
+                new NetworkEnvelope(new VersionMessage(), testnet).WriteTo(stream);
 
                 while (agent == null && !gotVerAck)
                 {

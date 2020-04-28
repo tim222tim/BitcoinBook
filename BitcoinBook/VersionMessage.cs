@@ -6,6 +6,8 @@ namespace BitcoinBook
 {
     public class VersionMessage : IMessage
     {
+        static readonly Random random = new Random();
+
         public const int DefaultVersion = 70015;
 
         public int Version { get; }
@@ -21,6 +23,14 @@ namespace BitcoinBook
         public string UserAgent { get; }
         public int Height { get; }
         public bool Flag { get; }
+
+        public VersionMessage() : this(DefaultVersion, 0,
+            DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            0, new IPAddress(new byte[] { 0, 0, 0, 0 }), 0,
+            0, new IPAddress(new byte[] { 0, 0, 0, 0 }), 0,
+            NextNonce(), "/rossitertest:0.1/", 0, true)
+        {
+        }
 
         public VersionMessage(int version, long services, long timestamp, long receiverServices, IPAddress receiverAddress, ushort receiverPort, long senderServices, IPAddress senderAddress, ushort senderPort, ulong nonce, string userAgent, int height, bool flag)
         {
@@ -40,6 +50,13 @@ namespace BitcoinBook
             UserAgent = userAgent;
             Height = height;
             Flag = flag;
+        }
+
+        static ulong NextNonce()
+        {
+            var buf = new byte[8];
+            random.NextBytes(buf);
+            return BitConverter.ToUInt64(buf, 0);
         }
 
         public string Command => "version";
