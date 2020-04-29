@@ -23,10 +23,10 @@ namespace BitcoinBook
 
         public void Handshake()
         {
+            Send(new VersionMessage());
+
             var gotVerAck = false;
             string agent = null;
-
-            new NetworkEnvelope(new VersionMessage(), testnet).WriteTo(stream);
 
             while (agent == null && !gotVerAck)
             {
@@ -36,6 +36,11 @@ namespace BitcoinBook
             }
 
             RemoteUserAgent = agent;
+        }
+
+        public void Send(VersionMessage message)
+        {
+            new NetworkEnvelope(message, testnet).WriteTo(stream);
         }
 
         public void Dispose()
