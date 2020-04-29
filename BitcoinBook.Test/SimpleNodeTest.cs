@@ -20,36 +20,6 @@ namespace BitcoinBook.Test
             using var node = new SimpleNode(ipAddress, testnet);
             node.Handshake();
             Assert.StartsWith("/Satoshi", node.RemoteUserAgent);
-            // SendVersion(ipAddress, testnet);
-        }
-
-        void SendVersion(IPAddress ipAddress, bool testnet)
-        {
-            var gotVerAck = false;
-            string agent = null;
-
-            var socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(new IPEndPoint(ipAddress, (ushort) (testnet ? 18333 : 8333)));
-
-            try
-            {
-                var stream = new NetworkStream(socket);
-                new NetworkEnvelope(new VersionMessage(), testnet).WriteTo(stream);
-
-                while (agent == null && !gotVerAck)
-                {
-                    var responseEnvelope = NetworkEnvelope.Parse(stream, testnet);
-                    agent = (responseEnvelope.Message as VersionMessage)?.UserAgent;
-                    gotVerAck = responseEnvelope.Message is VerAckMessage;
-                }
-
-                Assert.StartsWith("/Satoshi", agent!);
-            }
-            finally
-            {
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
-            }
         }
     }
 }
