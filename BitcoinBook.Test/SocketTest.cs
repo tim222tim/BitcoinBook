@@ -42,7 +42,7 @@ namespace BitcoinBook.Test
                     gotVerAck = responseEnvelope.Message is VerAckMessage;
                 }
 
-                Assert.StartsWith("/Satoshi", agent ?? "");
+                Assert.StartsWith("/Satoshi", agent!);
             }
             finally
             {
