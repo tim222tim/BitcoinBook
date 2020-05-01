@@ -8,6 +8,8 @@ namespace BitcoinBook
     {
         static readonly Random random = new Random();
 
+        public string Command => "version";
+
         public const int DefaultVersion = 70015;
 
         public int Version { get; }
@@ -58,8 +60,6 @@ namespace BitcoinBook
             random.NextBytes(buf);
             return BitConverter.ToUInt64(buf, 0);
         }
-
-        public string Command => "version";
 
         public static VersionMessage Parse(byte[] bytes)
         {
