@@ -5,22 +5,28 @@ namespace BitcoinBook
 {
     public class GetHeadersMessage : IMessage
     {
+        public const int DefaultVersion = 70015;
+
         readonly byte[] startingBlock;
         readonly byte[] endingBlock;
 
         public string Command => "getheaders";
 
-        public uint Version { get; }
+        public int Version { get; }
         public int Hashes { get; }
         public string StartingBlock => startingBlock.ToReverseHex();
         public string EndingBlock => endingBlock.ToReverseHex();
 
-        public GetHeadersMessage(uint version, int hashes, string startingBlock, string endingBlock)
+        public GetHeadersMessage(int version, int hashes, string startingBlock, string endingBlock)
         {
             Version = version;
             Hashes = hashes;
             this.startingBlock = Cipher.ToReverseBytes(startingBlock);
             this.endingBlock = Cipher.ToReverseBytes(endingBlock);
+        }
+
+        public GetHeadersMessage(string startingBlock) : this(DefaultVersion, 1, startingBlock, "0000000000000000000000000000000000000000000000000000000000000000")
+        {
         }
 
         public static GetHeadersMessage Parse(byte[] bytes)
@@ -29,7 +35,7 @@ namespace BitcoinBook
             try
             {
                 return new GetHeadersMessage(
-                    reader.ReadUnsignedInt(4),
+                    reader.ReadInt(4),
                     reader.ReadVarInt(),
                     reader.ReadBytes(32).ToReverseHex(),
                     reader.ReadBytes(32).ToReverseHex());

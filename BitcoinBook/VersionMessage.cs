@@ -6,11 +6,11 @@ namespace BitcoinBook
 {
     public class VersionMessage : IMessage
     {
+        public const int DefaultVersion = 70015;
+
         static readonly Random random = new Random();
 
         public string Command => "version";
-
-        public const int DefaultVersion = 70015;
 
         public int Version { get; }
         public long Services { get; }
