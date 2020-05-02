@@ -10,7 +10,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void ToStringTest()
         {
-            Assert.Equal("version: 010210", new NetworkEnvelope("version", new byte[] {1, 2, 16}, false).ToString());
+            Assert.Equal("something: 010210", new NetworkEnvelope("something", new byte[] {1, 2, 16}, false).ToString());
         }
 
         [Fact]
