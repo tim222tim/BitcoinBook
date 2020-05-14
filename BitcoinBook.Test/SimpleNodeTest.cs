@@ -9,7 +9,7 @@ namespace BitcoinBook.Test
     {
         public static IEnumerable<object[]> HandshakeData => new[]
         {
-            // new object[] { Dns.GetHostEntry("testnet.programmingbitcoin.com").AddressList[0], true },
+            new object[] { Dns.GetHostEntry("testnet.programmingbitcoin.com").AddressList[0], true },
             new object[] { new IPAddress(new byte[] { 104, 62, 47, 181 }), false},
         };
 
