@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -215,14 +214,16 @@ namespace BitcoinBook
             var signatures = PopSignatures(stack, stack.PopInt());
             stack.PopInt(); // Satoshi off-by-one
 
+            var keyIndex = 0;
             foreach (var signature in signatures)
             {
-                var foundKey = publicKeys.FirstOrDefault(k => k.Verify(sigHash, signature));
-                if (foundKey == null)
+                while (!publicKeys[keyIndex++].Verify(sigHash, signature))
                 {
-                    return false;
+                    if (keyIndex >= publicKeys.Count)
+                    {
+                        return false;
+                    }
                 }
-                publicKeys.Remove(foundKey);
             }
 
             return true;

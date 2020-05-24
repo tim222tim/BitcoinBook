@@ -9,7 +9,7 @@ namespace BitcoinBook.Test
 {
     public class TransactionFetcherTests
     {
-        const string baseUri = "http://song";
+        const string baseUri = "http://song/api/";
         const string transactionId = "4ea6e2222c4d59dea646e21a103d8b812a6db433f8ca331778a9408990fa17ee";
 
         readonly Mock<FakeHttpMessageHandler> mock = new Mock<FakeHttpMessageHandler>() { CallBase = true };
@@ -111,7 +111,7 @@ namespace BitcoinBook.Test
 
         void ExpectResponse(string id, HttpResponseMessage message)
         {
-            var uri = new Uri($"{baseUri}/tx/{id}.hex");
+            var uri = new Uri($"{baseUri}tx/{id}/hex");
             mock.Setup(h => h.Send(It.Is<HttpRequestMessage>(m => 
                 m.Method == HttpMethod.Get && m.RequestUri == uri))).Returns(message);
         }

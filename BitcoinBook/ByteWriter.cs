@@ -1,19 +1,21 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Numerics;
+using System.Text;
 
 namespace BitcoinBook
 {
-    public class WriterBase
+    public class ByteWriter
     {
         readonly BinaryWriter writer;
 
-        public WriterBase(BinaryWriter writer)
+        public ByteWriter(BinaryWriter writer)
         {
             this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
-        public WriterBase(Stream stream) : this(new BinaryWriter(stream ?? throw new ArgumentNullException(nameof(stream))))
+        public ByteWriter(Stream stream) : this(new BinaryWriter(stream ?? throw new ArgumentNullException(nameof(stream))))
         {
         }
 
@@ -27,12 +29,12 @@ namespace BitcoinBook
             Write((ulong)i, length);
         }
 
-        protected void Write(byte b)
+        public void Write(byte b)
         {
             writer.Write(b);
         }
 
-        protected void Write(byte[] bytes)
+        public void Write(byte[] bytes)
         {
             writer.Write(bytes);
         }
@@ -80,9 +82,12 @@ namespace BitcoinBook
 
         protected void WriteReverse(byte[] bytes)
         {
-            var newBytes = (byte[])bytes.Clone();
-            Array.Reverse(newBytes);
-            writer.Write(newBytes);
+            writer.Write(bytes.Reverse());
+        }
+
+        public void Write(string s, int length)
+        {
+            Write(Encoding.ASCII.GetBytes(s.PadRight(length, '\0')));
         }
 
         int GetVarLength(ulong i)
@@ -93,6 +98,30 @@ namespace BitcoinBook
         byte GetVarPrefix(ulong i)
         {
             return i < 0x10000 ? (byte)0xfd : i < 0x100000000 ? (byte)0xfe : (byte)0xff;
+        }
+
+        public void Write(IPAddress receiverAddress)
+        {
+            var bytes = receiverAddress.GetAddressBytes();
+            if (bytes.Length != 4)
+            {
+                throw new FormatException("Expecting IPv4");
+            }
+
+            Write(0, 10);
+            Write(0xffff, 2);
+            Write(bytes);
+        }
+
+        public void Write(string str)
+        {
+            var bytes = Encoding.ASCII.GetBytes(str);
+            WriteVarBytes(bytes);
+        }
+
+        public void Write(bool b)
+        {
+            Write(b ? 1 : 0, 1);
         }
     }
 }

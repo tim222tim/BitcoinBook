@@ -43,7 +43,7 @@ namespace BitcoinBook
             return ToBase58(bytes.Concat(Hash256Prefix(bytes)));
         }
 
-        static byte[] Hash256Prefix(byte[] bytes)
+        public static byte[] Hash256Prefix(byte[] bytes)
         {
             return Hash256(bytes).Copy(0, 4);
         }
@@ -91,6 +91,11 @@ namespace BitcoinBook
         {
             using var sha256 = SHA256.Create();
             return sha256.ComputeHash(sha256.ComputeHash(data));
+        }
+
+        public static byte[] ReverseHash256(byte[] data)
+        {
+            return Hash256(data).Reverse();
         }
 
         public static byte[] Hash256(string data)
@@ -155,6 +160,11 @@ namespace BitcoinBook
             }
 
             return bytes;
+        }
+
+        public static byte[] ToReverseBytes(string hex)
+        {
+            return ToBytes(hex).Reverse();
         }
 
         static int CountZeros(byte[] bytes)

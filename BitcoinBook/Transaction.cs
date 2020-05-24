@@ -15,7 +15,8 @@ namespace BitcoinBook
         public bool Segwit { get; }
         public int Version { get; }
         public ReadOnlyCollection<TransactionInput> Inputs => inputs.AsReadOnly();
-        public ReadOnlyCollection<TransactionOutput> Outputs => outputs.AsReadOnly();public uint LockTime { get; }
+        public ReadOnlyCollection<TransactionOutput> Outputs => outputs.AsReadOnly();
+        public uint LockTime { get; }
         public bool Testnet { get; }
 
         public Transaction(int version, bool segwit, IEnumerable<TransactionInput> inputs, IEnumerable<TransactionOutput> outputs, uint lockTime, bool testnet = false)
@@ -32,12 +33,7 @@ namespace BitcoinBook
         string ComputeId()
         {
             var transaction = Segwit ? CloneNonMalleable() : this;
-            var stream = new MemoryStream();
-            var writer = new TransactionWriter(stream);
-            writer.Write(transaction);
-            var hash = Cipher.Hash256(stream.ToArray());
-            Array.Reverse(hash);
-            return hash.ToHex();
+            return Cipher.ReverseHash256(transaction.ToBytes()).ToHex();
         }
 
         public byte[] ToBytes()

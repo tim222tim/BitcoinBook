@@ -70,7 +70,7 @@ namespace BitcoinBook
 
         async Task<Transaction> InternalFetch(string transactionId)
         {
-            var response = await httpClient.GetAsync($"/tx/{transactionId}.hex");
+            var response = await httpClient.GetAsync($"tx/{transactionId}/hex");
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 cache.Remove(transactionId);
