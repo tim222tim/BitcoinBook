@@ -38,7 +38,18 @@ namespace BitcoinBook
             RemoteUserAgent = agent;
         }
 
-        public void Send(VersionMessage message)
+        // public void CheckBlocks()
+        // {
+        //     var previous = BlockHeader.GenesisBlockHeader;
+        //     for (int i = 0; i < 19; i++)
+        //     {
+        //         Send(new GetHeadersMessage(previous.Id));
+        //         var responseEnvelope = NetworkEnvelope.Parse(stream, testnet);
+        //
+        //     }
+        // }
+
+        public void Send(IMessage message)
         {
             new NetworkEnvelope(message, testnet).WriteTo(stream);
         }
