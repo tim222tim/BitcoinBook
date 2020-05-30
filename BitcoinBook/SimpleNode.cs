@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 
@@ -30,24 +31,50 @@ namespace BitcoinBook
 
             while (agent == null && !gotVerAck)
             {
-                var responseEnvelope = NetworkEnvelope.Parse(stream, testnet);
-                agent = (responseEnvelope.Message as VersionMessage)?.UserAgent;
-                gotVerAck = responseEnvelope.Message is VerAckMessage;
+                var message = WaitForMessage();
+                agent = (message as VersionMessage)?.UserAgent;
+                gotVerAck = message is VerAckMessage;
             }
 
             RemoteUserAgent = agent;
         }
 
-        // public void CheckBlocks()
-        // {
-        //     var previous = BlockHeader.GenesisBlockHeader;
-        //     for (int i = 0; i < 19; i++)
-        //     {
-        //         Send(new GetHeadersMessage(previous.Id));
-        //         var responseEnvelope = NetworkEnvelope.Parse(stream, testnet);
-        //
-        //     }
-        // }
+        public IMessage WaitForMessage()
+        {
+            var responseEnvelope = NetworkEnvelope.Parse(stream, testnet);
+            return responseEnvelope.Message;
+        }
+
+        public T WaitFor<T>() where T : class, IMessage
+        {
+            while (true)
+            {
+                // TODO respond to version & ping messages
+                if (WaitForMessage() is T message)
+                {
+                    return message;
+                }
+            }
+        }
+
+        public void CheckBlocks()
+        {
+            var previousHeader = BlockHeader.GenesisBlockHeader;
+            for (int i = 0; i < 19; i++)
+            {
+                Send(new GetHeadersMessage(previousHeader.Id));
+                var message = WaitFor<HeadersMessage>();
+                foreach (var header in message.BlockHeaders)
+                {
+                    if (!header.IsValidProofOfWork())
+                    {
+                        throw new ApplicationException("Not valid proof of work");
+                    }
+
+                    previousHeader = header;
+                }
+            }
+        }
 
         public void Send(IMessage message)
         {
