@@ -46,7 +46,7 @@ namespace BitcoinBook
                 BitConverter.ToUInt32(bytes, 76));
         }
 
-        public static BlockHeader GenesisBlockHeader { get; } = Parse(Cipher.ToBytes(
+        public static BlockHeader Genesis { get; } = Parse(Cipher.ToBytes(
             "0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c"));
 
         byte[] ComputeId()

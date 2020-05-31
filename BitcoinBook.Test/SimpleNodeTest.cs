@@ -33,11 +33,13 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public void CheckBlocksTest()
+        public void GetHeadersTest()
         {
             using var node = new SimpleNode(homeIpAddress);
             node.Handshake();
-            node.CheckBlocks();
+            node.Send(new GetHeadersMessage(BlockHeader.Genesis.Id));
+            var message = node.WaitFor<HeadersMessage>();
+            Assert.NotNull(message);
         }
     }
 }

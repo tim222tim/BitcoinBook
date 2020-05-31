@@ -85,6 +85,8 @@ namespace BitcoinBook
                     return VersionMessage.Parse(payload);
                 case "verack":
                     return VerAckMessage.Parse(payload);
+                case "headers":
+                    return HeadersMessage.Parse(payload);
                 default:
                     return null;
             }

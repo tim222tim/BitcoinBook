@@ -57,25 +57,6 @@ namespace BitcoinBook
             }
         }
 
-        public void CheckBlocks()
-        {
-            var previousHeader = BlockHeader.GenesisBlockHeader;
-            for (int i = 0; i < 19; i++)
-            {
-                Send(new GetHeadersMessage(previousHeader.Id));
-                var message = WaitFor<HeadersMessage>();
-                foreach (var header in message.BlockHeaders)
-                {
-                    if (!header.IsValidProofOfWork())
-                    {
-                        throw new ApplicationException("Not valid proof of work");
-                    }
-
-                    previousHeader = header;
-                }
-            }
-        }
-
         public void Send(IMessage message)
         {
             new NetworkEnvelope(message, testnet).WriteTo(stream);
