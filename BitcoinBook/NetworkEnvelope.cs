@@ -25,7 +25,7 @@ namespace BitcoinBook
 
         public static NetworkEnvelope Parse(byte[] bytes, bool testnet = false)
         {
-            return Parse(new MemoryStream(bytes));
+            return Parse(new MemoryStream(bytes), testnet);
         }
 
         public static NetworkEnvelope Parse(Stream stream, bool testnet = false)
