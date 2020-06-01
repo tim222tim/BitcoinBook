@@ -18,27 +18,49 @@ namespace BitcoinBook
             this.testnet = testnet;
             socket = new Socket(remoteHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(new IPEndPoint(remoteHost, (ushort)(testnet ? 18333 : 8333)));
-            stream = new NetworkStream(socket);
+            stream = new NetworkStream(socket) {ReadTimeout = 2000};
         }
 
         public void Handshake()
         {
             Send(new VersionMessage());
 
+            RemoteUserAgent = null;
             var gotVerAck = false;
-            string agent = null;
 
-            while (agent == null && !gotVerAck)
+            while (RemoteUserAgent == null || !gotVerAck)
             {
-                var responseEnvelope = NetworkEnvelope.Parse(stream, testnet);
-                agent = (responseEnvelope.Message as VersionMessage)?.UserAgent;
-                gotVerAck = responseEnvelope.Message is VerAckMessage;
+                if (WaitForMessage() is VerAckMessage)
+                {
+                    gotVerAck = true;
+                }
             }
-
-            RemoteUserAgent = agent;
         }
 
-        public void Send(VersionMessage message)
+        public IMessage WaitForMessage()
+        {
+            var envelope = NetworkEnvelope.Parse(stream, testnet);
+            if (envelope.Message is VersionMessage versionMessage)
+            {
+                RemoteUserAgent = versionMessage.UserAgent;
+                Send(new VerAckMessage());
+            }
+            // TODO ping message
+            return envelope.Message;
+        }
+
+        public T WaitFor<T>() where T : class, IMessage
+        {
+            while (true)
+            {
+                if (WaitForMessage() is T message)
+                {
+                    return message;
+                }
+            }
+        }
+
+        public void Send(IMessage message)
         {
             new NetworkEnvelope(message, testnet).WriteTo(stream);
         }

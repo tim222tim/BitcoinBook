@@ -100,6 +100,14 @@ namespace BitcoinBook.Test
             Assert.Equal(888171856257.3206, difficulty);
         }
 
+        [Fact]
+        public void GenesisBlockTest()
+        {
+            var header = BlockHeader.Genesis;
+            Assert.Equal("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f", header.Id);
+            Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", header.PreviousBlock);
+        }
+
         BlockHeader GetHeaderWithVersion(uint version)
         {
             return new BlockHeader(
