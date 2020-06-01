@@ -40,6 +40,7 @@ namespace BitcoinBook.Test
             node.Send(new GetHeadersMessage(BlockHeader.Genesis.Id));
             var message = node.WaitFor<HeadersMessage>();
             Assert.NotNull(message);
+            Assert.Equal(2000, message.BlockHeaders.Count);
         }
     }
 }
