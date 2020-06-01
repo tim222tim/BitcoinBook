@@ -16,12 +16,13 @@ namespace BitcoinBook.Test
         public void CheckFirstHeadersTest()
         {
             timNode.Handshake();
-            var previousId = BlockHeader.Genesis.Id;
-            timNode.Send(new GetHeadersMessage(previousId));
+
+            var previousHeader = BlockHeader.Genesis;
+            timNode.Send(new GetHeadersMessage(previousHeader.Id));
             var message = timNode.WaitFor<HeadersMessage>();
 
             var checker = new HeaderChecker();
-            checker.Check(BlockHeader.Genesis);
+            checker.Check(previousHeader);
             foreach (var header in message.BlockHeaders)
             {
                 checker.Check(header);
