@@ -37,10 +37,12 @@ namespace BitcoinBook.Test
         {
             using var node = new SimpleNode(homeIpAddress);
             node.Handshake();
-            node.Send(new GetHeadersMessage(BlockHeader.Genesis.Id));
+            var previousId = BlockHeader.Genesis.Id;
+            node.Send(new GetHeadersMessage(previousId));
             var message = node.WaitFor<HeadersMessage>();
             Assert.NotNull(message);
             Assert.Equal(2000, message.BlockHeaders.Count);
+            Assert.Equal(previousId, message.BlockHeaders[0].PreviousBlock);
         }
     }
 }
