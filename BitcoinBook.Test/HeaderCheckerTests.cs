@@ -13,19 +13,19 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public void CheckFirstHeadersTest()
+        public void CheckFirstTwoThousandHeadersTest()
         {
             timNode.Handshake();
 
-            var previousHeader = BlockHeader.Genesis;
-            timNode.Send(new GetHeadersMessage(previousHeader.Id));
-            var message = timNode.WaitFor<HeadersMessage>();
-
-            var checker = new HeaderChecker();
-            checker.Check(previousHeader);
-            foreach (var header in message.BlockHeaders)
+            var checker = new HeaderChecker(BlockHeader.Genesis);
+            for (var i = 0; i < 20; i++)
             {
-                checker.Check(header);
+                timNode.Send(new GetHeadersMessage(checker.PreviousHeader.Id));
+                var message = timNode.WaitFor<HeadersMessage>();
+                foreach (var header in message.BlockHeaders)
+                {
+                    checker.Check(header);
+                }
             }
         }
     }
