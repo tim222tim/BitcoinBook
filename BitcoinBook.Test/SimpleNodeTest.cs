@@ -1,24 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace BitcoinBook.Test
 {
-    public class SimpleNodeTest
+    public class SimpleNodeTest : IDisposable
     {
-        static readonly IPAddress homeIpAddress = new IPAddress(new byte[] { 104, 62, 47, 181 });
+        readonly SimpleNode timNode = new SimpleNode(IntegrationSetup.TimNode.Address);
 
-        public static IEnumerable<object[]> HandshakeData => new[]
+        public static IEnumerable<object[]> NodeData => new[]
         {
-            new object[] { Dns.GetHostEntry("testnet.programmingbitcoin.com").AddressList[0], true },
-            new object[] { homeIpAddress, false},
+            // new object[] {IntegrationSetup.BookNode},
+            new object[] {IntegrationSetup.TimNode},
         };
 
-        [Theory]
-        [MemberData(nameof(HandshakeData))]
-        public void HandshakeTest(IPAddress ipAddress, bool testnet)
+        public void Dispose()
         {
-            using var node = new SimpleNode(ipAddress, testnet);
+            timNode?.Dispose();
+        }
+
+        [Theory]
+        [MemberData(nameof(NodeData))]
+        public void HandshakeTest(NodeSetting setting)
+        {
+            using var node = new SimpleNode(setting.Address);
             node.Handshake();
             Assert.StartsWith("/Satoshi", node.RemoteUserAgent);
         }
@@ -26,20 +31,21 @@ namespace BitcoinBook.Test
         [Fact]
         public void WaitForVerakTest()
         {
-            using var node = new SimpleNode(homeIpAddress);
-            node.Send(new VersionMessage());
-            var message = node.WaitFor<VerAckMessage>();
+            timNode.Send(new VersionMessage());
+            var message = timNode.WaitFor<VerAckMessage>();
             Assert.NotNull(message);
         }
 
         [Fact]
         public void GetHeadersTest()
         {
-            using var node = new SimpleNode(homeIpAddress);
-            node.Handshake();
-            node.Send(new GetHeadersMessage(BlockHeader.Genesis.Id));
-            var message = node.WaitFor<HeadersMessage>();
+            timNode.Handshake();
+            var previousId = BlockHeader.Genesis.Id;
+            timNode.Send(new GetHeadersMessage(previousId));
+            var message = timNode.WaitFor<HeadersMessage>();
             Assert.NotNull(message);
+            Assert.Equal(2000, message.BlockHeaders.Count);
+            Assert.Equal(previousId, message.BlockHeaders[0].PreviousBlock);
         }
     }
 }

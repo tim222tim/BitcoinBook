@@ -12,8 +12,8 @@ namespace BitcoinBook
         public const int DefaultVersion = 70015;
 
         public string Id => id.ToHex();
-        public BigInteger Target => (Bits & 0x00ffffff) * BigInteger.Pow(256, (int)(Bits >> 0x18) - 3);
-        public double Difficulty => 0xffff * Math.Pow(256,0x1d - 3) / (double)Target;
+        public BigInteger Target => BlockMath.BitsToTarget(Bits);
+        public double Difficulty => BlockMath.TargetToDifficulty(Target);
 
         public uint Version { get; }
         public string PreviousBlock => previousBlock.ToReverseHex();

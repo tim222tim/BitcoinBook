@@ -129,6 +129,5 @@ namespace BitcoinBook.Test
                 bits,
                 0x5cfc9955);
         }
-
     }
 }

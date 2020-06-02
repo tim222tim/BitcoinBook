@@ -23,17 +23,12 @@ namespace BitcoinBook
 
         public void Handshake()
         {
-            Send(new VersionMessage());
-
             RemoteUserAgent = null;
-            var gotVerAck = false;
-
-            while (RemoteUserAgent == null || !gotVerAck)
+            Send(new VersionMessage());
+            WaitFor<VerAckMessage>();
+            if (RemoteUserAgent == null)
             {
-                if (WaitForMessage() is VerAckMessage)
-                {
-                    gotVerAck = true;
-                }
+                WaitFor<VersionMessage>();
             }
         }
 
