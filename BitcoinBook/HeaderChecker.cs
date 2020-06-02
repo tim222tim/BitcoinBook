@@ -5,6 +5,7 @@ namespace BitcoinBook
 {
     public class HeaderChecker
     {
+        int count;
         uint firstTimestamp;
         uint currentBits;
 
@@ -19,22 +20,34 @@ namespace BitcoinBook
 
         public void Check(BlockHeader header)
         {
+            ++count;
             if (!header.IsValidProofOfWork())
             {
-                throw new ValidationException($"Invalid proof of work at {header.Id}");
+                throw CreateException(header, "Invalid proof of work");
             }
 
             if (header.PreviousBlock != PreviousHeader.Id)
             {
-                throw new ValidationException($"Discontinuous block at {header.Id}");
+                throw CreateException(header, "Discontinuous block");
             }
 
-            if (header.Bits!= currentBits)
+            if (count % 2016 == 0)
             {
-                throw new ValidationException($"Invalid bits at {header.Id}");
+                currentBits = BlockMath.ComputeNewBits(firstTimestamp, PreviousHeader.Timestamp, currentBits);
+                firstTimestamp = header.Timestamp;
+            }
+
+            if (header.Bits != currentBits)
+            {
+                throw CreateException(header, "Invalid bits");
             }
 
             PreviousHeader = header;
+        }
+
+        ValidationException CreateException(BlockHeader header, string message)
+        {
+            return new ValidationException($"{message} at #{count} {header.Id}");
         }
     }
 }

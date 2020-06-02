@@ -12,8 +12,9 @@ namespace BitcoinBook.Test
             timNode?.Dispose();
         }
 
-        [Fact]
-        public void CheckFirstTwoThousandHeadersTest()
+        // Take a long time
+        //[Fact]
+        public void CheckFirstHeadersThroughDifficultyChangeTest()
         {
             timNode.Handshake();
 

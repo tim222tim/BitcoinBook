@@ -10,7 +10,7 @@ namespace BitcoinBook.Test
 
         public static IEnumerable<object[]> NodeData => new[]
         {
-            new object[] {IntegrationSetup.BookNode},
+            // new object[] {IntegrationSetup.BookNode},
             new object[] {IntegrationSetup.TimNode},
         };
 
