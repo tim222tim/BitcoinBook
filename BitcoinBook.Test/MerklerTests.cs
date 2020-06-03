@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Xunit;
 
 namespace BitcoinBook.Test
@@ -61,9 +62,31 @@ namespace BitcoinBook.Test
                 "2e6d722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908",
                 "b13a750047bc0bdceb2473e5fe488c2596d7a7124b4e716fdd29b046ef99bbf0",
             })]
+        [InlineData("c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5",
+            new[]
+            {
+                "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5",
+            })]
         public void ComputerMerkleRootTest(string expected, string[] hashes)
         {
             Assert.Equal(expected, merkler.ComputeMerkleRoot(hashes.Select(Cipher.ToBytes)).ToHex());
+        }
+
+        [Fact]
+        public void HashesNullTest()
+        {
+            Assert.Throws<ArgumentNullException>(() => merkler.ComputeMerkleRoot(null));
+        }
+
+        [Theory]
+        [InlineData(new object[] {new string[0]})]
+        [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", null}})]
+        [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", ""}})]
+        [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64c"}})]
+        [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", "c131474164b412e3406696da1ee20ab0fc9bf41c8f05fa8ceea7a08d672d7cc5", "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5"}})]
+        public void HashesBadTest(string[] hashes)
+        {
+            Assert.Throws<ArgumentException>(() => merkler.ComputeMerkleRoot(hashes.Select(s => s == null ? null : Cipher.ToBytes(s))));
         }
     }
 }
