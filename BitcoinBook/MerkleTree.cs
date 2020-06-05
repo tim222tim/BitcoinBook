@@ -44,10 +44,8 @@ namespace BitcoinBook
                 return;
             }
 
-            node.Hash = flags.Dequeue() ? 
-                proofHashes.Dequeue() :
-                node.IsLeaf ? 
-                    includedHashes.Dequeue() :
+            node.Hash = flags.Dequeue() ? proofHashes.Dequeue() :
+                node.IsLeaf ? includedHashes.Dequeue() :
                     ComputeHashFromChildren(node, includedHashes, proofHashes, flags);
         }
 
