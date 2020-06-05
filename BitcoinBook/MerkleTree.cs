@@ -17,10 +17,23 @@ namespace BitcoinBook
             Root = CreateTree(leafCount);
         }
 
+        public MerkleTree(IEnumerable<byte[]> values)
+        {
+            var valueList = values?.ToList() ?? throw new ArgumentNullException(nameof(values));
+            if (valueList.Count < 1) throw new ArgumentException("Must have at least one value", nameof(values));
+
+            Root = CreateTree(valueList.Select(v => new MerkleNode(v)));
+        }
+
         MerkleNode CreateTree(int leafCount)
         {
-            var nodes = Enumerable.Repeat(new MerkleNode(), leafCount).ToList();
-            if (leafCount > 1 && leafCount % 2 == 1)
+            return CreateTree(Enumerable.Repeat(new MerkleNode(), leafCount));
+        }
+
+        MerkleNode CreateTree(IEnumerable<MerkleNode> leafNodes)
+        {
+            var nodes = leafNodes.ToList();
+            if (nodes.Count > 1 && nodes.Count % 2 == 1)
             {
                 nodes.Add(null);
             }
@@ -30,13 +43,18 @@ namespace BitcoinBook
                 var parents = new List<MerkleNode>();
                 for (var i = 0; i < nodes.Count; i += 2)
                 {
-                    parents.Add(new MerkleNode(nodes[i], nodes[i + 1]));
+                    parents.Add(new MerkleNode(GetParentValue(nodes[i], nodes[i + 1]), nodes[i], nodes[i + 1]));
                 }
 
                 nodes = parents;
             }
 
             return nodes[0];
+        }
+
+        byte[] GetParentValue(MerkleNode left, MerkleNode right)
+        {
+            return left.Value == null ? null : Merkler.ComputeParent(left.Value, right.Value ?? left.Value);
         }
 
         int GetDepth(MerkleNode node)
