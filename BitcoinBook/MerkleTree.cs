@@ -14,6 +14,11 @@ namespace BitcoinBook
         {
             if (leafCount < 1) throw new ArgumentException("leafCount must be > 0", nameof(leafCount));
 
+            Root = CreateTree(leafCount);
+        }
+
+        MerkleNode CreateTree(int leafCount)
+        {
             var nodes = Enumerable.Repeat(new MerkleNode(), leafCount).ToList();
             if (leafCount > 1 && leafCount % 2 == 1)
             {
@@ -25,13 +30,13 @@ namespace BitcoinBook
                 var parents = new List<MerkleNode>();
                 for (var i = 0; i < nodes.Count; i += 2)
                 {
-                    parents.Add(new MerkleNode(nodes[i], nodes[i+1]));
+                    parents.Add(new MerkleNode(nodes[i], nodes[i + 1]));
                 }
 
                 nodes = parents;
             }
 
-            Root = nodes[0];
+            return nodes[0];
         }
 
         int GetDepth(MerkleNode node)
