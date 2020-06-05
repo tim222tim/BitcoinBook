@@ -92,11 +92,11 @@ namespace BitcoinBook.Test
             new[] {false, false, true, false, false, false, true})]
         public void ConstructForProofTest(string expectedRootHash, int leafCount, IEnumerable<string> includedHashes, IEnumerable<string> proofHashes, IEnumerable<bool> flags)
         {
-            var tree = new MerkleTree(leafCount, includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags);
+            var proof = new MerkleProof(includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags);
+            var tree = new MerkleTree(leafCount, proof);
             Assert.Equal(expectedRootHash, tree.Root.Hash.ToHex());
         }
 
-        [Fact]
         public void GenerateHashes()
         {
             var hash = GetHash("b825c0745f46ac58f7d3759e6dc535a1fec7820377f24d4c2c6ad2cc55c0cb59", "95513952a04bd8992721e9b7e2937f1c04ba31e0469fbe615a78197f68f52b7c");

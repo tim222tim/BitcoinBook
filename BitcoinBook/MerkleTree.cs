@@ -25,32 +25,30 @@ namespace BitcoinBook
             Root = CreateTree(hashList.Select(v => new MerkleNode(v)));
         }
 
-        public MerkleTree(int leafCount, IEnumerable<byte[]> includedHashes, IEnumerable<byte[]> proofHashes, IEnumerable<bool> flags)
+        public MerkleTree(int leafCount, MerkleProof proof)
         {
             if (leafCount < 1) throw new ArgumentException("leafCount must be > 0", nameof(leafCount));
-            var includedHashList = includedHashes?.ToList() ?? throw new ArgumentNullException(nameof(includedHashes));
-            CheckHashes(includedHashList, false);
-            var proofHashList = proofHashes?.ToList() ?? throw new ArgumentNullException(nameof(proofHashes));
-            CheckHashes(proofHashList, true);
 
             Root = CreateTree(leafCount);
-            Populate(Root, new Queue<byte[]>(includedHashList), new Queue<byte[]>(proofHashList), new Queue<bool>(flags));
+            Populate(Root,  proof);
+
+            // TODO make sure queues are empty
         }
 
-        void Populate(MerkleNode node, Queue<byte[]> includedHashes, Queue<byte[]> proofHashes, Queue<bool> flags)
+        void Populate(MerkleNode node, MerkleProof proof)
         {
             if (node != null)
             {
-                node.Hash = flags.Dequeue() ? proofHashes.Dequeue() :
-                    node.IsLeaf ? includedHashes.Dequeue() :
-                    ComputeHashFromChildren(node, includedHashes, proofHashes, flags);
+                node.Hash = proof.Flags.Dequeue() ? proof.ProofHashes.Dequeue() :
+                    node.IsLeaf ?  proof.IncludedHashes.Dequeue() :
+                    ComputeHashFromChildren(node, proof);
             }
         }
 
-        byte[] ComputeHashFromChildren(MerkleNode node, Queue<byte[]> includedHashes, Queue<byte[]> proofHashes, Queue<bool> flags)
+        byte[] ComputeHashFromChildren(MerkleNode node, MerkleProof proof)
         {
-            Populate(node.Left, includedHashes, proofHashes, flags);
-            Populate(node.Right, includedHashes, proofHashes, flags);
+            Populate(node.Left, proof);
+            Populate(node.Right, proof);
             return GetParentHash(node.Left, node.Right);
         }
 
