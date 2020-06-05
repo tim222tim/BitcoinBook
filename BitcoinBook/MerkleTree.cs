@@ -25,6 +25,17 @@ namespace BitcoinBook
             Root = CreateTree(hashList.Select(v => new MerkleNode(v)));
         }
 
+        public MerkleTree(int leafCount, IEnumerable<byte[]> knownHashes, IEnumerable<byte[]> proofHashes, IEnumerable<bool> flags)
+        {
+            if (leafCount < 1) throw new ArgumentException("leafCount must be > 0", nameof(leafCount));
+            var knownHashList = knownHashes?.ToList() ?? throw new ArgumentNullException(nameof(knownHashes));
+            CheckHashes(knownHashList);
+            var proofHashList = proofHashes?.ToList() ?? throw new ArgumentNullException(nameof(proofHashes));
+            CheckHashes(proofHashList);
+
+            Root = CreateTree(leafCount);
+        }
+
         void CheckHashes(List<byte[]> hashes)
         {
             if (!hashes.Any()) throw new ArgumentException("Must contain at least one hash", nameof(hashes));
