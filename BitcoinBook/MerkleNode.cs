@@ -2,7 +2,7 @@
 {
     public class MerkleNode
     {
-        public string Value { get; set; }
+        public byte[] Value { get; set; }
         public MerkleNode Left { get; }
         public MerkleNode Right { get; }
         public bool IsLeaf => Left == null && Right == null;
