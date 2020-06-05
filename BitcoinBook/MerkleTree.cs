@@ -20,32 +20,60 @@ namespace BitcoinBook
         public MerkleTree(IEnumerable<byte[]> hashes)
         {
             var hashList = hashes?.ToList() ?? throw new ArgumentNullException(nameof(hashes));
-            CheckHashes(hashList);
+            CheckHashes(hashList, false);
 
             Root = CreateTree(hashList.Select(v => new MerkleNode(v)));
         }
 
-        public MerkleTree(int leafCount, IEnumerable<byte[]> knownHashes, IEnumerable<byte[]> proofHashes, IEnumerable<bool> flags)
+        public MerkleTree(int leafCount, IEnumerable<byte[]> includedHashes, IEnumerable<byte[]> proofHashes, IEnumerable<bool> flags)
         {
             if (leafCount < 1) throw new ArgumentException("leafCount must be > 0", nameof(leafCount));
-            var knownHashList = knownHashes?.ToList() ?? throw new ArgumentNullException(nameof(knownHashes));
-            CheckHashes(knownHashList);
+            var includedHashList = includedHashes?.ToList() ?? throw new ArgumentNullException(nameof(includedHashes));
+            CheckHashes(includedHashList, false);
             var proofHashList = proofHashes?.ToList() ?? throw new ArgumentNullException(nameof(proofHashes));
-            CheckHashes(proofHashList);
+            CheckHashes(proofHashList, true);
 
             Root = CreateTree(leafCount);
+            Populate(Root, new Queue<byte[]>(includedHashList), new Queue<byte[]>(proofHashList), new Queue<bool>(flags));
         }
 
-        void CheckHashes(List<byte[]> hashes)
+        void Populate(MerkleNode node, Queue<byte[]> includedHashes, Queue<byte[]> proofHashes, Queue<bool> flags)
         {
-            if (!hashes.Any()) throw new ArgumentException("Must contain at least one hash", nameof(hashes));
+            if (node == null)
+            {
+                return;
+            }
+
+            node.Hash = flags.Dequeue() ? 
+                proofHashes.Dequeue() :
+                node.IsLeaf ? 
+                    includedHashes.Dequeue() :
+                    PopulateAndComputeHash(node, includedHashes, proofHashes, flags);
+        }
+
+        byte[] PopulateAndComputeHash(MerkleNode node, Queue<byte[]> includedHashes, Queue<byte[]> proofHashes, Queue<bool> flags)
+        {
+            Populate(node.Left, includedHashes, proofHashes, flags);
+            Populate(node.Right, includedHashes, proofHashes, flags);
+            return GetParentHash(node.Left, node.Right);
+        }
+
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
+        void CheckHashes(List<byte[]> hashes, bool isEmptyAllowed)
+        {
+            if (!(isEmptyAllowed || hashes.Any())) throw new ArgumentException("Must contain at least one hash", nameof(hashes));
             if (hashes.Any(h => h == null || h.Length != 32)) throw new ArgumentException("All hashes must be 32 bytes", nameof(hashes));
             if (!Unique(hashes)) throw new ArgumentException("All hashes must be unique", nameof(hashes));
         }
 
         MerkleNode CreateTree(int leafCount)
         {
-            return CreateTree(Enumerable.Repeat(new MerkleNode(), leafCount));
+            var nodes = new List<MerkleNode>();
+            while (leafCount-- > 0)
+            {
+                nodes.Add(new MerkleNode());
+            }
+            return CreateTree(nodes);
         }
 
         MerkleNode CreateTree(IEnumerable<MerkleNode> leafNodes)
