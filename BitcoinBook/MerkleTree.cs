@@ -48,10 +48,10 @@ namespace BitcoinBook
                 proofHashes.Dequeue() :
                 node.IsLeaf ? 
                     includedHashes.Dequeue() :
-                    PopulateAndComputeHash(node, includedHashes, proofHashes, flags);
+                    ComputeHashFromChildren(node, includedHashes, proofHashes, flags);
         }
 
-        byte[] PopulateAndComputeHash(MerkleNode node, Queue<byte[]> includedHashes, Queue<byte[]> proofHashes, Queue<bool> flags)
+        byte[] ComputeHashFromChildren(MerkleNode node, Queue<byte[]> includedHashes, Queue<byte[]> proofHashes, Queue<bool> flags)
         {
             Populate(node.Left, includedHashes, proofHashes, flags);
             Populate(node.Right, includedHashes, proofHashes, flags);
