@@ -75,7 +75,7 @@ namespace BitcoinBook.Test
         })]
         public void ConstructWithValuesTest(string expectedRootValue, string[] values)
         {
-            Assert.Equal(expectedRootValue, new MerkleTree(values.Select(Cipher.ToBytes)).Root.Value.ToHex());
+            Assert.Equal(expectedRootValue, new MerkleTree(values.Select(Cipher.ToBytes)).Root.Hash.ToHex());
         }
     }
 }

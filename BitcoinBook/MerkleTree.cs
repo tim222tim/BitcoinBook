@@ -17,14 +17,19 @@ namespace BitcoinBook
             Root = CreateTree(leafCount);
         }
 
-        public MerkleTree(IEnumerable<byte[]> values)
+        public MerkleTree(IEnumerable<byte[]> hashes)
         {
-            var valueList = values?.ToList() ?? throw new ArgumentNullException(nameof(values));
-            if (!valueList.Any()) throw new ArgumentException("Must contain at least one hash", nameof(values));
-            if (valueList.Any(h => h == null || h.Length != 32)) throw new ArgumentException("All hashes must be 32 bytes", nameof(values));
-            if (!Unique(valueList)) throw new ArgumentException("All hashes must be unique", nameof(values));
+            var hashList = hashes?.ToList() ?? throw new ArgumentNullException(nameof(hashes));
+            CheckHashes(hashList);
 
-            Root = CreateTree(valueList.Select(v => new MerkleNode(v)));
+            Root = CreateTree(hashList.Select(v => new MerkleNode(v)));
+        }
+
+        void CheckHashes(List<byte[]> hashes)
+        {
+            if (!hashes.Any()) throw new ArgumentException("Must contain at least one hash", nameof(hashes));
+            if (hashes.Any(h => h == null || h.Length != 32)) throw new ArgumentException("All hashes must be 32 bytes", nameof(hashes));
+            if (!Unique(hashes)) throw new ArgumentException("All hashes must be unique", nameof(hashes));
         }
 
         MerkleNode CreateTree(int leafCount)
@@ -45,7 +50,7 @@ namespace BitcoinBook
                 var parents = new List<MerkleNode>();
                 for (var i = 0; i < nodes.Count; i += 2)
                 {
-                    parents.Add(new MerkleNode(GetParentValue(nodes[i], nodes[i + 1]), nodes[i], nodes[i + 1]));
+                    parents.Add(new MerkleNode(GetParentHash(nodes[i], nodes[i + 1]), nodes[i], nodes[i + 1]));
                 }
 
                 nodes = parents;
@@ -54,9 +59,9 @@ namespace BitcoinBook
             return nodes[0];
         }
 
-        byte[] GetParentValue(MerkleNode left, MerkleNode right)
+        byte[] GetParentHash(MerkleNode left, MerkleNode right)
         {
-            return left.Value == null ? null : Merkler.ComputeParent(left.Value, right?.Value ?? left.Value);
+            return left.Hash == null ? null : Merkler.ComputeParent(left.Hash, right?.Hash ?? left.Hash);
         }
 
         int GetDepth(MerkleNode node)

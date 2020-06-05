@@ -2,12 +2,12 @@
 {
     public class MerkleNode
     {
-        public byte[] Value { get; set; }
+        public byte[] Hash { get; set; }
         public MerkleNode Left { get; }
         public MerkleNode Right { get; }
         public bool IsLeaf => Left == null && Right == null;
 
-        public MerkleNode(byte[] value = null) : this(value, null, null)
+        public MerkleNode(byte[] hash = null) : this(hash, null, null)
         {
         }
 
@@ -15,9 +15,9 @@
         {
         }
 
-        public MerkleNode(byte[] value, MerkleNode left, MerkleNode right)
+        public MerkleNode(byte[] hash, MerkleNode left, MerkleNode right)
         {
-            Value = value;
+            Hash = hash;
             Left = left;
             Right = right;
         }
