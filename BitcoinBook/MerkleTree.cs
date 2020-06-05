@@ -20,7 +20,9 @@ namespace BitcoinBook
         public MerkleTree(IEnumerable<byte[]> values)
         {
             var valueList = values?.ToList() ?? throw new ArgumentNullException(nameof(values));
-            if (valueList.Count < 1) throw new ArgumentException("Must have at least one value", nameof(values));
+            if (!valueList.Any()) throw new ArgumentException("Must contain at least one hash", nameof(values));
+            if (valueList.Any(h => h == null || h.Length != 32)) throw new ArgumentException("All hashes must be 32 bytes", nameof(values));
+            if (!Unique(valueList)) throw new ArgumentException("All hashes must be unique", nameof(values));
 
             Root = CreateTree(valueList.Select(v => new MerkleNode(v)));
         }
@@ -33,13 +35,13 @@ namespace BitcoinBook
         MerkleNode CreateTree(IEnumerable<MerkleNode> leafNodes)
         {
             var nodes = leafNodes.ToList();
-            if (nodes.Count > 1 && nodes.Count % 2 == 1)
-            {
-                nodes.Add(null);
-            }
 
             while (nodes.Count > 1)
             {
+                if (nodes.Count > 1 && nodes.Count % 2 == 1)
+                {
+                    nodes.Add(null);
+                }
                 var parents = new List<MerkleNode>();
                 for (var i = 0; i < nodes.Count; i += 2)
                 {
@@ -54,7 +56,7 @@ namespace BitcoinBook
 
         byte[] GetParentValue(MerkleNode left, MerkleNode right)
         {
-            return left.Value == null ? null : Merkler.ComputeParent(left.Value, right.Value ?? left.Value);
+            return left.Value == null ? null : Merkler.ComputeParent(left.Value, right?.Value ?? left.Value);
         }
 
         int GetDepth(MerkleNode node)
@@ -70,6 +72,12 @@ namespace BitcoinBook
             }
             var childCount = GetLeafCount(node.Left) + GetLeafCount(node.Right);
             return childCount == 0 ? 1 : childCount;
+        }
+
+        bool Unique(IEnumerable<byte[]> valueList)
+        {
+            var hashSet = new HashSet<string>();
+            return valueList.Select(b => b.ToHex()).All(hashSet.Add);
         }
     }
 }
