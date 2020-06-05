@@ -39,14 +39,12 @@ namespace BitcoinBook
 
         void Populate(MerkleNode node, Queue<byte[]> includedHashes, Queue<byte[]> proofHashes, Queue<bool> flags)
         {
-            if (node == null)
+            if (node != null)
             {
-                return;
-            }
-
-            node.Hash = flags.Dequeue() ? proofHashes.Dequeue() :
-                node.IsLeaf ? includedHashes.Dequeue() :
+                node.Hash = flags.Dequeue() ? proofHashes.Dequeue() :
+                    node.IsLeaf ? includedHashes.Dequeue() :
                     ComputeHashFromChildren(node, includedHashes, proofHashes, flags);
+            }
         }
 
         byte[] ComputeHashFromChildren(MerkleNode node, Queue<byte[]> includedHashes, Queue<byte[]> proofHashes, Queue<bool> flags)
