@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,9 +31,17 @@ namespace BitcoinBook
             if (leafCount < 1) throw new ArgumentException("leafCount must be > 0", nameof(leafCount));
 
             Root = CreateTree(leafCount);
-            Populate(Root,  proof);
+            Populate(Root,  proof ?? throw new ArgumentNullException(nameof(proof)));
 
-            // TODO make sure queues are empty
+            CheckForLeftovers(proof.ProofHashes, nameof(proof.ProofHashes));
+            CheckForLeftovers(proof.IncludedHashes, nameof(proof.IncludedHashes));
+            CheckForLeftovers(proof.Flags, nameof(proof.Flags));
+        }
+
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
+        static void CheckForLeftovers<T>(IEnumerable<T> items, string name)
+        {
+            if (items.Any()) throw new InvalidOperationException($"{name} has unused values");
         }
 
         void Populate(MerkleNode node, MerkleProof proof)
