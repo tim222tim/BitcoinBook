@@ -166,22 +166,5 @@ namespace BitcoinBook.Test
 
             Assert.Throws<InvalidOperationException>(() => tree.CreateProof(includedHashes.Select(Cipher.ToBytes)));
         }
-
-        void GenerateHashes()
-        {
-            var hash = GetHash("b825c0745f46ac58f7d3759e6dc535a1fec7820377f24d4c2c6ad2cc55c0cb59", "95513952a04bd8992721e9b7e2937f1c04ba31e0469fbe615a78197f68f52b7c");
-            Assert.Equal("43e7274e77fbe8e5a42a8fb58f7decdb04d521f319f332d88e6b06f8e6c09e27", hash);
-
-            hash = GetHash("2e6d722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908", "b13a750047bc0bdceb2473e5fe488c2596d7a7124b4e716fdd29b046ef99bbf0");
-            Assert.Equal("4f492e893bf854111c36cb5eff4dccbdd51b576e1cfdc1b84b456cd1c0403ccb", hash);
-
-            hash = GetHash("43e7274e77fbe8e5a42a8fb58f7decdb04d521f319f332d88e6b06f8e6c09e27", "4f492e893bf854111c36cb5eff4dccbdd51b576e1cfdc1b84b456cd1c0403ccb");
-            Assert.Equal("d20629030c7e48e778c1c837d91ebadc2f2ee319a0a0a461f4a9538b5cae2a69", hash);
-        }
-
-        static string GetHash(string hash1, string hash2)
-        {
-            return Merkler.ComputeParent(Cipher.ToBytes(hash1), Cipher.ToBytes(hash2)).ToHex();
-        }
     }
 }
