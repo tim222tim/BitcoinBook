@@ -18,7 +18,7 @@ namespace BitcoinBook
             this.testnet = testnet;
             socket = new Socket(remoteHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(new IPEndPoint(remoteHost, (ushort)(testnet ? 18333 : 8333)));
-            stream = new NetworkStream(socket) {ReadTimeout = 2000};
+            stream = new NetworkStream(socket) {ReadTimeout = 4000};
         }
 
         public void Handshake()

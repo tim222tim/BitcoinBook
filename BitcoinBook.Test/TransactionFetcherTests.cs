@@ -12,7 +12,7 @@ namespace BitcoinBook.Test
         const string baseUri = "http://song/api/";
         const string transactionId = "4ea6e2222c4d59dea646e21a103d8b812a6db433f8ca331778a9408990fa17ee";
 
-        readonly Mock<FakeHttpMessageHandler> mock = new Mock<FakeHttpMessageHandler>() { CallBase = true };
+        readonly Mock<FakeHttpMessageHandler> mock = new Mock<FakeHttpMessageHandler> { CallBase = true };
         readonly TransactionFetcher fetcher;
 
         public TransactionFetcherTests()
