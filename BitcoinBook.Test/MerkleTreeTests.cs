@@ -97,7 +97,7 @@ namespace BitcoinBook.Test
             Assert.Equal(expectedRootHash, tree.Root.Hash.ToHex());
         }
 
-        public void GenerateHashes()
+        void GenerateHashes()
         {
             var hash = GetHash("b825c0745f46ac58f7d3759e6dc535a1fec7820377f24d4c2c6ad2cc55c0cb59", "95513952a04bd8992721e9b7e2937f1c04ba31e0469fbe615a78197f68f52b7c");
             Assert.Equal("43e7274e77fbe8e5a42a8fb58f7decdb04d521f319f332d88e6b06f8e6c09e27", hash);
