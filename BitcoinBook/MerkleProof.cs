@@ -11,6 +11,13 @@ namespace BitcoinBook
         public Queue<byte[]> ProofHashes { get; }
         public Queue<bool> Flags { get; }
 
+        public MerkleProof()
+        {
+            IncludedHashes = new Queue<byte[]>();
+            ProofHashes = new Queue<byte[]>();
+            Flags = new Queue<bool>();
+        }
+
         public MerkleProof(IEnumerable<byte[]> includedHashes, IEnumerable<byte[]> proofHashes, IEnumerable<bool> flags)
         {
             var includedHashList = includedHashes?.ToList() ?? throw new ArgumentNullException(nameof(includedHashes));

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BitcoinBook
@@ -38,8 +39,47 @@ namespace BitcoinBook
             CheckForLeftovers(proof.Flags, nameof(proof.Flags));
         }
 
+        public MerkleProof CreateProof(IEnumerable<byte[]> includedHashes)
+        {
+            var includedSet = new HashSet<string>(includedHashes?.Select(b => b.ToHex()) ?? throw new ArgumentNullException(nameof(includedHashes)));
+            // TODO must not be empty
+
+            var proof = new MerkleProof();
+            AddToProof(Root, proof, includedSet);
+
+            // TODO check for included is Empty
+            return proof;
+        }
+
+        void AddToProof(MerkleNode node, MerkleProof proof, HashSet<string> includedSet)
+        {
+            if (ContainsAny(node, includedSet))
+            {
+                proof.Flags.Enqueue(false);
+                if (node.IsLeaf)
+                {
+                    proof.IncludedHashes.Enqueue(node.Hash);
+                }
+                else
+                {
+                    AddToProof(node.Left, proof, includedSet);
+                    AddToProof(node.Right, proof, includedSet);
+                }
+            }
+            else
+            {
+                proof.Flags.Enqueue(true);
+                proof.ProofHashes.Enqueue(node.Hash);
+            }
+        }
+
+        bool ContainsAny(MerkleNode node, HashSet<string> includedSet)
+        {
+            return node != null && (includedSet.Contains(node.Hash.ToHex()) || ContainsAny(node.Left, includedSet) || ContainsAny(node.Right, includedSet));
+        }
+
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-        static void CheckForLeftovers<T>(IEnumerable<T> items, string name)
+        void CheckForLeftovers<T>(IEnumerable<T> items, string name)
         {
             if (items.Any()) throw new InvalidOperationException($"{name} has unused values");
         }
