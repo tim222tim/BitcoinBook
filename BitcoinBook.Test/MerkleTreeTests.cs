@@ -160,5 +160,32 @@ namespace BitcoinBook.Test
 
             Assert.Throws<InvalidOperationException>(() => tree.CreateProof(includedHashes.Select(Cipher.ToBytes)));
         }
+
+        [Theory]
+        [InlineData(new object[] {new [] {"822305b3ce53de4b63a1eb3cc6b873ce32bdf14737a30440646c80f321dd0de3"}})]
+        [InlineData(new object[] {new [] {"822305b3ce53de4b63a1eb3cc6b873ce32bdf14737a30440646c80f321dd0de3", "49e64527efba5f8406178ef4adacb7348f8a82d25ab92a18910b9446916ff321"}})]
+        [InlineData(new object[] {new [] {"e49764e53fa8ff12183005d69bb4515b5f28b5a93b42ddc1793e03cf702aa818", "971760e3ee5e381bf161bca5d8c6dc6061b239a0ec0ef0f60d6c80d110e42b76", "6ffe50262fa2860b589f24b709595ca79db0bb2aff05fde293acd8ca59987cee"}})]
+        public void ProofAndVerifyTest(string[] includedHashes)
+        {
+            var tree = new MerkleTree(new[]
+            {
+                "822305b3ce53de4b63a1eb3cc6b873ce32bdf14737a30440646c80f321dd0de3",
+                "c93bc57922f9f3efc3f0c6284ecbe8ca255a56c151525c265e2af9b8c82427e4",
+                "1148ac093c5b9b179cec064fab73af632d3885983e63256f19ae37386a1b948f",
+                "c2011c634ef083e1fb8578b07dac24bf0db38bfd177b6581652d3e887f8d0364",
+                "b43e686197f2c34f096828daaaa3bfc600dc069f3b7237145d398dc00df01b44",
+                "43ee349da93736ddb177d9cd99c162094a2b1be0cc992abc3069f079c54e0fa5",
+                "ecc49063e23ac53fc166fd554b69aa9a31142a6952d4d70692acec5c4fca1a11",
+                "49e64527efba5f8406178ef4adacb7348f8a82d25ab92a18910b9446916ff321",
+                "93669e5589966137dad16296518f6190c007d8fa37c98b3f31b401478e172dc0",
+                "971760e3ee5e381bf161bca5d8c6dc6061b239a0ec0ef0f60d6c80d110e42b76",
+                "30ccea783fa1c0c2b7c1b448cd33f615579baff2cd51912beefe16d8921732a0",
+                "3cf3180450ef1a12b3cd3af83c923c1b75c382ec0ea01273b76bbdbb58018480",
+                "e49764e53fa8ff12183005d69bb4515b5f28b5a93b42ddc1793e03cf702aa818",
+                "a8be33a077e95d640cb81844e78289fc076a59c9975ecef0c2cb788401733d11",
+                "6ffe50262fa2860b589f24b709595ca79db0bb2aff05fde293acd8ca59987cee",}.Select(Cipher.ToBytes));
+            var proof = tree.CreateProof(includedHashes.Select(Cipher.ToBytes));
+            Assert.Equal(tree.Root.Hash.ToHex(), new MerkleTree(proof).Root.Hash.ToHex());
+        }
     }
 }

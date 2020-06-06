@@ -55,23 +55,23 @@ namespace BitcoinBook
 
         void AddToProof(MerkleNode node, MerkleProof proof, HashSet<string> includedSet)
         {
-            if (ContainsAny(node, includedSet))
+            if (node != null)
             {
-                proof.Flags.Enqueue(false);
-                if (node.IsLeaf)
+                if (ContainsAny(node, includedSet))
                 {
-                    proof.IncludedHashes.Enqueue(node.Hash);
-                }
-                else
-                {
+                    proof.Flags.Enqueue(false);
+                    if (node.IsLeaf)
+                    {
+                        proof.IncludedHashes.Enqueue(node.Hash);
+                    }
                     AddToProof(node.Left, proof, includedSet);
                     AddToProof(node.Right, proof, includedSet);
                 }
-            }
-            else
-            {
-                proof.Flags.Enqueue(true);
-                proof.ProofHashes.Enqueue(node.Hash);
+                else
+                {
+                    proof.Flags.Enqueue(true);
+                    proof.ProofHashes.Enqueue(node.Hash);
+                }
             }
         }
 
