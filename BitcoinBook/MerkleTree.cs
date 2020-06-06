@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace BitcoinBook
@@ -27,12 +25,12 @@ namespace BitcoinBook
             Root = CreateTree(hashList.Select(v => new MerkleNode(v)));
         }
 
-        public MerkleTree(int leafCount, MerkleProof proof)
+        public MerkleTree(MerkleProof proof)
         {
-            if (leafCount < 1) throw new ArgumentException("leafCount must be > 0", nameof(leafCount));
+            if (proof == null) throw new ArgumentNullException(nameof(proof));
 
-            Root = CreateTree(leafCount);
-            Populate(Root,  proof ?? throw new ArgumentNullException(nameof(proof)));
+            Root = CreateTree(proof.LeafCount);
+            Populate(Root,  proof);
 
             CheckForLeftovers(proof.ProofHashes, nameof(proof.ProofHashes));
             CheckForLeftovers(proof.IncludedHashes, nameof(proof.IncludedHashes));
@@ -44,7 +42,7 @@ namespace BitcoinBook
             var includedSet = new HashSet<string>(includedHashes?.Select(b => b.ToHex()) ?? throw new ArgumentNullException(nameof(includedHashes)));
             if (!includedSet.Any()) throw new ArgumentException("Included hashes must not be empty", nameof(includedHashes));
 
-            var proof = new MerkleProof();
+            var proof = new MerkleProof(LeafCount);
             AddToProof(Root, proof, includedSet);
 
             if (proof.IncludedHashes.Count != includedSet.Count)

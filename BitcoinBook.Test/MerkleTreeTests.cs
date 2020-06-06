@@ -35,12 +35,6 @@ namespace BitcoinBook.Test
             Assert.Equal(leafCount, new MerkleTree(leafCount).LeafCount);
         }
 
-        [Fact]
-        public void HashesNullTest()
-        {
-            Assert.Throws<ArgumentNullException>(() => new MerkleTree(null));
-        }
-
         [Theory]
         [InlineData(new object[] {new string[0]})]
         [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", null}})]
@@ -92,8 +86,8 @@ namespace BitcoinBook.Test
             new[] {false, false, true, false, false, false, true})]
         public void ConstructForProofTest(string expectedRootHash, int leafCount, IEnumerable<string> includedHashes, IEnumerable<string> proofHashes, IEnumerable<bool> flags)
         {
-            var proof = new MerkleProof(includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags);
-            var tree = new MerkleTree(leafCount, proof);
+            var proof = new MerkleProof(leafCount, includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags);
+            var tree = new MerkleTree(proof);
             Assert.Equal(expectedRootHash, tree.Root.Hash.ToHex());
         }
 
@@ -107,8 +101,8 @@ namespace BitcoinBook.Test
             new[] {false, false, true, false, false, false, true})]
         public void QueueAreTooSmallTest(int leafCount, IEnumerable<string> includedHashes, IEnumerable<string> proofHashes, IEnumerable<bool> flags)
         {
-            var proof = new MerkleProof(includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags ?? new bool[0]);
-            Assert.Throws<InvalidOperationException>(() => new MerkleTree(leafCount, proof));
+            var proof = new MerkleProof(leafCount, includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags ?? new bool[0]);
+            Assert.Throws<InvalidOperationException>(() => new MerkleTree(proof));
         }
     
         [Theory]
@@ -121,8 +115,8 @@ namespace BitcoinBook.Test
             new[] {false, false, true, false, false, false, true})]
         public void QueueAreTooBigTest(int leafCount, IEnumerable<string> includedHashes, IEnumerable<string> proofHashes, IEnumerable<bool> flags)
         {
-            var proof = new MerkleProof(includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags ?? new bool[0]);
-            Assert.Throws<InvalidOperationException>(() => new MerkleTree(leafCount, proof));
+            var proof = new MerkleProof(leafCount, includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags ?? new bool[0]);
+            Assert.Throws<InvalidOperationException>(() => new MerkleTree(proof));
         }
 
         [Theory]

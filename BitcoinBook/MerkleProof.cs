@@ -7,24 +7,30 @@ namespace BitcoinBook
 {
     public class MerkleProof
     {
+        public int LeafCount { get; }
         public Queue<byte[]> IncludedHashes { get; }
         public Queue<byte[]> ProofHashes { get; }
         public Queue<bool> Flags { get; }
 
-        public MerkleProof()
+        public MerkleProof(int leafCount)
         {
+            if (leafCount < 1) throw new ArgumentException("leafCount must be > 0", nameof(leafCount));
+
+            LeafCount = leafCount;
             IncludedHashes = new Queue<byte[]>();
             ProofHashes = new Queue<byte[]>();
             Flags = new Queue<bool>();
         }
 
-        public MerkleProof(IEnumerable<byte[]> includedHashes, IEnumerable<byte[]> proofHashes, IEnumerable<bool> flags)
+        public MerkleProof(int leafCount, IEnumerable<byte[]> includedHashes, IEnumerable<byte[]> proofHashes, IEnumerable<bool> flags)
         {
+            if (leafCount < 1) throw new ArgumentException("leafCount must be > 0", nameof(leafCount));
             var includedHashList = includedHashes?.ToList() ?? throw new ArgumentNullException(nameof(includedHashes));
             CheckHashes(includedHashList, false);
             var proofHashList = proofHashes?.ToList() ?? throw new ArgumentNullException(nameof(proofHashes));
             CheckHashes(proofHashList, true);
 
+            LeafCount = leafCount;
             IncludedHashes = new Queue<byte[]>(includedHashList);
             ProofHashes = new Queue<byte[]>(proofHashList);
             Flags = new Queue<bool>(flags ?? throw new ArgumentNullException(nameof(flags)));
