@@ -22,7 +22,7 @@ namespace BitcoinBook
             var hashList = hashes?.ToList() ?? throw new ArgumentNullException(nameof(hashes));
             CheckHashes(hashList, false);
 
-            Root = CreateTree(hashList.Select(v => new MerkleNode(v)));
+            Root = CreateTree(hashList.Select(h => new MerkleNode(h)));
         }
 
         public MerkleTree(MerkleProof proof)
@@ -30,7 +30,7 @@ namespace BitcoinBook
             if (proof == null) throw new ArgumentNullException(nameof(proof));
 
             Root = CreateTree(proof.LeafCount);
-            Populate(Root,  proof);
+            Populate(Root, proof);
 
             CheckForLeftovers(proof.ProofHashes, nameof(proof.ProofHashes));
             CheckForLeftovers(proof.IncludedHashes, nameof(proof.IncludedHashes));
