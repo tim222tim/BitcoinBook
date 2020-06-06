@@ -42,12 +42,16 @@ namespace BitcoinBook
         public MerkleProof CreateProof(IEnumerable<byte[]> includedHashes)
         {
             var includedSet = new HashSet<string>(includedHashes?.Select(b => b.ToHex()) ?? throw new ArgumentNullException(nameof(includedHashes)));
-            // TODO must not be empty
+            if (!includedSet.Any()) throw new ArgumentException("Included hashes must not be empty", nameof(includedHashes));
 
             var proof = new MerkleProof();
             AddToProof(Root, proof, includedSet);
 
-            // TODO check for included is Empty
+            if (proof.IncludedHashes.Count != includedSet.Count)
+            {
+                throw new InvalidOperationException("Not all included hashes were found in the tree");
+            }
+
             return proof;
         }
 

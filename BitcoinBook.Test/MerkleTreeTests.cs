@@ -146,6 +146,27 @@ namespace BitcoinBook.Test
             Assert.True(expectedFlags.SequenceEqual(proof.Flags));
         }
 
+        [Fact]
+        public void IncludedHashNotInTreeTest()
+        {
+            var tree = new MerkleTree(new[]
+            {
+                "b825c0745f46ac58f7d3759e6dc535a1fec7820377f24d4c2c6ad2cc55c0cb59",
+                "95513952a04bd8992721e9b7e2937f1c04ba31e0469fbe615a78197f68f52b7c",
+                "2e6d722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908",
+                "b13a750047bc0bdceb2473e5fe488c2596d7a7124b4e716fdd29b046ef99bbf0"
+            }.Select(Cipher.ToBytes));
+
+            var includedHashes = new[]
+            {
+                "95513952a04bd8992721e9b7e2937f1c04ba31e0469fbe615a78197f68f52b7c",
+                "2e6d722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908",
+                "aaaaa22e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908",
+            };
+
+            Assert.Throws<InvalidOperationException>(() => tree.CreateProof(includedHashes.Select(Cipher.ToBytes)));
+        }
+
         void GenerateHashes()
         {
             var hash = GetHash("b825c0745f46ac58f7d3759e6dc535a1fec7820377f24d4c2c6ad2cc55c0cb59", "95513952a04bd8992721e9b7e2937f1c04ba31e0469fbe615a78197f68f52b7c");
