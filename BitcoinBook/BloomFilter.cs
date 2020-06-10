@@ -42,14 +42,6 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] Result
-        {
-            get
-            {
-                var bytes = new byte[size];
-                bits.CopyTo(bytes, 0);
-                return bytes;
-            }
-        }
+        public byte[] Result => bits.ToBytes();
     }
 }
