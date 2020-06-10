@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Numerics;
-using System.Security.Cryptography;
 using Murmur;
 
 namespace BitcoinBook
@@ -37,8 +35,8 @@ namespace BitcoinBook
         {
             for (var i = 0; i < hashCount; i++)
             {
-                var murmur3 = MurmurHash.Create128((uint)i * bip37Constant + tweak);
-                var hash = murmur3.ComputeHash(data).ToBigInteger();
+                var seed = (uint)i * bip37Constant + tweak;
+                var hash = BitConverter.ToUInt32(MurmurHash.Create32(seed).ComputeHash(data));
                 var bit = (int)(hash % bitCount);
                 bits[bit] = true;
             }
