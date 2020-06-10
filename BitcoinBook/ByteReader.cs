@@ -27,7 +27,7 @@ namespace BitcoinBook
         {
         }
 
-        protected byte ReadByte()
+        public byte ReadByte()
         {
             return reader.ReadByte();
         }
@@ -87,7 +87,7 @@ namespace BitcoinBook
             return reader.ReadBytes(count).Reverse();
         }
 
-        protected byte[] ReadVarBytes()
+        public byte[] ReadVarBytes()
         {
             return reader.ReadBytes(ReadVarInt());
         }
