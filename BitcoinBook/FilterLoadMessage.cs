@@ -20,6 +20,10 @@ namespace BitcoinBook
             Flags = flags;
         }
 
+        public FilterLoadMessage(BloomFilter filter) : this(filter.Result, filter.HashCount, filter.Tweak, filter.Flags)
+        {
+        }
+
         public static FilterLoadMessage Parse(byte[] bytes)
         {
             var reader = new ByteReader(bytes);
