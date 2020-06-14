@@ -40,7 +40,10 @@ namespace BitcoinBook
                 RemoteUserAgent = versionMessage.UserAgent;
                 Send(new VerAckMessage());
             }
-            // TODO ping message
+            else if (envelope.Message is PingMessage pingMessage)
+            {
+                Send(new PongMessage(pingMessage.Nonce));
+            }
             return envelope.Message;
         }
 
