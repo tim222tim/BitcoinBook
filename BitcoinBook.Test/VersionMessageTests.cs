@@ -34,7 +34,7 @@ namespace BitcoinBook.Test
             Assert.Equal(message.Nonce, newMessage.Nonce);
             Assert.Equal(message.UserAgent, newMessage.UserAgent);
             Assert.Equal(message.Height, newMessage.Height);
-            Assert.Equal(message.Flag, newMessage.Flag);
+            Assert.Equal(message.RelayFlag, newMessage.RelayFlag);
         }
     }
 }

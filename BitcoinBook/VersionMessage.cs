@@ -24,17 +24,17 @@ namespace BitcoinBook
         public ulong Nonce { get; }
         public string UserAgent { get; }
         public int Height { get; }
-        public bool Flag { get; }
+        public bool RelayFlag { get; }
 
         public VersionMessage() : this(DefaultVersion, 0,
             DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             0, new IPAddress(new byte[] { 0, 0, 0, 0 }), 0,
             0, new IPAddress(new byte[] { 0, 0, 0, 0 }), 0,
-            NextNonce(), "/rossitertest:0.1/", 0, true)
+            NextNonce(), "/rossitertest:0.1/", 0, false)
         {
         }
 
-        public VersionMessage(int version, long services, long timestamp, long receiverServices, IPAddress receiverAddress, ushort receiverPort, long senderServices, IPAddress senderAddress, ushort senderPort, ulong nonce, string userAgent, int height, bool flag)
+        public VersionMessage(int version, long services, long timestamp, long receiverServices, IPAddress receiverAddress, ushort receiverPort, long senderServices, IPAddress senderAddress, ushort senderPort, ulong nonce, string userAgent, int height, bool relayFlag)
         {
             Version = version;
             Services = services;
@@ -51,7 +51,7 @@ namespace BitcoinBook
             Nonce = nonce;
             UserAgent = userAgent;
             Height = height;
-            Flag = flag;
+            RelayFlag = relayFlag;
         }
 
         static ulong NextNonce()
@@ -109,7 +109,7 @@ namespace BitcoinBook
             writer.Write(Nonce, 8);
             writer.Write(UserAgent);
             writer.Write(Height, 4);
-            writer.Write(Flag);
+            writer.Write(RelayFlag);
             return stream.ToArray();
         }
     }
