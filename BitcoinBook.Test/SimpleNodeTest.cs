@@ -37,7 +37,7 @@ namespace BitcoinBook.Test
             Assert.NotNull(message);
         }
 
-        [Fact(Skip = "missing messages")]
+        [Fact]
         public void GetHeadersTest()
         {
             timNode.Handshake();

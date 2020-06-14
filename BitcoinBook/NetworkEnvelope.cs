@@ -100,6 +100,10 @@ namespace BitcoinBook
                     return PingMessage.Parse(payload);
                 case "pong":
                     return PongMessage.Parse(payload);
+                case "addr":
+                case "feefilter":
+                    // TODO need message
+                    return null;
                 default:
                     throw new NotImplementedException("Unknown command: " + commandName);
             }
