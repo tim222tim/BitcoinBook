@@ -37,7 +37,7 @@ namespace BitcoinBook.Test
             Assert.NotNull(message);
         }
 
-        [Fact]
+        [Fact(Skip = "missing messages")]
         public void GetHeadersTest()
         {
             timNode.Handshake();
@@ -49,7 +49,23 @@ namespace BitcoinBook.Test
             Assert.Equal(previousId, message.BlockHeaders[0].PreviousBlock);
         }
 
+        // [Fact]
+        // public void GetCompactFiltersTest()
+        // {
+        //     timNode.Handshake();
+        //     timNode.Send(new GetCompactFiltersMessage(FilterType.Basic, 0, Cipher.ToBytes("000000004e833644bc7fb021abd3da831c64ec82bae73042cfa63923d47d3303")));
+        //     while (true)
+        //     {
+        //         var message = timNode.WaitForMessage();
+        //         if (message == null)
+        //         {
+        //             break;
+        //         }
+        //     }
+        // }
+
         // bloom filters are removed
+        // [Fact]
         // public void GetDataTest()
         // {
         //     timNode.Handshake();

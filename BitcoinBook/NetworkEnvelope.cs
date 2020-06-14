@@ -19,8 +19,13 @@ namespace BitcoinBook
             Message = ParseMessage(Command, Payload);
         }
 
-        public NetworkEnvelope(IMessage message, bool testnet) : this(message?.Command, message?.ToBytes(), testnet)
+        public NetworkEnvelope(IMessage message, bool testnet)
         {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            Command = message.Command;
+            Payload = message.ToBytes();
+            Message = message;
+            Testnet = testnet;
         }
 
         public static NetworkEnvelope Parse(byte[] bytes, bool testnet = false)
@@ -87,8 +92,16 @@ namespace BitcoinBook
                     return VerAckMessage.Parse(payload);
                 case "headers":
                     return HeadersMessage.Parse(payload);
+                case "sendheaders":
+                    return SendHeadersMessage.Parse(payload);
+                case "sendcmpct":
+                    return SendCompactMessage.Parse(payload);
+                case "ping":
+                    return PingMessage.Parse(payload);
+                case "pong":
+                    return PongMessage.Parse(payload);
                 default:
-                    return null;
+                    throw new NotImplementedException("Unknown command: " + commandName);
             }
         }
 
