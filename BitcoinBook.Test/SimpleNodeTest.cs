@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Xunit;
 
@@ -19,7 +20,15 @@ namespace BitcoinBook.Test
         {
             timNode?.Dispose();
         }
-        
+
+        [Fact]
+        public void WaitForVerakTest()
+        {
+            timNode.Send(new VersionMessage());
+            var message = timNode.WaitFor<VerAckMessage>();
+            Assert.NotNull(message);
+        }
+
         [Theory]
         [MemberData(nameof(NodeData))]
         public void HandshakeTest(NodeSetting setting)
@@ -30,11 +39,27 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public void WaitForVerakTest()
+        public void CompactHeadersTest()
         {
-            timNode.Send(new VersionMessage());
-            var message = timNode.WaitFor<VerAckMessage>();
-            Assert.NotNull(message);
+            timNode.Handshake();
+            ProcessAllMessages(timNode);
+            Assert.False(timNode.CompactHeaderFlags[1]);
+            Assert.False(timNode.CompactHeaderFlags[2]);
+        }
+
+        void ProcessAllMessages(SimpleNode node)
+        {
+            while (true)
+            {
+                try
+                {
+                    node.WaitForMessage();
+                }
+                catch (IOException)
+                {
+                    break;
+                }
+            }
         }
 
         [Fact]
@@ -50,22 +75,7 @@ namespace BitcoinBook.Test
         }
 
         // [Fact]
-        // public void GetCompactFiltersTest()
-        // {
-        //     timNode.Handshake();
-        //     timNode.Send(new GetCompactFiltersMessage(FilterType.Basic, 0, Cipher.ToBytes("000000004e833644bc7fb021abd3da831c64ec82bae73042cfa63923d47d3303")));
-        //     while (true)
-        //     {
-        //         var message = timNode.WaitForMessage();
-        //         if (message == null)
-        //         {
-        //             break;
-        //         }
-        //     }
-        // }
-
-        // bloom filters are removed
-        // [Fact]
+        // // bloom filters are removed
         // public void GetDataTest()
         // {
         //     timNode.Handshake();
@@ -78,6 +88,17 @@ namespace BitcoinBook.Test
         //     Assert.NotNull(headersMessage);
         //     var blockDataItems = headersMessage.BlockHeaders.Select(h => new BlockDataItem(BlockDataType.MerkleBlock, Cipher.ToBytes(h.Id)));
         //     timNode.Send(new GetDataMessage(blockDataItems));
+        //     while (true)
+        //     {
+        //         var message = timNode.WaitForMessage();
+        //     }
+        // }
+        //
+        // [Fact]
+        // public void GetCompactFiltersTest()
+        // {
+        //     timNode.Handshake();
+        //     timNode.Send(new GetCompactFiltersMessage(FilterType.Basic, 0, Cipher.ToBytes("000000004e833644bc7fb021abd3da831c64ec82bae73042cfa63923d47d3303")));
         //     while (true)
         //     {
         //         var message = timNode.WaitForMessage();
