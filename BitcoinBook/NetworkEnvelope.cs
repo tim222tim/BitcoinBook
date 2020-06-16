@@ -103,8 +103,7 @@ namespace BitcoinBook
                 case "feefilter":
                     return FeeFilterMessage.Parse(payload);
                 case "addr":
-                    // TODO need message
-                    return null;
+                    return AddressMessage.Parse(payload);
                 default:
                     throw new NotImplementedException("Unknown command: " + commandName);
             }
