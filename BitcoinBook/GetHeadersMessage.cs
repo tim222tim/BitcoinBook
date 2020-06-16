@@ -31,19 +31,11 @@ namespace BitcoinBook
 
         public static GetHeadersMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new GetHeadersMessage(
+            return Parse(bytes, reader => new GetHeadersMessage(
                     reader.ReadInt(4),
                     reader.ReadVarInt(),
                     reader.ReadBytes(32).ToReverseHex(),
-                    reader.ReadBytes(32).ToReverseHex());
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+                    reader.ReadBytes(32).ToReverseHex()));
         }
 
         public override byte[] ToBytes()

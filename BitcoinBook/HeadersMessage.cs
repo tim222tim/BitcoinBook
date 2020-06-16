@@ -20,8 +20,7 @@ namespace BitcoinBook
 
         public static HeadersMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
+            return Parse(bytes, reader =>
             {
                 var headers = new List<BlockHeader>();
                 var count = reader.ReadVarInt();
@@ -35,11 +34,7 @@ namespace BitcoinBook
                 }
 
                 return new HeadersMessage(headers);
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            });
         }
 
         public override byte[] ToBytes()

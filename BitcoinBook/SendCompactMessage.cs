@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace BitcoinBook
 {
@@ -18,17 +17,7 @@ namespace BitcoinBook
 
         public static SendCompactMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new SendCompactMessage(
-                    reader.ReadByte(),
-                    reader.ReadUnsignedLong(8));
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            return Parse(bytes, r => new SendCompactMessage(r.ReadByte(), r.ReadUnsignedLong(8)));
         }
 
         public override byte[] ToBytes()

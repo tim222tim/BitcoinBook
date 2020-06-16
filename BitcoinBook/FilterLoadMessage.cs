@@ -26,19 +26,12 @@ namespace BitcoinBook
 
         public static FilterLoadMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new FilterLoadMessage(
+            return Parse(bytes, reader =>
+                new FilterLoadMessage(
                     reader.ReadVarBytes(),
                     reader.ReadInt(4),
                     reader.ReadUnsignedInt(4),
-                    reader.ReadByte());
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+                    reader.ReadByte()));
         }
 
         public override byte[] ToBytes()

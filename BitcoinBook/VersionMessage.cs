@@ -51,10 +51,8 @@ namespace BitcoinBook
 
         public static VersionMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new VersionMessage(
+            return Parse(bytes, reader =>
+                new VersionMessage(
                     reader.ReadInt(4),
                     reader.ReadUnsignedLong(8),
                     reader.ReadLong(8),
@@ -65,12 +63,7 @@ namespace BitcoinBook
                     reader.ReadUnsignedLong(8),
                     reader.ReadString(),
                     reader.ReadInt(4),
-                    reader.ReadBool());
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+                    reader.ReadBool()));
         }
 
         public override byte[] ToBytes()

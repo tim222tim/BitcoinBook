@@ -16,15 +16,7 @@ namespace BitcoinBook
 
         public static FeeFilterMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new FeeFilterMessage(reader.ReadUnsignedLong(8));
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            return Parse(bytes, r => new FeeFilterMessage(r.ReadUnsignedLong(8)));
         }
 
         public override byte[] ToBytes()

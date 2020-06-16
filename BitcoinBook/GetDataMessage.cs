@@ -23,21 +23,17 @@ namespace BitcoinBook
 
         public static GetDataMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
+            return Parse(bytes, reader =>
             {
                 var count = reader.ReadVarInt();
                 var items = new List<BlockDataItem>();
                 while (count-- > 0)
                 {
-                    items.Add(new BlockDataItem((BlockDataType)reader.ReadInt(4), reader.ReadBytes(32)));
+                    items.Add(new BlockDataItem((BlockDataType) reader.ReadInt(4), reader.ReadBytes(32)));
                 }
+
                 return new GetDataMessage(items);
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            });
         }
 
         public override byte[] ToBytes()

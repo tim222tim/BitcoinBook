@@ -21,8 +21,7 @@ namespace BitcoinBook
 
         public static AddressMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
+            return Parse(bytes, reader =>
             {
                 var count = reader.ReadVarInt();
                 var addresses = new List<TimestampedNetworkAddress>();
@@ -30,12 +29,9 @@ namespace BitcoinBook
                 {
                     addresses.Add(reader.ReadTimestampedNetworkAddress());
                 }
+
                 return new AddressMessage(addresses);
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            });
         }
 
         public override byte[] ToBytes()
