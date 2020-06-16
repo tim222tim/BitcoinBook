@@ -119,7 +119,16 @@ namespace BitcoinBook
             }
         }
 
-        public IPAddress ReadAddress()
+        public NetworkAddress ReadNetworkAddress()
+        {
+            return new NetworkAddress(                    
+                ReadUnsignedLong(8),
+                ReadIPAddress(),
+                (ushort)ReadInt(2)
+            );
+        }
+
+        public IPAddress ReadIPAddress()
         {
             var bytesZero = reader.ReadBytes(10);
             var marker = ReadInt(2);

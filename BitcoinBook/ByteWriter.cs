@@ -100,9 +100,9 @@ namespace BitcoinBook
             return i < 0x10000 ? (byte)0xfd : i < 0x100000000 ? (byte)0xfe : (byte)0xff;
         }
 
-        public void Write(IPAddress receiverAddress)
+        public void Write(IPAddress ipAddress)
         {
-            var bytes = receiverAddress.GetAddressBytes();
+            var bytes = ipAddress.GetAddressBytes();
             if (bytes.Length != 4)
             {
                 throw new FormatException("Expecting IPv4");
@@ -111,6 +111,13 @@ namespace BitcoinBook
             Write(0, 10);
             Write(0xffff, 2);
             Write(bytes);
+        }
+
+        public void Write(NetworkAddress address)
+        {
+            Write(address.Services, 8);
+            Write(address.IPAddress);
+            Write(address.Port, 2);
         }
 
         public void Write(string str)
