@@ -3,9 +3,9 @@ using System.IO;
 
 namespace BitcoinBook
 {
-    public class FeeFilterMessage : IMessage
+    public class FeeFilterMessage : MessageBase
     {
-        public string Command => "feefilter";
+        public override string Command => "feefilter";
 
         public ulong FeeRate { get; }
 
@@ -27,7 +27,7 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             var stream = new MemoryStream();
             var writer = new ByteWriter(stream);

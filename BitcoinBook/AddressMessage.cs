@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace BitcoinBook
 {
-    public class AddressMessage : IMessage
+    public class AddressMessage : MessageBase
     {
         readonly List<TimestampedNetworkAddress> addresses;
 
-        public string Command => "addr";
+        public override string Command => "addr";
 
         public IList<TimestampedNetworkAddress> Addresses => addresses.AsReadOnly();
 
@@ -38,7 +38,7 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             var stream = new MemoryStream();
             var writer = new ByteWriter(stream);

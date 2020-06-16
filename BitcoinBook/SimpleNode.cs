@@ -72,7 +72,7 @@ namespace BitcoinBook
             }
         }
 
-        public void Send(IMessage message)
+        public void Send(MessageBase message)
         {
             new NetworkEnvelope(message, testnet).WriteTo(stream);
         }

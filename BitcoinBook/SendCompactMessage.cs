@@ -3,12 +3,12 @@ using System.IO;
 
 namespace BitcoinBook
 {
-    public class SendCompactMessage : IMessage
+    public class SendCompactMessage : MessageBase
     {
         public byte Flag { get; }
         public ulong Version { get; }
 
-        public string Command => "sendcmpct";
+        public override string Command => "sendcmpct";
 
         public SendCompactMessage(byte flag, ulong version)
         {
@@ -31,7 +31,7 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             var stream = new MemoryStream();
             var writer = new ByteWriter(stream);

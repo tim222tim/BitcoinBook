@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace BitcoinBook
 {
-    public class GetDataMessage : IMessage
+    public class GetDataMessage : MessageBase
     {
         readonly List<BlockDataItem> items;
 
-        public string Command => "getdata";
+        public override string Command => "getdata";
 
         public IList<BlockDataItem> Items => items.AsReadOnly();
 
@@ -40,7 +40,7 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             var stream = new MemoryStream();
             var writer = new ByteWriter(stream);

@@ -5,13 +5,13 @@ using System.IO;
 
 namespace BitcoinBook
 {
-    public class HeadersMessage : IMessage
+    public class HeadersMessage : MessageBase
     {
         readonly List<BlockHeader> blockHeaders;
 
         public ReadOnlyCollection<BlockHeader> BlockHeaders => blockHeaders.AsReadOnly();
 
-        public string Command => "headers";
+        public override string Command => "headers";
 
         public HeadersMessage(IEnumerable<BlockHeader> blockHeaders)
         {
@@ -42,7 +42,7 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             var stream = new MemoryStream();
             var writer = new ByteWriter(stream);

@@ -2,10 +2,8 @@
 
 namespace BitcoinBook
 {
-    public abstract class EmptyMessageBase : IMessage
+    public abstract class EmptyMessageBase : MessageBase
     {
-        public abstract string Command { get; }
-
         public static T Parse<T>(byte[] bytes) where T : EmptyMessageBase, new()
         {
             var message = new T();
@@ -14,7 +12,7 @@ namespace BitcoinBook
             return message;
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             return new byte[0];
         }

@@ -3,9 +3,9 @@ using System.IO;
 
 namespace BitcoinBook
 {
-    public class FilterLoadMessage : IMessage
+    public class FilterLoadMessage : MessageBase
     {
-        public string Command => "filterload";
+        public override string Command => "filterload";
 
         public byte[] Filter { get; }
         public int HashCount { get; }
@@ -41,7 +41,7 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             var stream = new MemoryStream();
             var writer = new ByteWriter(stream);

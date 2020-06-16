@@ -3,13 +3,13 @@ using System.IO;
 
 namespace BitcoinBook
 {
-    public class VersionMessage : IMessage
+    public class VersionMessage : MessageBase
     {
         public const int DefaultVersion = 70015;
 
         static readonly Random random = new Random();
 
-        public string Command => "version";
+        public override string Command => "version";
 
         public int Version { get; }
         public ulong Services { get; }
@@ -73,7 +73,7 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             var stream = new MemoryStream();
             var writer = new ByteWriter(stream);

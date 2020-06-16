@@ -3,14 +3,14 @@ using System.IO;
 
 namespace BitcoinBook
 {
-    public class GetHeadersMessage : IMessage
+    public class GetHeadersMessage : MessageBase
     {
         public const int DefaultVersion = 70015;
 
         readonly byte[] startingBlock;
         readonly byte[] endingBlock;
 
-        public string Command => "getheaders";
+        public override string Command => "getheaders";
 
         public int Version { get; }
         public int Hashes { get; }
@@ -46,7 +46,7 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             var stream = new MemoryStream();
             var writer = new ByteWriter(stream);

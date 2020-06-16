@@ -3,13 +3,13 @@ using System.IO;
 
 namespace BitcoinBook
 {
-    public class GetCompactFiltersMessage : IMessage
+    public class GetCompactFiltersMessage : MessageBase
     {
         public FilterType FilterType { get; }
         public uint StartHeight { get; }
         public byte[] StopHash { get; }
 
-        public string Command => "getcfilters";
+        public override string Command => "getcfilters";
 
         public GetCompactFiltersMessage(FilterType filterType, uint startHeight, byte[] stopHash)
         {
@@ -34,7 +34,7 @@ namespace BitcoinBook
             }
         }
 
-        public byte[] ToBytes()
+        public override byte[] ToBytes()
         {
             var stream = new MemoryStream();
             var writer = new ByteWriter(stream);
