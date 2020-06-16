@@ -128,6 +128,17 @@ namespace BitcoinBook
             );
         }
 
+        public TimestampedNetworkAddress ReadTimestampedNetworkAddress()
+        {
+            var timestamp = ReadUnsignedInt(4);
+            return new TimestampedNetworkAddress(                    
+                ReadUnsignedLong(8),
+                ReadIPAddress(),
+                (ushort)ReadInt(2),
+                timestamp
+            );
+        }
+
         public IPAddress ReadIPAddress()
         {
             var bytesZero = reader.ReadBytes(10);

@@ -120,6 +120,12 @@ namespace BitcoinBook
             Write(address.Port, 2);
         }
 
+        public void Write(TimestampedNetworkAddress address)
+        {
+            Write(address.Timestamp, 4);
+            Write((NetworkAddress)address);
+        }
+
         public void Write(string str)
         {
             var bytes = Encoding.ASCII.GetBytes(str);
