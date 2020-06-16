@@ -8,7 +8,7 @@ namespace BitcoinBook
 {
     public class ByteReader
     {
-        static readonly byte[] ipv4prefix = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
+        static readonly byte[] ipv4Prefix = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
 
         readonly BinaryReader reader;
 
@@ -150,7 +150,7 @@ namespace BitcoinBook
         public IPAddress ReadIPAddress()
         {
             var addressBytes = reader.ReadBytes(16);
-            var address = new IPAddress(StartsWith(addressBytes, ipv4prefix) ? addressBytes.Copy(12, 4) : addressBytes);
+            var address = new IPAddress(StartsWith(addressBytes, ipv4Prefix) ? addressBytes.Copy(12, 4) : addressBytes);
             return address;
         }
 
