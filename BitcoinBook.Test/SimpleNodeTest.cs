@@ -63,6 +63,13 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
+        public void AddressTest()
+        {
+            timNode.Handshake();
+            var message = timNode.WaitFor<AddressMessage>();
+        }
+
+        [Fact]
         public void GetHeadersTest()
         {
             timNode.Handshake();

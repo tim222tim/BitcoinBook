@@ -8,6 +8,8 @@ namespace BitcoinBook
 {
     public class ByteReader
     {
+        static readonly byte[] ipv4prefix = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff};
+
         readonly BinaryReader reader;
 
         public ByteReader(BinaryReader reader)
@@ -147,17 +149,22 @@ namespace BitcoinBook
 
         public IPAddress ReadIPAddress()
         {
-            var bytesZero = reader.ReadBytes(10);
-            var marker = ReadInt(2);
-            var addressBytes = reader.ReadBytes(4);
-            if (bytesZero.Any(b => b != 0) || marker != 0xffff)
+            var addressBytes = reader.ReadBytes(16);
+            var address = new IPAddress(StartsWith(addressBytes, ipv4prefix) ? addressBytes.Copy(12, 4) : addressBytes);
+            return address;
+        }
+
+        bool StartsWith(byte[] sequence, byte[] prefix)
+        {
+            for (var i = 0; i < prefix.Length; i++)
             {
-                return new IPAddress(0);
-                // throw new FormatException("Expected IPv4 prefix");
+                if (sequence[i] != prefix[i])
+                {
+                    return false;
+                }
             }
 
-            var address = new IPAddress(addressBytes);
-            return address;
+            return true;
         }
 
         public bool ReadBool()
