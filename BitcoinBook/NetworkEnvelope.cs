@@ -100,8 +100,9 @@ namespace BitcoinBook
                     return PingMessage.Parse(payload);
                 case "pong":
                     return PongMessage.Parse(payload);
-                case "addr":
                 case "feefilter":
+                    return FeeFilterMessage.Parse(payload);
+                case "addr":
                     // TODO need message
                     return null;
                 default:

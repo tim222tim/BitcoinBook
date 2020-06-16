@@ -16,6 +16,7 @@ namespace BitcoinBook
 
         public string RemoteUserAgent { get; private set; }
         public IDictionary<ulong, bool> CompactHeaderFlags { get; }
+        public ulong FeeRate { get; private set; }
 
         public SimpleNode(IPAddress remoteHost, bool testnet = false)
         {
@@ -52,6 +53,10 @@ namespace BitcoinBook
             else if (envelope.Message is SendCompactMessage sendCompactMessage)
             {
                 compactHeaderFlags[sendCompactMessage.Version] = sendCompactMessage.Flag != 0;
+            }
+            else if (envelope.Message is FeeFilterMessage feeFilterMessage)
+            {
+                FeeRate = feeFilterMessage.FeeRate;
             }
             return envelope.Message;
         }

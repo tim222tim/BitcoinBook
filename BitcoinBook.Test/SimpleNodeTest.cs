@@ -39,7 +39,7 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
-        public void CompactHeadersTest()
+        public void CompactHeaderFlagsTest()
         {
             timNode.Handshake();
             ProcessAllMessages(timNode);
@@ -47,19 +47,12 @@ namespace BitcoinBook.Test
             Assert.False(timNode.CompactHeaderFlags[2]);
         }
 
-        void ProcessAllMessages(SimpleNode node)
+        [Fact]
+        public void FeeRateTest()
         {
-            while (true)
-            {
-                try
-                {
-                    node.WaitForMessage();
-                }
-                catch (IOException)
-                {
-                    break;
-                }
-            }
+            timNode.Handshake();
+            ProcessAllMessages(timNode);
+            Assert.Equal(1000U, timNode.FeeRate);
         }
 
         [Fact]
@@ -93,7 +86,7 @@ namespace BitcoinBook.Test
         //         var message = timNode.WaitForMessage();
         //     }
         // }
-        //
+        
         // [Fact]
         // public void GetCompactFiltersTest()
         // {
@@ -104,5 +97,20 @@ namespace BitcoinBook.Test
         //         var message = timNode.WaitForMessage();
         //     }
         // }
+
+        void ProcessAllMessages(SimpleNode node)
+        {
+            while (true)
+            {
+                try
+                {
+                    node.WaitForMessage();
+                }
+                catch (IOException)
+                {
+                    break;
+                }
+            }
+        }
     }
 }
