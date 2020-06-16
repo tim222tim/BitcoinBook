@@ -14,5 +14,9 @@ namespace BitcoinBook
         {
             Timestamp = timestamp;
         }
+
+        public TimestampedNetworkAddress(NetworkAddress networkAddress, uint timestamp) : this(networkAddress.Services, networkAddress.IPAddress, networkAddress.Port, timestamp)
+        {
+        }
     }
 }

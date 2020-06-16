@@ -19,16 +19,6 @@ namespace BitcoinBook
         {
         }
 
-        public void Write(int i, int length)
-        {
-            Write((ulong)i, length);
-        }
-
-        public void Write(long i, int length)
-        {
-            Write((ulong)i, length);
-        }
-
         public void Write(byte b)
         {
             writer.Write(b);
@@ -44,18 +34,35 @@ namespace BitcoinBook
             writer.Write((byte)opCode);
         }
 
-        public void Write(ulong i, int length)
+        public void Write(int i, int length, bool bigEndian = false)
         {
-            var bytes = new BigInteger(i).ToLittleBytes();
-            var bx = 0;
-            var wx = 0;
-            while (bx < bytes.Length && wx++ < length)
+            Write((ulong)i, length, bigEndian);
+        }
+
+        public void Write(long i, int length, bool bigEndian = false)
+        {
+            Write((ulong)i, length, bigEndian);
+        }
+
+        public void Write(ulong i, int length, bool bigEndian = false)
+        {
+            if (bigEndian)
             {
-                Write(bytes[bx++]);
+                Write(new BigInteger(i).ToBigBytes(length));
             }
-            while (wx++ < length)
+            else
             {
-                Write((byte)0);
+                var bytes = new BigInteger(i).ToLittleBytes();
+                var bx = 0;
+                var wx = 0;
+                while (bx < bytes.Length && wx++ < length)
+                {
+                    Write(bytes[bx++]);
+                }
+                while (wx++ < length)
+                {
+                    Write((byte)0);
+                }
             }
         }
 
@@ -117,7 +124,7 @@ namespace BitcoinBook
         {
             Write(address.Services, 8);
             Write(address.IPAddress);
-            Write(address.Port, 2);
+            Write(address.Port, 2, true);
         }
 
         public void Write(TimestampedNetworkAddress address)

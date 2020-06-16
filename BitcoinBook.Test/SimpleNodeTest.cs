@@ -39,6 +39,14 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
+        public void VersionTest()
+        {
+            timNode.Send(new VersionMessage());
+            var message = timNode.WaitFor<VersionMessage>();
+            Assert.NotNull(message);
+        }
+
+        [Fact]
         public void CompactHeaderFlagsTest()
         {
             timNode.Handshake();
