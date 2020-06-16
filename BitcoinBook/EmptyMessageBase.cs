@@ -12,9 +12,8 @@ namespace BitcoinBook
             return message;
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            return new byte[0];
         }
     }
 }

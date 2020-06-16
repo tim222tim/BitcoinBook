@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
     public class FeeFilterMessage : MessageBase
     {
@@ -19,12 +16,9 @@ namespace BitcoinBook
             return Parse(bytes, r => new FeeFilterMessage(r.ReadUnsignedLong(8)));
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write(FeeRate, 8);
-            return stream.ToArray();
         }
     }
 }

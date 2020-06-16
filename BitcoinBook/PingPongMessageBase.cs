@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
     public abstract class PingPongMessageBase : MessageBase
     {
@@ -11,12 +9,9 @@ namespace BitcoinBook
             Nonce = nonce;
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write(Nonce, 8);
-            return stream.ToArray();
         }
     }
 }

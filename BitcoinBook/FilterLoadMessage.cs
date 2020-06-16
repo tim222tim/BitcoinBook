@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
     public class FilterLoadMessage : MessageBase
     {
@@ -34,15 +31,12 @@ namespace BitcoinBook
                     reader.ReadByte()));
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.WriteVarBytes(Filter);
             writer.Write(HashCount, 4);
             writer.Write(Tweak, 4);
             writer.Write(Flags);
-            return stream.ToArray();
         }
     }
 }

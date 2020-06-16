@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
     public class GetHeadersMessage : MessageBase
     {
@@ -38,15 +35,12 @@ namespace BitcoinBook
                     reader.ReadBytes(32).ToReverseHex()));
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write(Version, 4);
             writer.WriteVar(Hashes);
             writer.Write(startingBlock);
             writer.Write(endingBlock);
-            return stream.ToArray();
         }
     }
 }

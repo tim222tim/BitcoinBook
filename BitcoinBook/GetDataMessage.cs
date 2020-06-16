@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 
 namespace BitcoinBook
@@ -36,17 +34,14 @@ namespace BitcoinBook
             });
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.WriteVar(items.Count);
             foreach (var item in items)
             {
                 writer.Write((int)item.BlockDataType, 4);
                 writer.Write(item.Hash);
             }
-            return stream.ToArray();
         }
     }
 }

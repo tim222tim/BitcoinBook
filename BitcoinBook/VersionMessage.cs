@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace BitcoinBook
 {
@@ -66,10 +65,8 @@ namespace BitcoinBook
                     reader.ReadBool()));
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write(Version, 4);
             writer.Write(Services, 8);
             writer.Write(Timestamp, 8);
@@ -81,7 +78,6 @@ namespace BitcoinBook
             writer.Write(UserAgent);
             writer.Write(Height, 4);
             writer.Write(RelayFlag);
-            return stream.ToArray();
         }
     }
 }

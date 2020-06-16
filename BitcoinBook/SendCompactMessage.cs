@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
     public class SendCompactMessage : MessageBase
     {
@@ -20,13 +18,10 @@ namespace BitcoinBook
             return Parse(bytes, r => new SendCompactMessage(r.ReadByte(), r.ReadUnsignedLong(8)));
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write(Flag);
             writer.Write(Version, 8);
-            return stream.ToArray();
         }
     }
 }

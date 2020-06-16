@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace BitcoinBook
 {
@@ -37,17 +36,14 @@ namespace BitcoinBook
             });
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.WriteVar(blockHeaders.Count);
             foreach (var header in blockHeaders)
             {
                 writer.Write(header.ToBytes());
                 writer.WriteVar(0);
             }
-            return stream.ToArray();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace BitcoinBook
 {
@@ -27,14 +26,11 @@ namespace BitcoinBook
                     reader.ReadBytes(32)));
         }
 
-        public override byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write((byte)FilterType);
             writer.Write(StartHeight, 4);
             writer.Write(StopHash);
-            return stream.ToArray();
         }
     }
 }
