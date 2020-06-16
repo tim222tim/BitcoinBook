@@ -27,7 +27,7 @@ namespace BitcoinBook
         {
         }
 
-        protected byte ReadByte()
+        public byte ReadByte()
         {
             return reader.ReadByte();
         }
@@ -42,29 +42,40 @@ namespace BitcoinBook
             return bytes;
         }
 
-        public uint ReadUnsignedInt(int length)
+        public uint ReadUnsignedInt(int length, bool bigEndian = false)
         {
-            return (uint) ReadUnsignedLong(length);
+            return (uint) ReadUnsignedLong(length, bigEndian);
         }
 
-        public int ReadInt(int length)
+        public int ReadInt(int length, bool bigEndian = false)
         {
-            return (int) ReadUnsignedLong(length);
+            return (int) ReadUnsignedLong(length, bigEndian);
         }
 
-        public long ReadLong(int length)
+        public long ReadLong(int length, bool bigEndian = false)
         {
-            return (long) ReadUnsignedLong(length);
+            return (long) ReadUnsignedLong(length, bigEndian);
         }
 
-        public ulong ReadUnsignedLong(int length)
+        public ulong ReadUnsignedLong(int length, bool bigEndian = false)
         {
             ulong i = 0L;
-            ulong factor = 1L;
-            while (length-- > 0)
+            if (bigEndian)
             {
-                i += reader.ReadByte() * factor;
-                factor *= 256;
+                while (length-- > 0)
+                {
+                    i *= 256;
+                    i += reader.ReadByte();
+                }
+            }
+            else
+            {
+                ulong factor = 1L;
+                while (length-- > 0)
+                {
+                    i += reader.ReadByte() * factor;
+                    factor *= 256;
+                }
             }
 
             return i;
@@ -87,7 +98,7 @@ namespace BitcoinBook
             return reader.ReadBytes(count).Reverse();
         }
 
-        protected byte[] ReadVarBytes()
+        public byte[] ReadVarBytes()
         {
             return reader.ReadBytes(ReadVarInt());
         }
@@ -119,7 +130,22 @@ namespace BitcoinBook
             }
         }
 
-        public IPAddress ReadAddress()
+        public NetworkAddress ReadNetworkAddress()
+        {
+            return new NetworkAddress(                    
+                ReadUnsignedLong(8),
+                ReadIPAddress(),
+                (ushort)ReadInt(2, true)
+            );
+        }
+
+        public TimestampedNetworkAddress ReadTimestampedNetworkAddress()
+        {
+            var timestamp = ReadUnsignedInt(4);
+            return new TimestampedNetworkAddress(ReadNetworkAddress(), timestamp);
+        }
+
+        public IPAddress ReadIPAddress()
         {
             var bytesZero = reader.ReadBytes(10);
             var marker = ReadInt(2);

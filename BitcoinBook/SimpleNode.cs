@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Sockets;
 
@@ -10,8 +12,11 @@ namespace BitcoinBook
 
         readonly Socket socket;
         readonly NetworkStream stream;
+        readonly Dictionary<ulong, bool> compactHeaderFlags = new Dictionary<ulong, bool>();
 
         public string RemoteUserAgent { get; private set; }
+        public IDictionary<ulong, bool> CompactHeaderFlags { get; }
+        public ulong FeeRate { get; private set; }
 
         public SimpleNode(IPAddress remoteHost, bool testnet = false)
         {
@@ -19,6 +24,7 @@ namespace BitcoinBook
             socket = new Socket(remoteHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(new IPEndPoint(remoteHost, (ushort)(testnet ? 18333 : 8333)));
             stream = new NetworkStream(socket) {ReadTimeout = 4000};
+            CompactHeaderFlags = new ReadOnlyDictionary<ulong, bool>(compactHeaderFlags);
         }
 
         public void Handshake()
@@ -40,7 +46,18 @@ namespace BitcoinBook
                 RemoteUserAgent = versionMessage.UserAgent;
                 Send(new VerAckMessage());
             }
-            // TODO ping message
+            else if (envelope.Message is PingMessage pingMessage)
+            {
+                Send(new PongMessage(pingMessage.Nonce));
+            }
+            else if (envelope.Message is SendCompactMessage sendCompactMessage)
+            {
+                compactHeaderFlags[sendCompactMessage.Version] = sendCompactMessage.Flag != 0;
+            }
+            else if (envelope.Message is FeeFilterMessage feeFilterMessage)
+            {
+                FeeRate = feeFilterMessage.FeeRate;
+            }
             return envelope.Message;
         }
 

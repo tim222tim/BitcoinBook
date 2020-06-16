@@ -6,7 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="DevHawk.RIPEMD160" Version="3.0.21" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.4" />
+    <PackageReference Include="murmurhash" Version="1.0.3" />
   </ItemGroup>
 
 </Project>

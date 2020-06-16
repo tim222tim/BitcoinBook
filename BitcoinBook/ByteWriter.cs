@@ -19,16 +19,6 @@ namespace BitcoinBook
         {
         }
 
-        public void Write(int i, int length)
-        {
-            Write((ulong)i, length);
-        }
-
-        public void Write(long i, int length)
-        {
-            Write((ulong)i, length);
-        }
-
         public void Write(byte b)
         {
             writer.Write(b);
@@ -44,18 +34,35 @@ namespace BitcoinBook
             writer.Write((byte)opCode);
         }
 
-        public void Write(ulong i, int length)
+        public void Write(int i, int length, bool bigEndian = false)
         {
-            var bytes = new BigInteger(i).ToLittleBytes();
-            var bx = 0;
-            var wx = 0;
-            while (bx < bytes.Length && wx++ < length)
+            Write((ulong)i, length, bigEndian);
+        }
+
+        public void Write(long i, int length, bool bigEndian = false)
+        {
+            Write((ulong)i, length, bigEndian);
+        }
+
+        public void Write(ulong i, int length, bool bigEndian = false)
+        {
+            if (bigEndian)
             {
-                Write(bytes[bx++]);
+                Write(new BigInteger(i).ToBigBytes(length));
             }
-            while (wx++ < length)
+            else
             {
-                Write((byte)0);
+                var bytes = new BigInteger(i).ToLittleBytes();
+                var bx = 0;
+                var wx = 0;
+                while (bx < bytes.Length && wx++ < length)
+                {
+                    Write(bytes[bx++]);
+                }
+                while (wx++ < length)
+                {
+                    Write((byte)0);
+                }
             }
         }
 
@@ -100,9 +107,9 @@ namespace BitcoinBook
             return i < 0x10000 ? (byte)0xfd : i < 0x100000000 ? (byte)0xfe : (byte)0xff;
         }
 
-        public void Write(IPAddress receiverAddress)
+        public void Write(IPAddress ipAddress)
         {
-            var bytes = receiverAddress.GetAddressBytes();
+            var bytes = ipAddress.GetAddressBytes();
             if (bytes.Length != 4)
             {
                 throw new FormatException("Expecting IPv4");
@@ -111,6 +118,19 @@ namespace BitcoinBook
             Write(0, 10);
             Write(0xffff, 2);
             Write(bytes);
+        }
+
+        public void Write(NetworkAddress address)
+        {
+            Write(address.Services, 8);
+            Write(address.IPAddress);
+            Write(address.Port, 2, true);
+        }
+
+        public void Write(TimestampedNetworkAddress address)
+        {
+            Write(address.Timestamp, 4);
+            Write((NetworkAddress)address);
         }
 
         public void Write(string str)

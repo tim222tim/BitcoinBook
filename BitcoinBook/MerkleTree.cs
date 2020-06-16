@@ -80,12 +80,6 @@ namespace BitcoinBook
             return node != null && (includedSet.Contains(node.Hash.ToHex()) || ContainsAny(node.Left, includedSet) || ContainsAny(node.Right, includedSet));
         }
 
-        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-        void CheckForLeftovers<T>(IEnumerable<T> items, string name)
-        {
-            if (items.Any()) throw new InvalidOperationException($"{name} has unused values");
-        }
-
         void Populate(MerkleNode node, MerkleProof proof)
         {
             if (node != null)
@@ -101,6 +95,12 @@ namespace BitcoinBook
             Populate(node.Left, proof);
             Populate(node.Right, proof);
             return GetParentHash(node.Left, node.Right);
+        }
+
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
+        void CheckForLeftovers<T>(IEnumerable<T> items, string name)
+        {
+            if (items.Any()) throw new InvalidOperationException($"{name} has unused values");
         }
 
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
