@@ -66,7 +66,8 @@ namespace BitcoinBook.Test
         public void AddressTest()
         {
             timNode.Handshake();
-            var message = timNode.WaitFor<AddressMessage>();
+            timNode.WaitFor<AddressMessage>();
+            Assert.True(timNode.Addresses.Count > 0);
         }
 
         [Fact]

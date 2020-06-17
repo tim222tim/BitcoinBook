@@ -13,9 +13,11 @@ namespace BitcoinBook
         readonly Socket socket;
         readonly NetworkStream stream;
         readonly Dictionary<ulong, bool> compactHeaderFlags = new Dictionary<ulong, bool>();
+        readonly List<TimestampedNetworkAddress> addresses = new List<TimestampedNetworkAddress>();
 
         public string RemoteUserAgent { get; private set; }
         public IDictionary<ulong, bool> CompactHeaderFlags { get; }
+        public IList<TimestampedNetworkAddress> Addresses { get; }
         public ulong FeeRate { get; private set; }
 
         public SimpleNode(IPAddress remoteHost, bool testnet = false)
@@ -25,6 +27,7 @@ namespace BitcoinBook
             socket.Connect(new IPEndPoint(remoteHost, (ushort)(testnet ? 18333 : 8333)));
             stream = new NetworkStream(socket) {ReadTimeout = 4000};
             CompactHeaderFlags = new ReadOnlyDictionary<ulong, bool>(compactHeaderFlags);
+            Addresses = new ReadOnlyCollection<TimestampedNetworkAddress>(addresses);
         }
 
         public void Handshake()
@@ -57,6 +60,10 @@ namespace BitcoinBook
             else if (envelope.Message is FeeFilterMessage feeFilterMessage)
             {
                 FeeRate = feeFilterMessage.FeeRate;
+            }
+            else if (envelope.Message is AddressMessage addressMessage)
+            {
+                addresses.AddRange(addressMessage.Addresses);
             }
             return envelope.Message;
         }
