@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace BitcoinBook.Test
@@ -20,14 +21,6 @@ namespace BitcoinBook.Test
             timNode?.Dispose();
         }
 
-        [Fact]
-        public void WaitForVerakTest()
-        {
-            timNode.Send(new VersionMessage());
-            var message = timNode.WaitFor<VerAckMessage>();
-            Assert.NotNull(message);
-        }
-
         [Theory]
         [MemberData(nameof(NodeData))]
         public void HandshakeTest(NodeSetting setting)
@@ -35,6 +28,14 @@ namespace BitcoinBook.Test
             using var node = new SimpleNode(setting.Address);
             node.Handshake();
             Assert.StartsWith("/Satoshi", node.RemoteUserAgent);
+        }
+
+        [Fact]
+        public void WaitForVerakTest()
+        {
+            timNode.Send(new VersionMessage());
+            var message = timNode.WaitFor<VerAckMessage>();
+            Assert.NotNull(message);
         }
 
         [Fact]
@@ -83,7 +84,7 @@ namespace BitcoinBook.Test
         }
 
         // [Fact]
-        // // bloom filters are removed
+        // // sending bloom filter causes disconnect. otherwise, nothing after getdata
         // public void GetDataTest()
         // {
         //     timNode.Handshake();
@@ -103,6 +104,7 @@ namespace BitcoinBook.Test
         // }
         
         // [Fact]
+        // // nothing comes back
         // public void GetCompactFiltersTest()
         // {
         //     timNode.Handshake();
