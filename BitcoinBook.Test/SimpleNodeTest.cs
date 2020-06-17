@@ -28,6 +28,11 @@ namespace BitcoinBook.Test
             using var node = new SimpleNode(setting.Address);
             node.Handshake();
             Assert.StartsWith("/Satoshi", node.RemoteUserAgent);
+            Assert.True(node.ServiceFlags.HasFlag(ServiceFlags.Network));
+            Assert.False(node.ServiceFlags.HasFlag(ServiceFlags.GetUtxo));
+            Assert.False(node.ServiceFlags.HasFlag(ServiceFlags.Bloom));
+            Assert.True(node.ServiceFlags.HasFlag(ServiceFlags.Witness));
+            Assert.True(node.ServiceFlags.HasFlag(ServiceFlags.NetworkLimited));
         }
 
         [Fact]

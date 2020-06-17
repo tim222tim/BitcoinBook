@@ -11,7 +11,7 @@ namespace BitcoinBook
         public override string Command => "version";
 
         public int Version { get; }
-        public ulong Services { get; }
+        public ServiceFlags ServiceFlags { get; }
         public long Timestamp { get; }
         public NetworkAddress ReceiverAddress { get; }
         public NetworkAddress SenderAddress { get; }
@@ -28,10 +28,10 @@ namespace BitcoinBook
         {
         }
 
-        public VersionMessage(int version, ulong services, long timestamp, NetworkAddress receiverAddress, NetworkAddress senderAddress, ulong nonce, string userAgent, int height, bool relayFlag)
+        public VersionMessage(int version, ServiceFlags serviceFlags, long timestamp, NetworkAddress receiverAddress, NetworkAddress senderAddress, ulong nonce, string userAgent, int height, bool relayFlag)
         {
             Version = version;
-            Services = services;
+            ServiceFlags = serviceFlags;
             Timestamp = timestamp;
             ReceiverAddress = receiverAddress;
             SenderAddress = senderAddress;
@@ -53,7 +53,7 @@ namespace BitcoinBook
             return Parse(bytes, reader =>
                 new VersionMessage(
                     reader.ReadInt(4),
-                    reader.ReadUnsignedLong(8),
+                    (ServiceFlags) reader.ReadUnsignedLong(8),
                     reader.ReadLong(8),
 
                     reader.ReadNetworkAddress(),
@@ -68,7 +68,7 @@ namespace BitcoinBook
         public override void Write(ByteWriter writer)
         {
             writer.Write(Version, 4);
-            writer.Write(Services, 8);
+            writer.Write((ulong)ServiceFlags, 8);
             writer.Write(Timestamp, 8);
 
             writer.Write(ReceiverAddress);

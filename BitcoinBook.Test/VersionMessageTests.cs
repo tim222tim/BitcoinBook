@@ -23,7 +23,7 @@ namespace BitcoinBook.Test
         {
             var newMessage = VersionMessage.Parse(Cipher.ToBytes(messageHex));
             Assert.Equal(message.Version, newMessage.Version);
-            Assert.Equal(message.Services, newMessage.Services);
+            Assert.Equal(message.ServiceFlags, newMessage.ServiceFlags);
             Assert.Equal(message.Timestamp, newMessage.Timestamp);
             Assert.Equal(message.ReceiverAddress.Services, newMessage.ReceiverAddress.Services);
             Assert.Equal(message.ReceiverAddress.IPAddress, newMessage.ReceiverAddress.IPAddress);

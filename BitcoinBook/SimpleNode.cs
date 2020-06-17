@@ -15,6 +15,7 @@ namespace BitcoinBook
         readonly Dictionary<ulong, bool> compactHeaderFlags = new Dictionary<ulong, bool>();
         readonly List<TimestampedNetworkAddress> addresses = new List<TimestampedNetworkAddress>();
 
+        public ServiceFlags ServiceFlags { get; private set; }
         public string RemoteUserAgent { get; private set; }
         public IDictionary<ulong, bool> CompactHeaderFlags { get; }
         public IList<TimestampedNetworkAddress> Addresses { get; }
@@ -47,6 +48,7 @@ namespace BitcoinBook
             if (envelope.Message is VersionMessage versionMessage)
             {
                 RemoteUserAgent = versionMessage.UserAgent;
+                ServiceFlags = versionMessage.ServiceFlags;
                 Send(new VerAckMessage());
             }
             else if (envelope.Message is PingMessage pingMessage)
