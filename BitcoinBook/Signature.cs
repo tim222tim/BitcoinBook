@@ -4,17 +4,8 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class Signature : IEquatable<Signature>
+    public record Signature(BigInteger R, BigInteger S)
     {
-        public BigInteger R { get; }
-        public BigInteger S { get; }
-
-        public Signature(BigInteger r, BigInteger s)
-        {
-            R = r;
-            S = s;
-        }
-
         public Signature(string r, string s, NumberStyles numberStyles = NumberStyles.HexNumber) :
             this(BigInteger.Parse(r, numberStyles), BigInteger.Parse(s, numberStyles))
         {
@@ -69,26 +60,6 @@ namespace BitcoinBook
         byte[] ToPrefixedBytes(BigInteger i)
         {
             return new byte[] {0x02, (byte) i.ToSignedBigBytes().Length}.Concat(i.ToSignedBigBytes());
-        }
-
-        public bool Equals(Signature other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return R.Equals(other.R) && S.Equals(other.S);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Signature) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(R, S);
         }
     }
 }
