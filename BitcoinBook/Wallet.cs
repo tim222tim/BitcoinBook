@@ -20,7 +20,7 @@ namespace BitcoinBook
         public PrivateKey? FindBy(PublicKey publicKey)
         {
             if (publicKey == null) throw new ArgumentNullException(nameof(publicKey));
-            return privateKeys.FirstOrDefault(k => k.PublicKey == publicKey);
+            return privateKeys.FirstOrDefault(k => k.PublicKey.Equals(publicKey));
         }
 
         public PrivateKey? FindByHash(byte[] hash)

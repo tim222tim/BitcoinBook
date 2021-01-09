@@ -31,7 +31,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void NullThrows()
         {
-            Assert.Throws<ArgumentNullException>(() => evaluator.Evaluate(null, emptyHash));
+            Assert.Throws<ArgumentNullException>(() => evaluator.Evaluate(null!, emptyHash));
         }
 
         [Fact]

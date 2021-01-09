@@ -16,7 +16,7 @@ namespace BitcoinBook
             this.throwOnFailure = throwOnFailure;
         }
 
-        public bool Evaluate(IEnumerable<object> scriptCommands, byte[] sigHash = null)
+        public bool Evaluate(IEnumerable<object> scriptCommands, byte[]? sigHash = null)
         {
             var commands = new Queue<object>(scriptCommands ?? throw new ArgumentNullException(nameof(scriptCommands)));
             var stack = new ScriptStack();
@@ -46,7 +46,7 @@ namespace BitcoinBook
                                 result = Evaluate(opCode, stack);
                                 break;
                             case OpertationType.SigHash:
-                                result = Evaluate(opCode, stack, sigHash);
+                                result = Evaluate(opCode, stack, sigHash ?? throw new ArgumentNullException(nameof(sigHash)));
                                 break;
                             case OpertationType.Commands:
                                 result = Evaluate(opCode, stack, commands);

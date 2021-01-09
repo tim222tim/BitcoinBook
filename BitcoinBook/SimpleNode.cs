@@ -12,11 +12,11 @@ namespace BitcoinBook
 
         readonly Socket socket;
         readonly NetworkStream stream;
-        readonly Dictionary<ulong, bool> compactHeaderFlags = new Dictionary<ulong, bool>();
-        readonly List<TimestampedNetworkAddress> addresses = new List<TimestampedNetworkAddress>();
+        readonly Dictionary<ulong, bool> compactHeaderFlags = new();
+        readonly List<TimestampedNetworkAddress> addresses = new();
 
         public ServiceFlags ServiceFlags { get; private set; }
-        public string RemoteUserAgent { get; private set; }
+        public string? RemoteUserAgent { get; private set; }
         public IDictionary<ulong, bool> CompactHeaderFlags { get; }
         public IList<TimestampedNetworkAddress> Addresses { get; }
         public ulong FeeRate { get; private set; }

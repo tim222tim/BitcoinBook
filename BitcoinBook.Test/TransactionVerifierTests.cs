@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -41,7 +40,7 @@ namespace BitcoinBook.Test
         {
             var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
             Assert.NotNull(trans);
-            Assert.True(await throwingVerifier.Verify(trans, 0));
+            Assert.True(await throwingVerifier.Verify(trans!, 0));
         }
 
         [Fact]
@@ -59,14 +58,15 @@ namespace BitcoinBook.Test
         {
             var trans = await fetcher.Fetch(transactionId);
             Assert.NotNull(trans);
-            Assert.True(await verifier.Verify(trans));
+            Assert.True(await verifier.Verify(trans!));
         }
 
         [Fact]
         public async Task VerifyFalseWhenNegativeFees()
         {
             var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
-            trans = trans.CloneWithReplacedOutput(trans.Outputs[0], new TransactionOutput(trans.Outputs[0].Amount + 100, trans.Outputs[0].ScriptPubKey));
+            Assert.NotNull(transaction);
+            trans = trans!.CloneWithReplacedOutput(trans.Outputs[0], new TransactionOutput(trans.Outputs[0].Amount + 100, trans.Outputs[0].ScriptPubKey));
             Assert.False(await verifier.Verify(trans));
         }
 
@@ -74,7 +74,8 @@ namespace BitcoinBook.Test
         public async Task VerifyFalseWhenBadSig()
         {
             var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
-            ((byte[])trans.Inputs[0].SigScript.Commands[0])[0] += 1;
+            Assert.NotNull(transaction);
+            ((byte[])trans!.Inputs[0].SigScript.Commands[0])[0] += 1;
             Assert.False(await verifier.Verify(trans));
         }
 
@@ -82,7 +83,8 @@ namespace BitcoinBook.Test
         public async Task VerifyFalseWhenBadSecondSig()
         {
             var trans = await fetcher.Fetch("874d0ad92528d8cb6cd9fa449cc6ef1f38a84fd23426b359e5a8e51ddf47892f");
-            ((byte[])trans.Inputs[1].SigScript.Commands[0])[0] += 1;
+            Assert.NotNull(transaction);
+            ((byte[])trans!.Inputs[1].SigScript.Commands[0])[0] += 1;
             Assert.False(await verifier.Verify(trans));
         }
 
@@ -90,7 +92,8 @@ namespace BitcoinBook.Test
         public async Task VerifyFalseWhenBadPrevious()
         {
             var trans = await fetcher.Fetch("ef24f67c2ce44fc89718654c642bcb401dcf441f6ef7c7132413c3c2a818faea");
-            trans = trans.CloneWithReplacedInput(trans.Inputs[0], new TransactionInput(trans.Inputs[0].PreviousTransaction, 999, trans.Inputs[0].SigScript, new Script(), trans.Inputs[0].Sequence));
+            Assert.NotNull(transaction);
+            trans = trans!.CloneWithReplacedInput(trans.Inputs[0], new TransactionInput(trans.Inputs[0].PreviousTransaction, 999, trans.Inputs[0].SigScript, new Script(), trans.Inputs[0].Sequence));
             Assert.False(await verifier.Verify(trans));
         }
     }

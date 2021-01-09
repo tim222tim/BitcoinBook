@@ -5,11 +5,9 @@ using Xunit;
 
 namespace BitcoinBook.Test
 {
-#pragma warning disable xUnit1000 // Test classes must be public
-    class SimpleNodeTest : IDisposable
-#pragma warning restore xUnit1000 // Test classes must be public
+    public class SimpleNodeTest : IDisposable
     {
-        readonly SimpleNode timNode = new SimpleNode(IntegrationSetup.TimNode.Address);
+        readonly SimpleNode timNode = new(IntegrationSetup.TimNode.Address);
 
         public static IEnumerable<object[]> NodeData => new[]
         {
@@ -19,7 +17,7 @@ namespace BitcoinBook.Test
 
         public void Dispose()
         {
-            timNode?.Dispose();
+            timNode.Dispose();
         }
 
         [Theory]
@@ -28,7 +26,8 @@ namespace BitcoinBook.Test
         {
             using var node = new SimpleNode(setting.Address);
             node.Handshake();
-            Assert.StartsWith("/Satoshi", node.RemoteUserAgent);
+            Assert.NotNull(node.RemoteUserAgent);
+            Assert.StartsWith("/Satoshi", node.RemoteUserAgent!);
             Assert.True(node.ServiceFlags.HasFlag(ServiceFlags.Network));
             Assert.False(node.ServiceFlags.HasFlag(ServiceFlags.GetUtxo));
             Assert.False(node.ServiceFlags.HasFlag(ServiceFlags.Bloom));
