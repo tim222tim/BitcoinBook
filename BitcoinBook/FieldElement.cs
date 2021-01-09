@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class FieldElement
+    public record FieldElement
     {
         public BigInteger Number { get; }
         public Field Field { get; }
@@ -60,36 +60,16 @@ namespace BitcoinBook
 
         public FieldElement SquareRoot()
         {
-            return new FieldElement(BigInteger.ModPow(Number, (Field.Prime + 1) / 4, Field.Prime), Field);
+            return new(BigInteger.ModPow(Number, (Field.Prime + 1) / 4, Field.Prime), Field);
         }
 
-        public static bool operator ==(FieldElement a, FieldElement b) => a?.Equals(b) ?? ReferenceEquals(null, b);
-        public static bool operator !=(FieldElement a, FieldElement b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
         public static FieldElement operator +(FieldElement a, FieldElement b) => a.Add(b);
         public static FieldElement operator -(FieldElement a, FieldElement b) => a.Subtract(b);
         public static FieldElement operator *(FieldElement a, FieldElement b) => a.Multiply(b);
         public static FieldElement operator /(FieldElement a, FieldElement b) => a.Divide(b);
         public static FieldElement operator ^(FieldElement a, BigInteger exponent) => a.Power(exponent);
 
-        public bool Equals(FieldElement other)
-        {
-            return Number.Equals(other.Number) && Prime.Equals(other.Prime);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is FieldElement other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (Number.GetHashCode() * 397) ^ Prime.GetHashCode();
-            }
-        }
-
-        public static bool SameField(params FieldElement[] elements)
+        static bool SameField(params FieldElement[] elements)
         {
             foreach (var element in elements)
             {

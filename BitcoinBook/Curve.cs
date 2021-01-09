@@ -4,20 +4,20 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class Curve : IEquatable<Curve>
+    public record Curve
     {
-        readonly Field field;
-
         public FieldElement A { get; }
         public FieldElement B { get; }
+        public Point Infinity { get; }
 
         public Curve(FieldElement a, FieldElement b)
         {
-            if (a.Field!= b.Field) throw new InvalidOperationException("Numbers must be in the same field");
+            if (a == null) throw new ArgumentNullException(nameof(a));
+            if (b == null) throw new ArgumentNullException(nameof(b));
+            if (!a.Field.Equals(b.Field)) throw new InvalidOperationException("Numbers must be in the same field");
 
             A = a;
             B = b;
-            field = A.Field;
             Infinity = BitcoinBook.Point.Infinity(this);
         }
 
@@ -34,46 +34,14 @@ namespace BitcoinBook
 
         public Point Point(BigInteger x, BigInteger y)
         {
-            x = BigInteger.Remainder(x, field.Prime);
-            y = BigInteger.Remainder(y, field.Prime);
-            return Point(field.Element(x), field.Element(y));
+            x = BigInteger.Remainder(x, A.Field.Prime);
+            y = BigInteger.Remainder(y, A.Field.Prime);
+            return Point(A.Field.Element(x), A.Field.Element(y));
         }
 
         public Point Point(string x, string y, NumberStyles numberStyles = NumberStyles.HexNumber)
         {
             return Point(BigInteger.Parse(x, numberStyles), BigInteger.Parse(y, numberStyles));
         }
-
-        public Point Infinity { get; }
-
-        public bool Equals(Curve? other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(field, other.field) && A.Equals(other.A) && B.Equals(other.B) && Infinity.Equals(other.Infinity);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Curve) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = (field != null ? field.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ A.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
-                hashCode = (hashCode * 397) ^ Infinity.GetHashCode();
-                return hashCode;
-            }
-        }
-
-        public static bool operator ==(Curve a, Curve b) => a?.Equals(b) ?? ReferenceEquals(null, b);
-        public static bool operator !=(Curve a, Curve b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
     }
 }
