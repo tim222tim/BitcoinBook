@@ -46,7 +46,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void HashesNullTest()
         {
-            Assert.Throws<ArgumentNullException>(() => merkler.ComputeMerkleRoot(null));
+            Assert.Throws<ArgumentNullException>(() => merkler.ComputeMerkleRoot(null!));
         }
 
         [Theory]

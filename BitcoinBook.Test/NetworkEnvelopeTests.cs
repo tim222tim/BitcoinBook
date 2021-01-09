@@ -16,7 +16,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void ParseNullTest()
         {
-            Assert.Throws<ArgumentNullException>(() => NetworkEnvelope.Parse((byte[])null));
+            Assert.Throws<ArgumentNullException>(() => NetworkEnvelope.Parse((byte[])null!));
         }
 
         [Theory]

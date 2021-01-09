@@ -11,7 +11,7 @@ namespace BitcoinBook.Test
         public SignerMapTests()
         {
             var fetcher = new TransactionFetcher(new HttpClient());
-            var hasher = new TransactionHasher(null);
+            var hasher = new TransactionHasher(null!);
 
             signerMap = new SignerMap(
                 new PayToPubKeySigner(fetcher, hasher), 

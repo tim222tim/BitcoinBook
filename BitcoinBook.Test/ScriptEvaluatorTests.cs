@@ -43,7 +43,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void NullOnTopThrows()
         {
-            Assert.Throws<InvalidOperationException>(() => evaluator.Evaluate(new object[] { null }, emptyHash));
+            Assert.Throws<InvalidOperationException>(() => evaluator.Evaluate(new object[] { null! }, emptyHash));
         }
 
         [Fact]

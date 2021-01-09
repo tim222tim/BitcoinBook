@@ -76,7 +76,7 @@ namespace BitcoinBook
             return Number.Equals(other.Number) && Prime.Equals(other.Prime);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is FieldElement other && Equals(other);
         }

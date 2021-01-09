@@ -46,14 +46,14 @@ namespace BitcoinBook
 
         public Point Infinity { get; }
 
-        public bool Equals(Curve other)
+        public bool Equals(Curve? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Equals(field, other.field) && A.Equals(other.A) && B.Equals(other.B) && Infinity.Equals(other.Infinity);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
