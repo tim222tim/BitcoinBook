@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -134,7 +133,7 @@ namespace BitcoinBook
 
         public NetworkAddress ReadNetworkAddress()
         {
-            return new NetworkAddress(                    
+            return new(                    
                 ReadUnsignedLong(8),
                 ReadIPAddress(),
                 (ushort)ReadInt(2, true)

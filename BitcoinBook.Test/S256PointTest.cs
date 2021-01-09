@@ -19,7 +19,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void OrderTest()
         {
-            Assert.Equal(S256Curve.Curve.Infinity, S256Curve.Generator * S256Curve.Order);
+            Assert.Equal(S256Curve.Curve.GetInfinity(), S256Curve.Generator * S256Curve.Order);
         }
 
         [Fact]

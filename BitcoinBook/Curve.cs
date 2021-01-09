@@ -8,7 +8,8 @@ namespace BitcoinBook
     {
         public FieldElement A { get; }
         public FieldElement B { get; }
-        public Point Infinity { get; }
+
+        public Point GetInfinity() => BitcoinBook.Point.Infinity(this);
 
         public Curve(FieldElement a, FieldElement b)
         {
@@ -18,7 +19,6 @@ namespace BitcoinBook
 
             A = a;
             B = b;
-            Infinity = BitcoinBook.Point.Infinity(this);
         }
 
         public Curve(Field field, BigInteger a, BigInteger b) : this(field.Element(a), field.Element(b))

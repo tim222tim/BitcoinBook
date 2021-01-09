@@ -70,7 +70,7 @@ namespace BitcoinBook.Test
         public void MultiplyByZeroTest()
         {
             var p = curve.Point(47, 71);
-            Assert.Equal(curve.Infinity, p * 0);
+            Assert.Equal(curve.GetInfinity(), p * 0);
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace BitcoinBook.Test
         public void MultiplyToInfinityTest()
         {
             var p = curve.Point(47, 71);
-            Assert.Equal(curve.Infinity, p * 21);
+            Assert.Equal(curve.GetInfinity(), p * 21);
         }
 
         [Fact]

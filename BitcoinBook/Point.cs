@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class Point : IEquatable<Point>
+    public record Point
     {
         public FieldElement X { get; }
         public FieldElement Y { get; }
@@ -22,53 +22,23 @@ namespace BitcoinBook
                 throw new ArithmeticException($"{x},{y} is not on the curve");
             }
 
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
             Curve = curve;
-
             IsInfinity = false;
         }
 
         Point(Curve curve)
         {
-            X = default;
-            Y = default;
+            X = default!;
+            Y = default!;
             Curve = curve;
             IsInfinity = true;
         }
 
         public static Point Infinity(Curve curve)
         {
-            return new Point(curve);
-        }
-
-        public bool Equals(Point p)
-        {
-            if (ReferenceEquals(null, p)) return false;
-            if (ReferenceEquals(this, p)) return true;
-            if (A != p.A || B != p.B) return false;
-            if (IsInfinity != p.IsInfinity) return false;
-            if (IsInfinity && p.IsInfinity) return true;
-            return X == p.X && Y == p.Y;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || obj.GetType() != GetType()) return false;
-            return Equals((Point)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = X.GetHashCode();
-                hashCode = (hashCode * 397) ^ Y.GetHashCode();
-                hashCode = (hashCode * 397) ^ A.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
-                hashCode = (hashCode * 397) ^ IsInfinity.GetHashCode();
-                return hashCode;
-            }
+            return new(curve);
         }
 
         public Point Add(Point p)
@@ -76,7 +46,7 @@ namespace BitcoinBook
             ThrowIfNotSameCurve(this, p);
             if (IsInfinity) return p;
             if (p.IsInfinity) return this;
-            if (X == p.X && Y != p.Y) return Curve.Infinity;
+            if (X == p.X && Y != p.Y) return Curve.GetInfinity();
             if (Equals(p)) return AddToSelf(this);
             return AddGeneral(this, p);
         }
@@ -86,7 +56,7 @@ namespace BitcoinBook
             if (coefficient < 0) throw new ArgumentException("Must be 0 or greater", nameof(coefficient));
 
             var current = this;
-            var result = Curve.Infinity;
+            var result = Curve.GetInfinity();
             while (coefficient > 0)
             {
                 if (!coefficient.IsEven)
@@ -114,8 +84,6 @@ namespace BitcoinBook
             return count;
         }
 
-        public static bool operator ==(Point a, Point b) => a?.Equals(b) ?? ReferenceEquals(null, b);
-        public static bool operator !=(Point a, Point b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
         public static Point operator +(Point p1, Point p2) => p1.Add(p2);
         public static Point operator *(Point p1, BigInteger coefficient) => p1.MultiplyBy(coefficient);
 
