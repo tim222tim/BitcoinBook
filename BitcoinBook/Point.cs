@@ -5,11 +5,8 @@ namespace BitcoinBook
 {
     public class Point : IEquatable<Point>
     {
-        readonly FieldElement x;
-        readonly FieldElement y;
-
-        public FieldElement X => !IsInfinity ? x : throw new ArithmeticException("X not valid for infinity point");
-        public FieldElement Y => !IsInfinity ? y : throw new ArithmeticException("Y not valid for infinity point");
+        public FieldElement X { get; }
+        public FieldElement Y { get; }
         public Curve Curve { get; }
         public bool IsInfinity { get; }
 
@@ -25,8 +22,8 @@ namespace BitcoinBook
                 throw new ArithmeticException($"{x},{y} is not on the curve");
             }
 
-            this.x = x;
-            this.y = y;
+            this.X = x;
+            this.Y = y;
             Curve = curve;
 
             IsInfinity = false;
@@ -34,8 +31,8 @@ namespace BitcoinBook
 
         Point(Curve curve)
         {
-            x = default;
-            y = default;
+            X = default;
+            Y = default;
             Curve = curve;
             IsInfinity = true;
         }
@@ -65,8 +62,8 @@ namespace BitcoinBook
         {
             unchecked
             {
-                var hashCode = x.GetHashCode();
-                hashCode = (hashCode * 397) ^ y.GetHashCode();
+                var hashCode = X.GetHashCode();
+                hashCode = (hashCode * 397) ^ Y.GetHashCode();
                 hashCode = (hashCode * 397) ^ A.GetHashCode();
                 hashCode = (hashCode * 397) ^ B.GetHashCode();
                 hashCode = (hashCode * 397) ^ IsInfinity.GetHashCode();
@@ -79,7 +76,7 @@ namespace BitcoinBook
             ThrowIfNotSameCurve(this, p);
             if (IsInfinity) return p;
             if (p.IsInfinity) return this;
-            if (X == p.x && Y != p.Y) return Curve.Infinity;
+            if (X == p.X && Y != p.Y) return Curve.Infinity;
             if (Equals(p)) return AddToSelf(this);
             return AddGeneral(this, p);
         }
@@ -142,8 +139,8 @@ namespace BitcoinBook
         public override string ToString()
         {
             return IsInfinity ? "Inf" : 
-                x.Field.Prime < 1000 ?
-                    $"({x.Number},{y.Number})_{A.Number}_{B.Number} Field({x.Field.Prime})" :
+                X.Field.Prime < 1000 ?
+                    $"({X.Number},{Y.Number})_{A.Number}_{B.Number} Field({X.Field.Prime})" :
                     $"(0x{X.Number.ToHex32()},0x{Y.Number.ToHex32()})_S256)";
         }
 

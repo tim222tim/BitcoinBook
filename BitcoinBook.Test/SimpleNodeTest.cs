@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace BitcoinBook.Test
 {
-    public class SimpleNodeTest : IDisposable
+#pragma warning disable xUnit1000 // Test classes must be public
+    class SimpleNodeTest : IDisposable
+#pragma warning restore xUnit1000 // Test classes must be public
     {
         readonly SimpleNode timNode = new SimpleNode(IntegrationSetup.TimNode.Address);
 
