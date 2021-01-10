@@ -51,7 +51,7 @@ namespace BitcoinBook
 
         public Transaction Clone()
         {
-            return new Transaction(Version, Segwit, Inputs.Select(i => i.Clone()), 
+            return new(Version, Segwit, Inputs.Select(i => i.Clone()), 
                 Outputs.Select(o => o.Clone()), LockTime, Testnet);
         }
 
@@ -62,31 +62,31 @@ namespace BitcoinBook
 
         public Transaction CloneWithoutSigScripts()
         {
-            return new Transaction(Version, Segwit, Inputs.Select(i => i.CloneWithoutSigScript()), 
+            return new(Version, Segwit, Inputs.Select(i => i.CloneWithoutSigScript()), 
                 Outputs.Select(o => o.Clone()), LockTime, Testnet);
         }
 
         public Transaction CloneWithReplacedInput(TransactionInput oldInput, TransactionInput newInput)
         {
             var newInputs = Inputs.Select(i => i == oldInput ? newInput : i);
-            return new Transaction(Version, Segwit, newInputs, Outputs, LockTime, Testnet);
+            return new(Version, Segwit, newInputs, Outputs, LockTime, Testnet);
         }
 
         public Transaction CloneWithReplacedOutput(TransactionOutput oldOutput, TransactionOutput newOutput)
         {
             var newOutputs = Outputs.Select(o => o == oldOutput ? newOutput : o);
-            return new Transaction(Version, Segwit, Inputs, newOutputs, LockTime, Testnet);
+            return new(Version, Segwit, Inputs, newOutputs, LockTime, Testnet);
         }
 
         public Transaction CloneWithReplacedSigScript(TransactionInput input, Script script)
         {
             var newInputs = Inputs.Select(i => i == input ? i.CloneWithSigScript(script) : i.CloneWithoutSigScript());
-            return new Transaction(Version, Segwit, newInputs, Outputs, LockTime, Testnet);
+            return new(Version, Segwit, newInputs, Outputs, LockTime, Testnet);
         }
 
         public Transaction CloneNonMalleable()
         {
-            return new Transaction(Version, false, Inputs.Select(i => i.CloneWithWitness(new Script())),
+            return new(Version, false, Inputs.Select(i => i.CloneWithWitness(new Script())),
                 Outputs.Select(o => o.Clone()), LockTime, Testnet);
         }
     }

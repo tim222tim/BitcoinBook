@@ -25,7 +25,7 @@ namespace BitcoinBook
         {
             this.testnet = testnet;
             socket = new Socket(remoteHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(new IPEndPoint(remoteHost, (ushort)(testnet ? 18333 : 8333)));
+            socket.Connect(new IPEndPoint(remoteHost, testnet ? 18333 : 8333));
             stream = new NetworkStream(socket) {ReadTimeout = 4000};
             CompactHeaderFlags = new ReadOnlyDictionary<ulong, bool>(compactHeaderFlags);
             Addresses = new ReadOnlyCollection<TimestampedNetworkAddress>(addresses);
@@ -88,8 +88,8 @@ namespace BitcoinBook
 
         public void Dispose()
         {
-            stream?.Dispose();
-            socket?.Dispose();
+            stream.Dispose();
+            socket.Dispose();
         }
     }
 }

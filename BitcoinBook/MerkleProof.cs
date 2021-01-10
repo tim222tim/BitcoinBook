@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace BitcoinBook
@@ -36,7 +35,6 @@ namespace BitcoinBook
             Flags = new Queue<bool>(flags ?? throw new ArgumentNullException(nameof(flags)));
         }
 
-        [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
         void CheckHashes(List<byte[]> hashes, bool isEmptyAllowed)
         {
             if (!(isEmptyAllowed || hashes.Any())) throw new ArgumentException("Must contain at least one hash", nameof(hashes));

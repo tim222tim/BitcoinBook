@@ -6,7 +6,7 @@ namespace BitcoinBook
     {
         public const int DefaultVersion = 70015;
 
-        static readonly Random random = new Random();
+        static readonly Random random = new();
 
         public override string Command => "version";
 

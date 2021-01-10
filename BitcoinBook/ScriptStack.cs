@@ -5,7 +5,7 @@ namespace BitcoinBook
 {
     public class ScriptStack
     {
-        readonly Stack<byte[]> stack = new Stack<byte[]>();
+        readonly Stack<byte[]> stack = new();
 
         public int Count => stack.Count;
 

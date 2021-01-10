@@ -5,7 +5,7 @@ namespace BitcoinBook.Test
 {
     public class GetCompactFiltersMessageTests
     {
-        readonly GetCompactFiltersMessage message = new GetCompactFiltersMessage(FilterType.Basic, 0x01020304, Cipher.ToBytes("0000000000000000007962066dcd6675830883516bcf40047d42740a85eb2919"));
+        readonly GetCompactFiltersMessage message = new(FilterType.Basic, 0x01020304, Cipher.ToBytes("0000000000000000007962066dcd6675830883516bcf40047d42740a85eb2919"));
         const string messageHex = "00040302010000000000000000007962066dcd6675830883516bcf40047d42740a85eb2919";
         
         [Fact]

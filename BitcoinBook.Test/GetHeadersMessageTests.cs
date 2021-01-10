@@ -4,7 +4,7 @@ namespace BitcoinBook.Test
 {
     public class GetHeadersMessageTests
     {
-        readonly GetHeadersMessage message = new GetHeadersMessage(
+        readonly GetHeadersMessage message = new(
             8793487,
             2,
             "00000000000000000011421889a2d5d0f52f0e73decd0846167fc5e9011dd1cc",

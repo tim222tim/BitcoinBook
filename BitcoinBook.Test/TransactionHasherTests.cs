@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net.Http;
-using System.Numerics;
 using System.Threading.Tasks;
 using Xunit;
 

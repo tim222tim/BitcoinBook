@@ -5,7 +5,7 @@ namespace BitcoinBook.Test
 {
     public class PointTests
     {
-        readonly Field field = new Field(223);
+        readonly Field field = new(223);
         readonly Curve curve;
 
         public PointTests()

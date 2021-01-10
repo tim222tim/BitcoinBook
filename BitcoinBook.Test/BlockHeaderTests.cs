@@ -57,7 +57,7 @@ namespace BitcoinBook.Test
         [InlineData(999)]
         public void IsBipThrowsNotImplementedTest(int bip)
         {
-            Assert.Throws<NotImplementedException>(() => header500K.IsBip(bip));
+            Assert.Throws<InvalidOperationException>(() => header500K.IsBip(bip));
         }
 
         [Theory]

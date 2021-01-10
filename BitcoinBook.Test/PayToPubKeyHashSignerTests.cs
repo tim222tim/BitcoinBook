@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Moq;
@@ -9,8 +8,8 @@ namespace BitcoinBook.Test
 {
     public class PayToPubKeyHashSignerTests
     {
-        readonly Mock<ITransactionFetcher> mockFetcher = new Mock<ITransactionFetcher>();
-        readonly PrivateKey privateKey = new PrivateKey(8732874329871);
+        readonly Mock<ITransactionFetcher> mockFetcher = new();
+        readonly PrivateKey privateKey = new(8732874329871);
         readonly Transaction transaction;
         readonly TransactionInput input;
         readonly IInputSigner signer;

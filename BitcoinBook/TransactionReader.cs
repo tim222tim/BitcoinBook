@@ -60,7 +60,7 @@ namespace BitcoinBook
 
         TransactionInput ReadInput()
         {
-            return new TransactionInput(ReadBytesReverse(32), ReadInt(4), ReadScript(), new Script(), ReadUnsignedInt(4));
+            return new(ReadBytesReverse(32), ReadInt(4), ReadScript(), new Script(), ReadUnsignedInt(4));
         }
 
         IList<TransactionOutput> ReadOutputs(int count)
@@ -76,7 +76,7 @@ namespace BitcoinBook
 
         TransactionOutput ReadOutput()
         {
-            return new TransactionOutput(ReadLong(8), ReadScript());
+            return new(ReadLong(8), ReadScript());
         }
 
         public Script ReadScript()

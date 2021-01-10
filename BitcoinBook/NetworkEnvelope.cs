@@ -105,7 +105,7 @@ namespace BitcoinBook
                 case "addr":
                     return AddressMessage.Parse(payload);
                 default:
-                    throw new NotImplementedException("Unknown command: " + commandName);
+                    throw new InvalidOperationException("Unknown command: " + commandName);
             }
         }
 

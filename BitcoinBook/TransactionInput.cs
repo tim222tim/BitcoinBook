@@ -26,7 +26,7 @@ namespace BitcoinBook
 
         public TransactionInput Clone()
         {
-            return new TransactionInput(PreviousTransaction, PreviousIndex, SigScript.Clone(), Witness.Clone(), Sequence);
+            return new(PreviousTransaction, PreviousIndex, SigScript.Clone(), Witness.Clone(), Sequence);
         }
 
         object ICloneable.Clone()
@@ -41,12 +41,12 @@ namespace BitcoinBook
 
         public TransactionInput CloneWithSigScript(Script script)
         {
-            return new TransactionInput(PreviousTransaction, PreviousIndex, script, Witness, Sequence);
+            return new(PreviousTransaction, PreviousIndex, script, Witness, Sequence);
         }
 
         public TransactionInput CloneWithWitness(Script witness)
         {
-            return new TransactionInput(PreviousTransaction, PreviousIndex, SigScript, witness, Sequence);
+            return new(PreviousTransaction, PreviousIndex, SigScript, witness, Sequence);
         }
     }
 }

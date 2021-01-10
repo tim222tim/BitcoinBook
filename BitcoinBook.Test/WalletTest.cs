@@ -4,7 +4,7 @@ namespace BitcoinBook.Test
 {
     public class WalletTest
     {
-        readonly PrivateKey privateKey = new PrivateKey(12345);
+        readonly PrivateKey privateKey = new(12345);
         readonly Wallet wallet;
 
         public WalletTest()

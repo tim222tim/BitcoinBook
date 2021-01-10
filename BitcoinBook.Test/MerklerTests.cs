@@ -6,7 +6,7 @@ namespace BitcoinBook.Test
 {
     public class MerklerTests
     {
-        readonly Merkler merkler = new Merkler();
+        readonly Merkler merkler = new();
 
         [Fact]
         public void ComputeParentTest()

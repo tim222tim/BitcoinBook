@@ -4,7 +4,7 @@
     {
         public static Script PayToPubKey(byte[] sec)
         {
-            return new Script(
+            return new(
                 sec,
                 OpCode.OP_CHECKSIG);
         }
@@ -16,7 +16,7 @@
 
         public static Script PayToPubKeyHash(byte[] hash160)
         {
-            return new Script(
+            return new(
                 OpCode.OP_DUP, 
                 OpCode.OP_HASH160, 
                 hash160, 
