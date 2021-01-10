@@ -6,7 +6,7 @@ namespace BitcoinBook.Test
 {
     public class FilterLoadMessageTests
     {
-        readonly FilterLoadMessage message = new FilterLoadMessage(Cipher.ToBytes("4000600a080000010940"), 5, 99, 0);
+        readonly FilterLoadMessage message = new(Cipher.ToBytes("4000600a080000010940"), 5, 99, 0);
         readonly string[] inputs = {"Hello World", "Goodbye!"};
         const string messageHex = "0a4000600a080000010940050000006300000000";
 

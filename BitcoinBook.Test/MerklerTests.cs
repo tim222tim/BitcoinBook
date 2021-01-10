@@ -6,7 +6,7 @@ namespace BitcoinBook.Test
 {
     public class MerklerTests
     {
-        readonly Merkler merkler = new Merkler();
+        readonly Merkler merkler = new();
 
         [Fact]
         public void ComputeParentTest()
@@ -46,7 +46,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void HashesNullTest()
         {
-            Assert.Throws<ArgumentNullException>(() => merkler.ComputeMerkleRoot(null));
+            Assert.Throws<ArgumentNullException>(() => merkler.ComputeMerkleRoot(null!));
         }
 
         [Theory]
@@ -55,9 +55,9 @@ namespace BitcoinBook.Test
         [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", ""}})]
         [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64c"}})]
         [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", "c131474164b412e3406696da1ee20ab0fc9bf41c8f05fa8ceea7a08d672d7cc5", "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5"}})]
-        public void HashesBadTest(string[] hashes)
+        public void HashesBadTest(string?[] hashes)
         {
-            Assert.Throws<ArgumentException>(() => merkler.ComputeMerkleRoot(hashes.Select(s => s == null ? null : Cipher.ToBytes(s))));
+            Assert.Throws<ArgumentException>(() => merkler.ComputeMerkleRoot(hashes.Select(s => s == null ? null! : Cipher.ToBytes(s))));
         }
     }
 }

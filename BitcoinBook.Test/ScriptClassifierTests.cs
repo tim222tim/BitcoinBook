@@ -4,7 +4,7 @@ namespace BitcoinBook.Test
 {
     public class ScriptClassifierTests
     {
-        readonly ScriptClassifier classifier = new ScriptClassifier();
+        readonly ScriptClassifier classifier = new();
 
         [Fact]
         public void EmptyTest()

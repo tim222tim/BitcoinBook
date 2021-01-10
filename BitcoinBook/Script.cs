@@ -48,7 +48,7 @@ namespace BitcoinBook
 
         public Script Clone()
         {
-            return new Script(Commands.Select(Clone));
+            return new(Commands.Select(Clone));
         }
 
         object ICloneable.Clone()

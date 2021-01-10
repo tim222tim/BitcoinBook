@@ -1,18 +1,17 @@
 ﻿using System;
-using System.IO;
 
 namespace BitcoinBook
 {
-    public class VersionMessage : IMessage
+    public class VersionMessage : MessageBase
     {
         public const int DefaultVersion = 70015;
 
-        static readonly Random random = new Random();
+        static readonly Random random = new();
 
-        public string Command => "version";
+        public override string Command => "version";
 
         public int Version { get; }
-        public ulong Services { get; }
+        public ServiceFlags ServiceFlags { get; }
         public long Timestamp { get; }
         public NetworkAddress ReceiverAddress { get; }
         public NetworkAddress SenderAddress { get; }
@@ -29,10 +28,10 @@ namespace BitcoinBook
         {
         }
 
-        public VersionMessage(int version, ulong services, long timestamp, NetworkAddress receiverAddress, NetworkAddress senderAddress, ulong nonce, string userAgent, int height, bool relayFlag)
+        public VersionMessage(int version, ServiceFlags serviceFlags, long timestamp, NetworkAddress receiverAddress, NetworkAddress senderAddress, ulong nonce, string userAgent, int height, bool relayFlag)
         {
             Version = version;
-            Services = services;
+            ServiceFlags = serviceFlags;
             Timestamp = timestamp;
             ReceiverAddress = receiverAddress;
             SenderAddress = senderAddress;
@@ -51,12 +50,10 @@ namespace BitcoinBook
 
         public static VersionMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new VersionMessage(
+            return Parse(bytes, reader =>
+                new VersionMessage(
                     reader.ReadInt(4),
-                    reader.ReadUnsignedLong(8),
+                    (ServiceFlags) reader.ReadUnsignedLong(8),
                     reader.ReadLong(8),
 
                     reader.ReadNetworkAddress(),
@@ -65,20 +62,13 @@ namespace BitcoinBook
                     reader.ReadUnsignedLong(8),
                     reader.ReadString(),
                     reader.ReadInt(4),
-                    reader.ReadBool());
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+                    reader.ReadBool()));
         }
 
-        public byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write(Version, 4);
-            writer.Write(Services, 8);
+            writer.Write((ulong)ServiceFlags, 8);
             writer.Write(Timestamp, 8);
 
             writer.Write(ReceiverAddress);
@@ -88,7 +78,6 @@ namespace BitcoinBook
             writer.Write(UserAgent);
             writer.Write(Height, 4);
             writer.Write(RelayFlag);
-            return stream.ToArray();
         }
     }
 }

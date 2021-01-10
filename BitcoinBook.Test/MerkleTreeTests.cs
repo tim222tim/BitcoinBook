@@ -7,13 +7,9 @@ namespace BitcoinBook.Test
 {
     public class MerkleTreeTests
     {
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public void LeafCountThrowsTest(int leafCount)
-        {
-            Assert.Throws<ArgumentException>(() => new MerkleTree(leafCount));
-        }
+        const string c117 = "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5";
+
+        static readonly Random random = new();
 
         [Theory]
         [InlineData(1, 1)]
@@ -22,7 +18,7 @@ namespace BitcoinBook.Test
         [InlineData(3, 4)]
         public void DepthTest(int expectedDepth, int leafCount)
         {
-            Assert.Equal(expectedDepth, new MerkleTree(leafCount).Depth);
+            Assert.Equal(expectedDepth, new MerkleTree(GetRandomHashes(leafCount)).Depth);
         }
 
         [Theory]
@@ -32,30 +28,30 @@ namespace BitcoinBook.Test
         [InlineData(4)]
         public void CountTest(int leafCount)
         {
-            Assert.Equal(leafCount, new MerkleTree(leafCount).LeafCount);
+            Assert.Equal(leafCount, new MerkleTree(GetRandomHashes(leafCount)).LeafCount);
         }
 
         [Theory]
         [InlineData(new object[] {new string[0]})]
-        [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", null}})]
-        [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", ""}})]
-        [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64c"}})]
-        [InlineData(new object[] {new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", "c131474164b412e3406696da1ee20ab0fc9bf41c8f05fa8ceea7a08d672d7cc5", "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5"}})]
-        public void HashesBadTest(string[] hashes)
+        [InlineData(new object[] {new[] {c117, null}})]
+        [InlineData(new object[] {new[] {c117, ""}})]
+        [InlineData(new object[] {new[] {c117, "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64c"}})]
+        [InlineData(new object[] {new[] {c117, "c131474164b412e3406696da1ee20ab0fc9bf41c8f05fa8ceea7a08d672d7cc5", c117}})]
+        public void HashesBadTest(string?[] hashes)
         {
-            Assert.Throws<ArgumentException>(() => new MerkleTree(hashes.Select(s => s == null ? null : Cipher.ToBytes(s))));
+            Assert.Throws<ArgumentException>(() => new MerkleTree(hashes.Select(s => s == null ? null : Cipher.ToBytes(s))!));
         }
 
         [Theory]
-        [InlineData("c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5"})]
+        [InlineData(c117, new[] {c117})]
         [InlineData("8b30c5ba100f6f2e5ad1e2a742e5020491240f8eb514fe97c713c31718ad7ecd", new[]
         {
-            "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", 
+            c117, 
             "c131474164b412e3406696da1ee20ab0fc9bf41c8f05fa8ceea7a08d672d7cc5"
         })]
         [InlineData("acbcab8bcc1af95d8d563b77d24c3d19b18f1486383d75a5085c4e86c86beed6", new[]
         {
-            "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5",
+            c117,
             "c131474164b412e3406696da1ee20ab0fc9bf41c8f05fa8ceea7a08d672d7cc5",
             "f391da6ecfeed1814efae39e7fcb3838ae0b02c02ae7d0a5848a66947c0727b0",
             "3d238a92a94532b946c90e19c49351c763696cff3db400485b813aecb8a13181",
@@ -70,12 +66,12 @@ namespace BitcoinBook.Test
         })]
         public void ConstructWithValuesTest(string expectedRootHash, string[] hashes)
         {
-            Assert.Equal(expectedRootHash, new MerkleTree(hashes.Select(Cipher.ToBytes)).Root.Hash.ToHex());
+            Assert.Equal(expectedRootHash, new MerkleTree(hashes.Select(Cipher.ToBytes)).Root.Hash!.ToHex());
         }
 
         [Theory]
-        [InlineData("c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5", 1,
-            new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5"}, null, new[] {false})]
+        [InlineData(c117, 1,
+            new[] {c117}, null, new[] {false})]
         [InlineData("d20629030c7e48e778c1c837d91ebadc2f2ee319a0a0a461f4a9538b5cae2a69", 4,
             new[] {"2e6d722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908"}, 
             new[] {"43e7274e77fbe8e5a42a8fb58f7decdb04d521f319f332d88e6b06f8e6c09e27", "b13a750047bc0bdceb2473e5fe488c2596d7a7124b4e716fdd29b046ef99bbf0"}, 
@@ -84,36 +80,36 @@ namespace BitcoinBook.Test
             new[] {"95513952a04bd8992721e9b7e2937f1c04ba31e0469fbe615a78197f68f52b7c", "2e6d722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908"}, 
             new[] {"b825c0745f46ac58f7d3759e6dc535a1fec7820377f24d4c2c6ad2cc55c0cb59", "b13a750047bc0bdceb2473e5fe488c2596d7a7124b4e716fdd29b046ef99bbf0"}, 
             new[] {false, false, true, false, false, false, true})]
-        public void ConstructForProofTest(string expectedRootHash, int leafCount, IEnumerable<string> includedHashes, IEnumerable<string> proofHashes, IEnumerable<bool> flags)
+        public void ConstructForProofTest(string expectedRootHash, int leafCount, IEnumerable<string> includedHashes, IEnumerable<string>? proofHashes, IEnumerable<bool> flags)
         {
-            var proof = new MerkleProof(leafCount, includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags);
+            var proof = new MerkleProof(leafCount, includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes!), flags);
             var tree = new MerkleTree(proof);
-            Assert.Equal(expectedRootHash, tree.Root.Hash.ToHex());
+            Assert.Equal(expectedRootHash, tree.Root.Hash!.ToHex());
         }
 
         [Theory]
-        [InlineData(1, new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5"}, null, null)]
+        [InlineData(1, new[] {c117}, null, null)]
         [InlineData(4, new[] {"2e6d722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908"}, 
             new[] {"43e7274e77fbe8e5a42a8fb58f7decdb04d521f319f332d88e6b06f8e6c09e27"}, 
             new[] {false, true, false, false, true})]
         [InlineData(4, new[] {"95513952a04bd8992721e9b7e2937f1c04ba31e0469fbe615a78197f68f52b7c"}, 
             new[] {"b825c0745f46ac58f7d3759e6dc535a1fec7820377f24d4c2c6ad2cc55c0cb59", "b13a750047bc0bdceb2473e5fe488c2596d7a7124b4e716fdd29b046ef99bbf0"}, 
             new[] {false, false, true, false, false, false, true})]
-        public void QueueAreTooSmallTest(int leafCount, IEnumerable<string> includedHashes, IEnumerable<string> proofHashes, IEnumerable<bool> flags)
+        public void QueueAreTooSmallTest(int leafCount, IEnumerable<string> includedHashes, IEnumerable<string>? proofHashes, IEnumerable<bool>? flags)
         {
             var proof = new MerkleProof(leafCount, includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags ?? new bool[0]);
             Assert.Throws<InvalidOperationException>(() => new MerkleTree(proof));
         }
-    
+
         [Theory]
-        [InlineData(1, new[] {"c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5"}, null, new[] {false, false})]
+        [InlineData(1, new[] {c117}, null, new[] {false, false})]
         [InlineData(4, new[] {"2e6d722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908", "aaaa750047bc0bdceb2473e5fe488c2596d7a7124b4e716fdd29b046ef99bbf0"}, 
             new[] {"43e7274e77fbe8e5a42a8fb58f7decdb04d521f319f332d88e6b06f8e6c09e27", "b13a750047bc0bdceb2473e5fe488c2596d7a7124b4e716fdd29b046ef99bbf0"}, 
             new[] {false, true, false, false, true})]
         [InlineData(4, new[] {"95513952a04bd8992721e9b7e2937f1c04ba31e0469fbe615a78197f68f52b7c", "2e6d722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908"}, 
             new[] {"b825c0745f46ac58f7d3759e6dc535a1fec7820377f24d4c2c6ad2cc55c0cb59", "b13a750047bc0bdceb2473e5fe488c2596d7a7124b4e716fdd29b046ef99bbf0", "aaaa722e5e4dbdf2447ddecc9f7dabb8e299bae921c99ad5b0184cd9eb8e5908"}, 
             new[] {false, false, true, false, false, false, true})]
-        public void QueueAreTooBigTest(int leafCount, IEnumerable<string> includedHashes, IEnumerable<string> proofHashes, IEnumerable<bool> flags)
+        public void QueueAreTooBigTest(int leafCount, IEnumerable<string> includedHashes, IEnumerable<string>? proofHashes, IEnumerable<bool>? flags)
         {
             var proof = new MerkleProof(leafCount, includedHashes.Select(Cipher.ToBytes), (proofHashes ?? new string[0]).Select(Cipher.ToBytes), flags ?? new bool[0]);
             Assert.Throws<InvalidOperationException>(() => new MerkleTree(proof));
@@ -185,7 +181,18 @@ namespace BitcoinBook.Test
                 "a8be33a077e95d640cb81844e78289fc076a59c9975ecef0c2cb788401733d11",
                 "6ffe50262fa2860b589f24b709595ca79db0bb2aff05fde293acd8ca59987cee",}.Select(Cipher.ToBytes));
             var proof = tree.CreateProof(includedHashes.Select(Cipher.ToBytes));
-            Assert.Equal(tree.Root.Hash.ToHex(), new MerkleTree(proof).Root.Hash.ToHex());
+            Assert.Equal(tree.Root.Hash!.ToHex(), new MerkleTree(proof).Root.Hash!.ToHex());
+        }
+
+        IEnumerable<byte[]> GetRandomHashes(int count)
+        {
+            var hashes = new byte[count][];
+            for (var i = 0; i < count; i++)
+            {
+                hashes[i] = new byte[32];
+                random.NextBytes(hashes[i]);
+            }
+            return hashes;
         }
     }
 }

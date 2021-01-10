@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 
 namespace BitcoinBook
 {
-    public class GetDataMessage : IMessage
+    public class GetDataMessage : MessageBase
     {
         readonly List<BlockDataItem> items;
 
-        public string Command => "getdata";
+        public override string Command => "getdata";
 
         public IList<BlockDataItem> Items => items.AsReadOnly();
 
@@ -23,34 +21,27 @@ namespace BitcoinBook
 
         public static GetDataMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
+            return Parse(bytes, reader =>
             {
                 var count = reader.ReadVarInt();
                 var items = new List<BlockDataItem>();
                 while (count-- > 0)
                 {
-                    items.Add(new BlockDataItem((BlockDataType)reader.ReadInt(4), reader.ReadBytes(32)));
+                    items.Add(new BlockDataItem((BlockDataType) reader.ReadInt(4), reader.ReadBytes(32)));
                 }
+
                 return new GetDataMessage(items);
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            });
         }
 
-        public byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.WriteVar(items.Count);
             foreach (var item in items)
             {
                 writer.Write((int)item.BlockDataType, 4);
                 writer.Write(item.Hash);
             }
-            return stream.ToArray();
         }
     }
 }

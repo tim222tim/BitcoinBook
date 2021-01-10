@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace BitcoinBook
 {
-    public class AddressMessage : IMessage
+    public class AddressMessage : MessageBase
     {
         readonly List<TimestampedNetworkAddress> addresses;
 
-        public string Command => "addr";
+        public override string Command => "addr";
 
         public IList<TimestampedNetworkAddress> Addresses => addresses.AsReadOnly();
 
@@ -21,8 +20,7 @@ namespace BitcoinBook
 
         public static AddressMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
+            return Parse(bytes, reader =>
             {
                 var count = reader.ReadVarInt();
                 var addresses = new List<TimestampedNetworkAddress>();
@@ -30,24 +28,18 @@ namespace BitcoinBook
                 {
                     addresses.Add(reader.ReadTimestampedNetworkAddress());
                 }
+
                 return new AddressMessage(addresses);
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            });
         }
 
-        public byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.WriteVar(addresses.Count);
             foreach (var address in addresses)
             {
                 writer.Write(address);
             }
-            return stream.ToArray();
         }
     }
 }

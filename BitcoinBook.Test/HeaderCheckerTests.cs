@@ -5,15 +5,14 @@ namespace BitcoinBook.Test
 {
     public class HeaderCheckerTests : IDisposable
     {
-        readonly SimpleNode timNode = new SimpleNode(IntegrationSetup.TimNode.Address);
+        readonly SimpleNode timNode = new(IntegrationSetup.TimNode.Address);
 
         public void Dispose()
         {
             timNode?.Dispose();
         }
 
-        // Take a long time
-        //[Fact]
+        [Fact(Skip = "Takes a long time")]
         public void CheckFirstHeadersThroughDifficultyChangeTest()
         {
             timNode.Handshake();

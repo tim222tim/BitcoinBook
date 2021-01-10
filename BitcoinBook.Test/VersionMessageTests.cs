@@ -5,7 +5,7 @@ namespace BitcoinBook.Test
 {
     public class VersionMessageTests
     {
-        readonly VersionMessage message = new VersionMessage(VersionMessage.DefaultVersion, 0, 0x5b8317ad,
+        readonly VersionMessage message = new(VersionMessage.DefaultVersion, 0, 0x5b8317ad,
             new NetworkAddress(0, new IPAddress(new byte[] {0, 0, 0, 0}), 8333),
             new NetworkAddress(0, new IPAddress(new byte[] {0, 0, 0, 0}), 8333),
             0xa127ec40a4d7a8f6, "/rossitertest:0.1/", 0, true);
@@ -23,7 +23,7 @@ namespace BitcoinBook.Test
         {
             var newMessage = VersionMessage.Parse(Cipher.ToBytes(messageHex));
             Assert.Equal(message.Version, newMessage.Version);
-            Assert.Equal(message.Services, newMessage.Services);
+            Assert.Equal(message.ServiceFlags, newMessage.ServiceFlags);
             Assert.Equal(message.Timestamp, newMessage.Timestamp);
             Assert.Equal(message.ReceiverAddress.Services, newMessage.ReceiverAddress.Services);
             Assert.Equal(message.ReceiverAddress.IPAddress, newMessage.ReceiverAddress.IPAddress);

@@ -4,7 +4,7 @@ namespace BitcoinBook.Test
 {
     public class SendCompactMessageTests
     {
-        readonly SendCompactMessage message = new SendCompactMessage(1, 1);
+        readonly SendCompactMessage message = new(1, 1);
 
         const string messageHex = "010100000000000000";
 

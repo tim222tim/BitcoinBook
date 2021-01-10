@@ -12,19 +12,23 @@ namespace BitcoinBook
 
         readonly Socket socket;
         readonly NetworkStream stream;
-        readonly Dictionary<ulong, bool> compactHeaderFlags = new Dictionary<ulong, bool>();
+        readonly Dictionary<ulong, bool> compactHeaderFlags = new();
+        readonly List<TimestampedNetworkAddress> addresses = new();
 
-        public string RemoteUserAgent { get; private set; }
+        public ServiceFlags ServiceFlags { get; private set; }
+        public string? RemoteUserAgent { get; private set; }
         public IDictionary<ulong, bool> CompactHeaderFlags { get; }
+        public IList<TimestampedNetworkAddress> Addresses { get; }
         public ulong FeeRate { get; private set; }
 
         public SimpleNode(IPAddress remoteHost, bool testnet = false)
         {
             this.testnet = testnet;
             socket = new Socket(remoteHost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(new IPEndPoint(remoteHost, (ushort)(testnet ? 18333 : 8333)));
+            socket.Connect(new IPEndPoint(remoteHost, testnet ? 18333 : 8333));
             stream = new NetworkStream(socket) {ReadTimeout = 4000};
             CompactHeaderFlags = new ReadOnlyDictionary<ulong, bool>(compactHeaderFlags);
+            Addresses = new ReadOnlyCollection<TimestampedNetworkAddress>(addresses);
         }
 
         public void Handshake()
@@ -44,6 +48,7 @@ namespace BitcoinBook
             if (envelope.Message is VersionMessage versionMessage)
             {
                 RemoteUserAgent = versionMessage.UserAgent;
+                ServiceFlags = versionMessage.ServiceFlags;
                 Send(new VerAckMessage());
             }
             else if (envelope.Message is PingMessage pingMessage)
@@ -57,6 +62,10 @@ namespace BitcoinBook
             else if (envelope.Message is FeeFilterMessage feeFilterMessage)
             {
                 FeeRate = feeFilterMessage.FeeRate;
+            }
+            else if (envelope.Message is AddressMessage addressMessage)
+            {
+                addresses.AddRange(addressMessage.Addresses);
             }
             return envelope.Message;
         }
@@ -72,15 +81,15 @@ namespace BitcoinBook
             }
         }
 
-        public void Send(IMessage message)
+        public void Send(MessageBase message)
         {
             new NetworkEnvelope(message, testnet).WriteTo(stream);
         }
 
         public void Dispose()
         {
-            stream?.Dispose();
-            socket?.Dispose();
+            stream.Dispose();
+            socket.Dispose();
         }
     }
 }

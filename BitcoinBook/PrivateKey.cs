@@ -4,9 +4,9 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class PrivateKey : IEquatable<PrivateKey>
+    public record PrivateKey
     {
-        static readonly RandomBigInteger random = new RandomBigInteger();
+        static readonly RandomBigInteger random = new();
 
         public BigInteger Key { get; }
         public PublicKey PublicKey { get; }
@@ -73,28 +73,5 @@ namespace BitcoinBook
 
             return Cipher.ToBase58Check(bytes);
         }
-
-        public bool Equals(PrivateKey other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Key.Equals(other.Key);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((PrivateKey) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Key.GetHashCode();
-        }
-
-        public static bool operator ==(PrivateKey a, PrivateKey b) => a?.Equals(b) ?? ReferenceEquals(null, b);
-        public static bool operator !=(PrivateKey a, PrivateKey b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
     }
 }

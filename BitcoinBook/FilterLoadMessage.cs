@@ -1,11 +1,8 @@
-﻿using System;
-using System.IO;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
-    public class FilterLoadMessage : IMessage
+    public class FilterLoadMessage : MessageBase
     {
-        public string Command => "filterload";
+        public override string Command => "filterload";
 
         public byte[] Filter { get; }
         public int HashCount { get; }
@@ -26,30 +23,20 @@ namespace BitcoinBook
 
         public static FilterLoadMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new FilterLoadMessage(
+            return Parse(bytes, reader =>
+                new FilterLoadMessage(
                     reader.ReadVarBytes(),
                     reader.ReadInt(4),
                     reader.ReadUnsignedInt(4),
-                    reader.ReadByte());
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+                    reader.ReadByte()));
         }
 
-        public byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.WriteVarBytes(Filter);
             writer.Write(HashCount, 4);
             writer.Write(Tweak, 4);
             writer.Write(Flags);
-            return stream.ToArray();
         }
     }
 }

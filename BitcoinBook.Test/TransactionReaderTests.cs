@@ -72,7 +72,7 @@ namespace BitcoinBook.Test
 
         static TransactionReader GetReader(string input)
         {
-            return new TransactionReader(input);
+            return new(input);
         }
     }
 }

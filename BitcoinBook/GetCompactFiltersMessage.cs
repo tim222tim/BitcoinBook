@@ -1,15 +1,14 @@
 ﻿using System;
-using System.IO;
 
 namespace BitcoinBook
 {
-    public class GetCompactFiltersMessage : IMessage
+    public class GetCompactFiltersMessage : MessageBase
     {
         public FilterType FilterType { get; }
         public uint StartHeight { get; }
         public byte[] StopHash { get; }
 
-        public string Command => "getcfilters";
+        public override string Command => "getcfilters";
 
         public GetCompactFiltersMessage(FilterType filterType, uint startHeight, byte[] stopHash)
         {
@@ -20,28 +19,18 @@ namespace BitcoinBook
 
         public static GetCompactFiltersMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new GetCompactFiltersMessage(
+            return Parse(bytes, reader =>
+                new GetCompactFiltersMessage(
                     (FilterType) reader.ReadByte(),
                     reader.ReadUnsignedInt(4),
-                    reader.ReadBytes(32));
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+                    reader.ReadBytes(32)));
         }
 
-        public byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write((byte)FilterType);
             writer.Write(StartHeight, 4);
             writer.Write(StopHash);
-            return stream.ToArray();
         }
     }
 }

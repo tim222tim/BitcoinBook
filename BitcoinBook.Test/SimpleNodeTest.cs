@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace BitcoinBook.Test
 {
     public class SimpleNodeTest : IDisposable
     {
-        readonly SimpleNode timNode = new SimpleNode(IntegrationSetup.TimNode.Address);
+        readonly SimpleNode timNode = new(IntegrationSetup.TimNode.Address);
 
         public static IEnumerable<object[]> NodeData => new[]
         {
@@ -18,15 +17,7 @@ namespace BitcoinBook.Test
 
         public void Dispose()
         {
-            timNode?.Dispose();
-        }
-
-        [Fact]
-        public void WaitForVerakTest()
-        {
-            timNode.Send(new VersionMessage());
-            var message = timNode.WaitFor<VerAckMessage>();
-            Assert.NotNull(message);
+            timNode.Dispose();
         }
 
         [Theory]
@@ -35,7 +26,21 @@ namespace BitcoinBook.Test
         {
             using var node = new SimpleNode(setting.Address);
             node.Handshake();
-            Assert.StartsWith("/Satoshi", node.RemoteUserAgent);
+            Assert.NotNull(node.RemoteUserAgent);
+            Assert.StartsWith("/Satoshi", node.RemoteUserAgent!);
+            Assert.True(node.ServiceFlags.HasFlag(ServiceFlags.Network));
+            Assert.False(node.ServiceFlags.HasFlag(ServiceFlags.GetUtxo));
+            Assert.False(node.ServiceFlags.HasFlag(ServiceFlags.Bloom));
+            Assert.True(node.ServiceFlags.HasFlag(ServiceFlags.Witness));
+            Assert.True(node.ServiceFlags.HasFlag(ServiceFlags.NetworkLimited));
+        }
+
+        [Fact]
+        public void WaitForVerakTest()
+        {
+            timNode.Send(new VersionMessage());
+            var message = timNode.WaitFor<VerAckMessage>();
+            Assert.NotNull(message);
         }
 
         [Fact]
@@ -64,6 +69,14 @@ namespace BitcoinBook.Test
         }
 
         [Fact]
+        public void AddressTest()
+        {
+            timNode.Handshake();
+            timNode.WaitFor<AddressMessage>();
+            Assert.True(timNode.Addresses.Count > 0);
+        }
+
+        [Fact]
         public void GetHeadersTest()
         {
             timNode.Handshake();
@@ -76,7 +89,7 @@ namespace BitcoinBook.Test
         }
 
         // [Fact]
-        // // bloom filters are removed
+        // // sending bloom filter causes disconnect. otherwise, nothing after getdata
         // public void GetDataTest()
         // {
         //     timNode.Handshake();
@@ -96,6 +109,7 @@ namespace BitcoinBook.Test
         // }
         
         // [Fact]
+        // // nothing comes back
         // public void GetCompactFiltersTest()
         // {
         //     timNode.Handshake();

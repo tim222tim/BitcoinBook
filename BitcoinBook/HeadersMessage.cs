@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace BitcoinBook
 {
-    public class HeadersMessage : IMessage
+    public class HeadersMessage : MessageBase
     {
         readonly List<BlockHeader> blockHeaders;
 
         public ReadOnlyCollection<BlockHeader> BlockHeaders => blockHeaders.AsReadOnly();
 
-        public string Command => "headers";
+        public override string Command => "headers";
 
         public HeadersMessage(IEnumerable<BlockHeader> blockHeaders)
         {
@@ -20,8 +19,7 @@ namespace BitcoinBook
 
         public static HeadersMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
+            return Parse(bytes, reader =>
             {
                 var headers = new List<BlockHeader>();
                 var count = reader.ReadVarInt();
@@ -35,24 +33,17 @@ namespace BitcoinBook
                 }
 
                 return new HeadersMessage(headers);
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            });
         }
 
-        public byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.WriteVar(blockHeaders.Count);
             foreach (var header in blockHeaders)
             {
                 writer.Write(header.ToBytes());
                 writer.WriteVar(0);
             }
-            return stream.ToArray();
         }
     }
 }

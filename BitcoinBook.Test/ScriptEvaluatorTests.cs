@@ -7,21 +7,21 @@ namespace BitcoinBook.Test
     {
         const string goodHash = "ec208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60";
         const string badHash = "ff208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60";
-        readonly ScriptEvaluator evaluator = new ScriptEvaluator();
+        readonly ScriptEvaluator evaluator = new();
         readonly byte[] emptyHash = new byte[0];
 
-        readonly PublicKey publicKey = new PublicKey(
+        readonly PublicKey publicKey = new(
             "0887387e452b8eacc4acfde10d9aaf7f6d9a0f975aabb10d006e4da568744d06c",
             "061de6d95231cd89026e286df3b6ae4a894a3378e393e93a0f45b666329a0ae34");
 
-        readonly Signature signature = new Signature(
+        readonly Signature signature = new(
             "0ac8d1c87e51d0d441be8b3dd5b05c8795b48875dffe00b7ffcfac23010d3a395",
             "068342ceff8935ededd102dd876ffd6ba72d6a427a3edb13d26eb0781cb423c4");
 
-        readonly PrivateKey privateKey2 = new PrivateKey(8989349843893);
+        readonly PrivateKey privateKey2 = new(8989349843893);
         readonly Signature signature2;
 
-        readonly PrivateKey privateKey3 = new PrivateKey(28974387478934);
+        readonly PrivateKey privateKey3 = new(28974387478934);
 
         public ScriptEvaluatorTests()
         {
@@ -31,7 +31,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void NullThrows()
         {
-            Assert.Throws<ArgumentNullException>(() => evaluator.Evaluate(null, emptyHash));
+            Assert.Throws<ArgumentNullException>(() => evaluator.Evaluate(null!, emptyHash));
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace BitcoinBook.Test
         [Fact]
         public void NullOnTopThrows()
         {
-            Assert.Throws<InvalidOperationException>(() => evaluator.Evaluate(new object[] { null }, emptyHash));
+            Assert.Throws<InvalidOperationException>(() => evaluator.Evaluate(new object[] { null! }, emptyHash));
         }
 
         [Fact]

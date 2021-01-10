@@ -15,6 +15,6 @@ namespace BitcoinBook
             };
         }
 
-        public IInputSigner this[ScriptType scriptType] => dictionary[scriptType];
+        public IInputSigner? this[ScriptType scriptType] => dictionary.TryGetValue(scriptType, out var signer) ? signer : null;
     }
 }

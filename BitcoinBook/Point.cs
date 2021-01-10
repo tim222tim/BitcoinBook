@@ -3,13 +3,10 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class Point : IEquatable<Point>
+    public record Point
     {
-        readonly FieldElement x;
-        readonly FieldElement y;
-
-        public FieldElement X => !IsInfinity ? x : throw new ArithmeticException("X not valid for infinity point");
-        public FieldElement Y => !IsInfinity ? y : throw new ArithmeticException("Y not valid for infinity point");
+        public FieldElement X { get; }
+        public FieldElement Y { get; }
         public Curve Curve { get; }
         public bool IsInfinity { get; }
 
@@ -25,53 +22,23 @@ namespace BitcoinBook
                 throw new ArithmeticException($"{x},{y} is not on the curve");
             }
 
-            this.x = x;
-            this.y = y;
+            X = x;
+            Y = y;
             Curve = curve;
-
             IsInfinity = false;
         }
 
         Point(Curve curve)
         {
-            x = default;
-            y = default;
+            X = default!;
+            Y = default!;
             Curve = curve;
             IsInfinity = true;
         }
 
         public static Point Infinity(Curve curve)
         {
-            return new Point(curve);
-        }
-
-        public bool Equals(Point p)
-        {
-            if (ReferenceEquals(null, p)) return false;
-            if (ReferenceEquals(this, p)) return true;
-            if (A != p.A || B != p.B) return false;
-            if (IsInfinity != p.IsInfinity) return false;
-            if (IsInfinity && p.IsInfinity) return true;
-            return X == p.X && Y == p.Y;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || obj.GetType() != GetType()) return false;
-            return Equals((Point)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = x.GetHashCode();
-                hashCode = (hashCode * 397) ^ y.GetHashCode();
-                hashCode = (hashCode * 397) ^ A.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
-                hashCode = (hashCode * 397) ^ IsInfinity.GetHashCode();
-                return hashCode;
-            }
+            return new(curve);
         }
 
         public Point Add(Point p)
@@ -79,7 +46,7 @@ namespace BitcoinBook
             ThrowIfNotSameCurve(this, p);
             if (IsInfinity) return p;
             if (p.IsInfinity) return this;
-            if (X == p.x && Y != p.Y) return Curve.Infinity;
+            if (X == p.X && Y != p.Y) return Curve.GetInfinity();
             if (Equals(p)) return AddToSelf(this);
             return AddGeneral(this, p);
         }
@@ -89,7 +56,7 @@ namespace BitcoinBook
             if (coefficient < 0) throw new ArgumentException("Must be 0 or greater", nameof(coefficient));
 
             var current = this;
-            var result = Curve.Infinity;
+            var result = Curve.GetInfinity();
             while (coefficient > 0)
             {
                 if (!coefficient.IsEven)
@@ -117,8 +84,6 @@ namespace BitcoinBook
             return count;
         }
 
-        public static bool operator ==(Point a, Point b) => a?.Equals(b) ?? ReferenceEquals(null, b);
-        public static bool operator !=(Point a, Point b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
         public static Point operator +(Point p1, Point p2) => p1.Add(p2);
         public static Point operator *(Point p1, BigInteger coefficient) => p1.MultiplyBy(coefficient);
 
@@ -142,8 +107,8 @@ namespace BitcoinBook
         public override string ToString()
         {
             return IsInfinity ? "Inf" : 
-                x.Field.Prime < 1000 ?
-                    $"({x.Number},{y.Number})_{A.Number}_{B.Number} Field({x.Field.Prime})" :
+                X.Field.Prime < 1000 ?
+                    $"({X.Number},{Y.Number})_{A.Number}_{B.Number} Field({X.Field.Prime})" :
                     $"(0x{X.Number.ToHex32()},0x{Y.Number.ToHex32()})_S256)";
         }
 

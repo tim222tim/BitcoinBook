@@ -7,10 +7,10 @@ namespace BitcoinBook.Test
     {
         static readonly BlockDataItem[] items = 
         {
-            new BlockDataItem(BlockDataType.MerkleBlock, Cipher.ToBytes("00000000000000000011421889a2d5d0f52f0e73decd0846167fc5e9011dd1cc")),
-            new BlockDataItem(BlockDataType.Block, Cipher.ToBytes("0000000000000000007962066dcd6675830883516bcf40047d42740a85eb2919")),
+            new(BlockDataType.MerkleBlock, Cipher.ToBytes("00000000000000000011421889a2d5d0f52f0e73decd0846167fc5e9011dd1cc")),
+            new(BlockDataType.Block, Cipher.ToBytes("0000000000000000007962066dcd6675830883516bcf40047d42740a85eb2919")),
         };
-        readonly GetDataMessage message = new GetDataMessage(items);
+        readonly GetDataMessage message = new(items);
         const string messageHex = "020300000000000000000000000011421889a2d5d0f52f0e73decd0846167fc5e9011dd1cc020000000000000000000000007962066dcd6675830883516bcf40047d42740a85eb2919";
 
         [Fact]

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net.Http;
-using System.Numerics;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,7 +28,8 @@ namespace BitcoinBook.Test
         public async Task ComputeSigHashWhenPayToScriptHashTest()
         {
             var transaction = await IntegrationSetup.Mainnet.Fetcher.Fetch("5bdadd2f3d983a6909bdf04d25ec89a6973d3a07df12177968c6bb64ab03311d");
-            var sigHash = await IntegrationSetup.Mainnet.Hasher.ComputeSigHash(transaction, 0, SigHashType.All);
+            Assert.NotNull(transaction);
+            var sigHash = await IntegrationSetup.Mainnet.Hasher.ComputeSigHash(transaction!, 0, SigHashType.All);
             Assert.Equal("f1e940b0bf6c43b81f0152b943def8ad46e632cdbdffba8d6002316a25b17fa9", sigHash.ToHex());
         }
     }

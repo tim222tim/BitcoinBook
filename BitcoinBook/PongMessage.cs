@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
     public class PongMessage : PingPongMessageBase
     {
@@ -11,17 +8,9 @@ namespace BitcoinBook
         {
         }
 
-        public static PingMessage Parse(byte[] bytes)
+        public static PongMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new PingMessage(reader.ReadUnsignedLong(8));
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            return Parse(bytes, r => new PongMessage(r.ReadUnsignedLong(8)));
         }
     }
 }

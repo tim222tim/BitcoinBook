@@ -17,13 +17,13 @@ namespace BitcoinBook
             this.privateKeys = new List<PrivateKey>(privateKeys);
         }
 
-        public PrivateKey FindBy(PublicKey publicKey)
+        public PrivateKey? FindBy(PublicKey publicKey)
         {
             if (publicKey == null) throw new ArgumentNullException(nameof(publicKey));
-            return privateKeys.FirstOrDefault(k => k.PublicKey == publicKey);
+            return privateKeys.FirstOrDefault(k => k.PublicKey.Equals(publicKey));
         }
 
-        public PrivateKey FindByHash(byte[] hash)
+        public PrivateKey? FindByHash(byte[] hash)
         {
             if (hash == null) throw new ArgumentNullException(nameof(hash));
             return privateKeys.FirstOrDefault(k => k.PublicKey.ToHash160().SequenceEqual(hash));

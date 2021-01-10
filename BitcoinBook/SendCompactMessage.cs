@@ -1,14 +1,11 @@
-﻿using System;
-using System.IO;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
-    public class SendCompactMessage : IMessage
+    public class SendCompactMessage : MessageBase
     {
         public byte Flag { get; }
         public ulong Version { get; }
 
-        public string Command => "sendcmpct";
+        public override string Command => "sendcmpct";
 
         public SendCompactMessage(byte flag, ulong version)
         {
@@ -18,26 +15,13 @@ namespace BitcoinBook
 
         public static SendCompactMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new SendCompactMessage(
-                    reader.ReadByte(),
-                    reader.ReadUnsignedLong(8));
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            return Parse(bytes, r => new SendCompactMessage(r.ReadByte(), r.ReadUnsignedLong(8)));
         }
 
-        public byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write(Flag);
             writer.Write(Version, 8);
-            return stream.ToArray();
         }
     }
 }

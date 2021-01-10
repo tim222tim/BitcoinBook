@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
@@ -18,12 +17,12 @@ namespace BitcoinBook
             this.httpClient = httpClient;
         }
 
-        public async Task<Transaction> Fetch(string transactionId, bool fresh = false)
+        public async Task<Transaction?> Fetch(string transactionId, bool fresh = false)
         {
             return (fresh ? null : cache.Get<Transaction>(transactionId))?.Clone() ?? await InternalFetch(transactionId);
         }
 
-        public Task<Transaction> Fetch(byte[] transactionId, bool fresh = false)
+        public Task<Transaction?> Fetch(byte[] transactionId, bool fresh = false)
         {
             return Fetch(transactionId.ToHex(), fresh);
         }
@@ -68,7 +67,7 @@ namespace BitcoinBook
                 : throw new FetchException($"Transaction output {transactionId.ToHex()}:{index} does not exist");
         }
 
-        async Task<Transaction> InternalFetch(string transactionId)
+        async Task<Transaction?> InternalFetch(string transactionId)
         {
             var response = await httpClient.GetAsync($"tx/{transactionId}/hex");
             if (response.StatusCode == HttpStatusCode.NotFound)

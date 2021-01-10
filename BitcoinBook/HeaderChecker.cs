@@ -47,7 +47,7 @@ namespace BitcoinBook
 
         ValidationException CreateException(BlockHeader header, string message)
         {
-            return new ValidationException($"{message} at #{count} {header.Id}");
+            return new($"{message} at #{count} {header.Id}");
         }
     }
 }

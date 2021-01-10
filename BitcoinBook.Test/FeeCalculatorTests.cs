@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 
 namespace BitcoinBook.Test
@@ -20,7 +18,8 @@ namespace BitcoinBook.Test
         public async Task ShouldCaculateFees(long expected, string transactionId)
         {
             var transaction = await IntegrationSetup.Mainnet.Fetcher.Fetch(transactionId);
-            Assert.Equal(expected, await calculator.CalculateFeesAsync(transaction));
+            Assert.NotNull(transaction);
+            Assert.Equal(expected, await calculator.CalculateFeesAsync(transaction!));
         }
     }
 }

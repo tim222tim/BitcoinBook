@@ -7,9 +7,9 @@ namespace BitcoinBook.Test
     {
         static readonly TimestampedNetworkAddress[] addresses = 
         {
-            new TimestampedNetworkAddress(1, new IPAddress(new byte[] {10, 0, 0, 1}), 8333, 0x4D1015E2),
+            new(1, new IPAddress(new byte[] {10, 0, 0, 1}), 8333, 0x4D1015E2),
         };
-        readonly AddressMessage message = new AddressMessage(addresses);
+        readonly AddressMessage message = new(addresses);
         const string messageHex = "01e215104d010000000000000000000000000000000000ffff0a000001208d";
 
         [Fact]

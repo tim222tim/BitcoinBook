@@ -15,7 +15,7 @@ namespace BitcoinBook
 
         public TransactionOutput Clone()
         {
-            return new TransactionOutput(Amount, ScriptPubKey.Clone());
+            return new(Amount, ScriptPubKey.Clone());
         }
 
         object ICloneable.Clone()

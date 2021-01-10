@@ -4,15 +4,8 @@ using System.Numerics;
 
 namespace BitcoinBook
 {
-    public class PublicKey : IEquatable<PublicKey>
+    public record PublicKey(Point Key)
     {
-        public Point Key { get; }
-
-        public PublicKey(Point key)
-        {
-            Key = key;
-        }
-
         public PublicKey(string x, string y, NumberStyles numberStyles = NumberStyles.HexNumber) :
             this(S256Curve.Point(x, y, numberStyles))
         {
@@ -26,7 +19,7 @@ namespace BitcoinBook
         {
         }
 
-        public static PublicKey FromSec(byte[] sec)
+        public static PublicKey FromSec(byte[]? sec)
         {
             if (sec == null || sec.Length == 0)
             {
@@ -57,7 +50,7 @@ namespace BitcoinBook
             return new PublicKey(S256Curve.Point(xField, isEven ? evenBeta : oddBeta));
         }
 
-        public static PublicKey FromSec(string sec)
+        public static PublicKey FromSec(string? sec)
         {
             return FromSec(Cipher.ToBytes(sec ?? ""));
         }
@@ -130,33 +123,5 @@ namespace BitcoinBook
         {
             return Cipher.Hash160(ToSec(compressed));
         }
-
-        public override string ToString()
-        {
-            return Key.ToString();
-        }
-
-        public bool Equals(PublicKey other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(Key, other.Key);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((PublicKey) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (Key != null ? Key.GetHashCode() : 0);
-        }
-
-        public static bool operator ==(PublicKey a, PublicKey b) => a?.Equals(b) ?? ReferenceEquals(null, b);
-        public static bool operator !=(PublicKey a, PublicKey b) => !a?.Equals(b) ?? !ReferenceEquals(null, b);
     }
 }

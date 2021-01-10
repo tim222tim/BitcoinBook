@@ -78,7 +78,7 @@ namespace BitcoinBook
                 case 9:  return Version >> 29 == 1;
                 case 91:  return (Version >> 4 & 1) == 1;
                 case 141:  return (Version >> 1 & 1) == 1;
-                default:  throw new NotImplementedException();
+                default:  throw new InvalidOperationException();
             }
         }
 

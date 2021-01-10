@@ -8,7 +8,7 @@ namespace BitcoinBook
     {
         public string Command { get; }
         public byte[] Payload { get; }
-        public IMessage Message { get; }
+        public MessageBase Message { get; }
         public bool Testnet { get; }
 
         public NetworkEnvelope(string command, byte[] payload, bool testnet = false)
@@ -19,7 +19,7 @@ namespace BitcoinBook
             Message = ParseMessage(Command, Payload);
         }
 
-        public NetworkEnvelope(IMessage message, bool testnet)
+        public NetworkEnvelope(MessageBase message, bool testnet)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
             Command = message.Command;
@@ -82,7 +82,7 @@ namespace BitcoinBook
             return string.Format($"{Command}: {Payload.ToHex()}");
         }
 
-        IMessage ParseMessage(string commandName, byte[] payload)
+        MessageBase ParseMessage(string commandName, byte[] payload)
         {
             switch (commandName)
             {
@@ -103,10 +103,9 @@ namespace BitcoinBook
                 case "feefilter":
                     return FeeFilterMessage.Parse(payload);
                 case "addr":
-                    // TODO need message
-                    return null;
+                    return AddressMessage.Parse(payload);
                 default:
-                    throw new NotImplementedException("Unknown command: " + commandName);
+                    throw new InvalidOperationException("Unknown command: " + commandName);
             }
         }
 

@@ -1,11 +1,8 @@
-﻿using System;
-using System.IO;
-
-namespace BitcoinBook
+﻿namespace BitcoinBook
 {
-    public class FeeFilterMessage : IMessage
+    public class FeeFilterMessage : MessageBase
     {
-        public string Command => "feefilter";
+        public override string Command => "feefilter";
 
         public ulong FeeRate { get; }
 
@@ -16,23 +13,12 @@ namespace BitcoinBook
 
         public static FeeFilterMessage Parse(byte[] bytes)
         {
-            var reader = new ByteReader(bytes);
-            try
-            {
-                return new FeeFilterMessage(reader.ReadUnsignedLong(8));
-            }
-            catch (EndOfStreamException ex)
-            {
-                throw new FormatException("Read past end of data", ex);
-            }
+            return Parse(bytes, r => new FeeFilterMessage(r.ReadUnsignedLong(8)));
         }
 
-        public byte[] ToBytes()
+        public override void Write(ByteWriter writer)
         {
-            var stream = new MemoryStream();
-            var writer = new ByteWriter(stream);
             writer.Write(FeeRate, 8);
-            return stream.ToArray();
         }
     }
 }
