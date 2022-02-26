@@ -2,116 +2,115 @@
 using System.IO;
 using System.Linq;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class NetworkEnvelope
 {
-    public class NetworkEnvelope
+    public string Command { get; }
+    public byte[] Payload { get; }
+    public MessageBase Message { get; }
+    public bool Testnet { get; }
+
+    public NetworkEnvelope(string command, byte[] payload, bool testnet = false)
     {
-        public string Command { get; }
-        public byte[] Payload { get; }
-        public MessageBase Message { get; }
-        public bool Testnet { get; }
+        Command = command ?? throw new ArgumentNullException(nameof(command));
+        Payload = payload ?? throw new ArgumentNullException(nameof(payload));
+        Testnet = testnet;
+        Message = ParseMessage(Command, Payload);
+    }
 
-        public NetworkEnvelope(string command, byte[] payload, bool testnet = false)
-        {
-            Command = command ?? throw new ArgumentNullException(nameof(command));
-            Payload = payload ?? throw new ArgumentNullException(nameof(payload));
-            Testnet = testnet;
-            Message = ParseMessage(Command, Payload);
-        }
+    public NetworkEnvelope(MessageBase message, bool testnet)
+    {
+        if (message == null) throw new ArgumentNullException(nameof(message));
+        Command = message.Command;
+        Payload = message.ToBytes();
+        Message = message;
+        Testnet = testnet;
+    }
 
-        public NetworkEnvelope(MessageBase message, bool testnet)
-        {
-            if (message == null) throw new ArgumentNullException(nameof(message));
-            Command = message.Command;
-            Payload = message.ToBytes();
-            Message = message;
-            Testnet = testnet;
-        }
+    public static NetworkEnvelope Parse(byte[] bytes, bool testnet = false)
+    {
+        return Parse(new MemoryStream(bytes), testnet);
+    }
 
-        public static NetworkEnvelope Parse(byte[] bytes, bool testnet = false)
+    public static NetworkEnvelope Parse(Stream stream, bool testnet = false)
+    {
+        var reader = new ByteReader(stream);
+        try
         {
-            return Parse(new MemoryStream(bytes), testnet);
-        }
-
-        public static NetworkEnvelope Parse(Stream stream, bool testnet = false)
-        {
-            var reader = new ByteReader(stream);
-            try
+            var magic = reader.ReadUnsignedInt(4);
+            if (magic != Magic(testnet))
             {
-                var magic = reader.ReadUnsignedInt(4);
-                if (magic != Magic(testnet))
-                {
-                    throw new FormatException("Invalid magic");
-                }
-
-                var command = reader.ReadString(12);
-                var payloadLength = reader.ReadInt(4);
-                var checksum = reader.ReadBytes(4);
-                var payload = payloadLength > 0 ? reader.ReadBytes(payloadLength) : new byte[0];
-                if (!checksum.SequenceEqual(Cipher.Hash256Prefix(payload)))
-                {
-                    throw new FormatException("Bad checksum");
-                }
-                return new NetworkEnvelope(command, payload, testnet);
+                throw new FormatException("Invalid magic");
             }
-            catch (EndOfStreamException ex)
+
+            var command = reader.ReadString(12);
+            var payloadLength = reader.ReadInt(4);
+            var checksum = reader.ReadBytes(4);
+            var payload = payloadLength > 0 ? reader.ReadBytes(payloadLength) : new byte[0];
+            if (!checksum.SequenceEqual(Cipher.Hash256Prefix(payload)))
             {
-                throw new FormatException("Read past end of data", ex);
+                throw new FormatException("Bad checksum");
             }
+            return new NetworkEnvelope(command, payload, testnet);
         }
-
-        public byte[] ToBytes()
+        catch (EndOfStreamException ex)
         {
-            var stream = new MemoryStream();
-            WriteTo(stream);
-            return stream.ToArray();
+            throw new FormatException("Read past end of data", ex);
         }
+    }
 
-        public void WriteTo(Stream stream)
-        {
-            var writer = new ByteWriter(stream);
-            writer.Write(Magic(Testnet), 4);
-            writer.Write(Command, 12);
-            writer.Write(Payload.Length, 4);
-            writer.Write(Cipher.Hash256Prefix(Payload));
-            writer.Write(Payload);
-        }
+    public byte[] ToBytes()
+    {
+        var stream = new MemoryStream();
+        WriteTo(stream);
+        return stream.ToArray();
+    }
 
-        public override string ToString()
-        {
-            return string.Format($"{Command}: {Payload.ToHex()}");
-        }
+    public void WriteTo(Stream stream)
+    {
+        var writer = new ByteWriter(stream);
+        writer.Write(Magic(Testnet), 4);
+        writer.Write(Command, 12);
+        writer.Write(Payload.Length, 4);
+        writer.Write(Cipher.Hash256Prefix(Payload));
+        writer.Write(Payload);
+    }
 
-        MessageBase ParseMessage(string commandName, byte[] payload)
-        {
-            switch (commandName)
-            {
-                case "version":
-                    return VersionMessage.Parse(payload);
-                case "verack":
-                    return VerAckMessage.Parse(payload);
-                case "headers":
-                    return HeadersMessage.Parse(payload);
-                case "sendheaders":
-                    return SendHeadersMessage.Parse(payload);
-                case "sendcmpct":
-                    return SendCompactMessage.Parse(payload);
-                case "ping":
-                    return PingMessage.Parse(payload);
-                case "pong":
-                    return PongMessage.Parse(payload);
-                case "feefilter":
-                    return FeeFilterMessage.Parse(payload);
-                case "addr":
-                    return AddressMessage.Parse(payload);
-                default:
-                    throw new InvalidOperationException("Unknown command: " + commandName);
-            }
-        }
+    public override string ToString()
+    {
+        return string.Format($"{Command}: {Payload.ToHex()}");
+    }
 
-        static uint Magic(bool testnet)
+    MessageBase ParseMessage(string commandName, byte[] payload)
+    {
+        switch (commandName)
         {
-            return testnet ? 0x0709110b : 0xd9b4bef9;
+            case "version":
+                return VersionMessage.Parse(payload);
+            case "verack":
+                return VerAckMessage.Parse(payload);
+            case "headers":
+                return HeadersMessage.Parse(payload);
+            case "sendheaders":
+                return SendHeadersMessage.Parse(payload);
+            case "sendcmpct":
+                return SendCompactMessage.Parse(payload);
+            case "ping":
+                return PingMessage.Parse(payload);
+            case "pong":
+                return PongMessage.Parse(payload);
+            case "feefilter":
+                return FeeFilterMessage.Parse(payload);
+            case "addr":
+                return AddressMessage.Parse(payload);
+            default:
+                throw new InvalidOperationException("Unknown command: " + commandName);
         }
+    }
+
+    static uint Magic(bool testnet)
+    {
+        return testnet ? 0x0709110b : 0xd9b4bef9;
     }
 }

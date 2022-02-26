@@ -1,16 +1,15 @@
-﻿namespace BitcoinBook
+﻿namespace BitcoinBook;
+
+public class PongMessage : PingPongMessageBase
 {
-    public class PongMessage : PingPongMessageBase
+    public override string Command => "pong";
+
+    public PongMessage(ulong nonce) : base(nonce)
     {
-        public override string Command => "pong";
+    }
 
-        public PongMessage(ulong nonce) : base(nonce)
-        {
-        }
-
-        public static PongMessage Parse(byte[] bytes)
-        {
-            return Parse(bytes, r => new PongMessage(r.ReadUnsignedLong(8)));
-        }
+    public static PongMessage Parse(byte[] bytes)
+    {
+        return Parse(bytes, r => new PongMessage(r.ReadUnsignedLong(8)));
     }
 }

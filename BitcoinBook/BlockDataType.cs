@@ -1,10 +1,9 @@
-﻿namespace BitcoinBook
+﻿namespace BitcoinBook;
+
+public enum BlockDataType
 {
-    public enum BlockDataType
-    {
-        Transaction = 1,
-        Block = 2,
-        MerkleBlock = 3,
-        CompactBlock = 4,
-    }
+    Transaction = 1,
+    Block = 2,
+    MerkleBlock = 3,
+    CompactBlock = 4,
 }

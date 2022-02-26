@@ -1,53 +1,52 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class HeaderChecker
 {
-    public class HeaderChecker
+    int count;
+    uint firstTimestamp;
+    uint currentBits;
+
+    public BlockHeader PreviousHeader { get; private set; }
+
+    public HeaderChecker(BlockHeader previous)
     {
-        int count;
-        uint firstTimestamp;
-        uint currentBits;
+        PreviousHeader = previous ?? throw new ArgumentNullException(nameof(previous));
+        firstTimestamp = PreviousHeader.Timestamp;
+        currentBits = PreviousHeader.Bits;
+    }
 
-        public BlockHeader PreviousHeader { get; private set; }
-
-        public HeaderChecker(BlockHeader previous)
+    public void Check(BlockHeader header)
+    {
+        ++count;
+        if (!header.IsValidProofOfWork())
         {
-            PreviousHeader = previous ?? throw new ArgumentNullException(nameof(previous));
-            firstTimestamp = PreviousHeader.Timestamp;
-            currentBits = PreviousHeader.Bits;
+            throw CreateException(header, "Invalid proof of work");
         }
 
-        public void Check(BlockHeader header)
+        if (header.PreviousBlock != PreviousHeader.Id)
         {
-            ++count;
-            if (!header.IsValidProofOfWork())
-            {
-                throw CreateException(header, "Invalid proof of work");
-            }
-
-            if (header.PreviousBlock != PreviousHeader.Id)
-            {
-                throw CreateException(header, "Discontinuous block");
-            }
-
-            if (count % 2016 == 0)
-            {
-                currentBits = BlockMath.ComputeNewBits(firstTimestamp, PreviousHeader.Timestamp, currentBits);
-                firstTimestamp = header.Timestamp;
-            }
-
-            if (header.Bits != currentBits)
-            {
-                throw CreateException(header, "Invalid bits");
-            }
-
-            PreviousHeader = header;
+            throw CreateException(header, "Discontinuous block");
         }
 
-        ValidationException CreateException(BlockHeader header, string message)
+        if (count % 2016 == 0)
         {
-            return new($"{message} at #{count} {header.Id}");
+            currentBits = BlockMath.ComputeNewBits(firstTimestamp, PreviousHeader.Timestamp, currentBits);
+            firstTimestamp = header.Timestamp;
         }
+
+        if (header.Bits != currentBits)
+        {
+            throw CreateException(header, "Invalid bits");
+        }
+
+        PreviousHeader = header;
+    }
+
+    ValidationException CreateException(BlockHeader header, string message)
+    {
+        return new($"{message} at #{count} {header.Id}");
     }
 }

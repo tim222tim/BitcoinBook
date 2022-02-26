@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class PrivateKeyNotFoundException : Exception
 {
-    public class PrivateKeyNotFoundException : Exception
+    public PrivateKeyNotFoundException()
     {
-        public PrivateKeyNotFoundException()
-        {
-        }
+    }
 
-        public PrivateKeyNotFoundException(string message) : base(message)
-        {
-        }
+    public PrivateKeyNotFoundException(string message) : base(message)
+    {
+    }
 
-        public PrivateKeyNotFoundException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+    public PrivateKeyNotFoundException(string message, Exception innerException) : base(message, innerException)
+    {
     }
 }

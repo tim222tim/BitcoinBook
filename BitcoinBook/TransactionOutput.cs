@@ -1,26 +1,25 @@
 ﻿using System;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class TransactionOutput : ICloneable
 {
-    public class TransactionOutput : ICloneable
+    public long Amount { get; }
+    public Script ScriptPubKey { get; }
+
+    public TransactionOutput(long amount, Script scriptPubKey)
     {
-        public long Amount { get; }
-        public Script ScriptPubKey { get; }
+        Amount = amount;
+        ScriptPubKey = scriptPubKey ?? throw new ArgumentNullException(nameof(scriptPubKey));
+    }
 
-        public TransactionOutput(long amount, Script scriptPubKey)
-        {
-            Amount = amount;
-            ScriptPubKey = scriptPubKey ?? throw new ArgumentNullException(nameof(scriptPubKey));
-        }
+    public TransactionOutput Clone()
+    {
+        return new(Amount, ScriptPubKey.Clone());
+    }
 
-        public TransactionOutput Clone()
-        {
-            return new(Amount, ScriptPubKey.Clone());
-        }
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
+    object ICloneable.Clone()
+    {
+        return Clone();
     }
 }

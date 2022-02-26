@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class VerificationFailureException : Exception
 {
-    public class VerificationFailureException : Exception
+    public VerificationFailureException()
     {
-        public VerificationFailureException()
-        {
-        }
+    }
 
-        public VerificationFailureException(string message) : base(message)
-        {
-        }
+    public VerificationFailureException(string message) : base(message)
+    {
+    }
 
-        public VerificationFailureException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+    public VerificationFailureException(string message, Exception innerException) : base(message, innerException)
+    {
     }
 }
