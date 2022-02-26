@@ -1,7 +1,6 @@
-﻿namespace BitcoinBook
+﻿namespace BitcoinBook;
+
+public enum FilterType
 {
-    public enum FilterType
-    {
-        Basic = 0,
-    }
+    Basic = 0,
 }

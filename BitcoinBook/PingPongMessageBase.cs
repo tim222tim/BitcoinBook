@@ -1,17 +1,16 @@
-﻿namespace BitcoinBook
+﻿namespace BitcoinBook;
+
+public abstract class PingPongMessageBase : MessageBase
 {
-    public abstract class PingPongMessageBase : MessageBase
+    public ulong Nonce { get; }
+
+    protected PingPongMessageBase(ulong nonce)
     {
-        public ulong Nonce { get; }
+        Nonce = nonce;
+    }
 
-        protected PingPongMessageBase(ulong nonce)
-        {
-            Nonce = nonce;
-        }
-
-        public override void Write(ByteWriter writer)
-        {
-            writer.Write(Nonce, 8);
-        }
+    public override void Write(ByteWriter writer)
+    {
+        writer.Write(Nonce, 8);
     }
 }

@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class SignerMap
 {
-    public class SignerMap
+    readonly IDictionary<ScriptType, IInputSigner> dictionary;
+
+    public SignerMap(PayToPubKeySigner payToPubKeySigner, PayToPubKeyHashSigner payToPubKeyHashSigner)
     {
-        readonly IDictionary<ScriptType, IInputSigner> dictionary;
-
-        public SignerMap(PayToPubKeySigner payToPubKeySigner, PayToPubKeyHashSigner payToPubKeyHashSigner)
+        dictionary = new Dictionary<ScriptType, IInputSigner>
         {
-            dictionary = new Dictionary<ScriptType, IInputSigner>
-            {
-                {ScriptType.PayToPubKey, payToPubKeySigner },
-                {ScriptType.PayToPubKeyHash, payToPubKeyHashSigner },
-            };
-        }
-
-        public IInputSigner? this[ScriptType scriptType] => dictionary.TryGetValue(scriptType, out var signer) ? signer : null;
+            {ScriptType.PayToPubKey, payToPubKeySigner },
+            {ScriptType.PayToPubKeyHash, payToPubKeyHashSigner },
+        };
     }
+
+    public IInputSigner? this[ScriptType scriptType] => dictionary.TryGetValue(scriptType, out var signer) ? signer : null;
 }

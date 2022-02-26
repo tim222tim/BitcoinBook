@@ -1,50 +1,49 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class TransactionSigner
 {
-    public class TransactionSigner
+    readonly ITransactionFetcher fetcher;
+    readonly ScriptClassifier scriptClassifier;
+    readonly SignerMap signerMap;
+
+    public TransactionSigner(ITransactionFetcher fetcher, ScriptClassifier scriptClassifier, SignerMap signerMap)
     {
-        readonly ITransactionFetcher fetcher;
-        readonly ScriptClassifier scriptClassifier;
-        readonly SignerMap signerMap;
+        this.fetcher = fetcher;
+        this.scriptClassifier = scriptClassifier;
+        this.signerMap = signerMap;
+    }
 
-        public TransactionSigner(ITransactionFetcher fetcher, ScriptClassifier scriptClassifier, SignerMap signerMap)
+    public async Task<Transaction> SignTransaction(Wallet wallet, Transaction transaction, SigHashType sigHashType, bool ignoreKeyNotFound = false)
+    {
+        foreach (var input in transaction.Inputs)
         {
-            this.fetcher = fetcher;
-            this.scriptClassifier = scriptClassifier;
-            this.signerMap = signerMap;
-        }
-
-        public async Task<Transaction> SignTransaction(Wallet wallet, Transaction transaction, SigHashType sigHashType, bool ignoreKeyNotFound = false)
-        {
-            foreach (var input in transaction.Inputs)
+            var priorOutput = await fetcher.FetchPriorOutput(input);
+            var scriptType = scriptClassifier.GetScriptType(priorOutput.ScriptPubKey);
+            var signer = signerMap[scriptType];
+            if (signer != null)
             {
-                var priorOutput = await fetcher.FetchPriorOutput(input);
-                var scriptType = scriptClassifier.GetScriptType(priorOutput.ScriptPubKey);
-                var signer = signerMap[scriptType];
-                if (signer != null)
+                try
                 {
-                    try
-                    {
-                        var sigScript = await signer.CreateSigScript(wallet, transaction, input, sigHashType);
-                        transaction = transaction.CloneWithReplacedSigScript(input, sigScript);
-                    }
-                    catch (PrivateKeyNotFoundException)
-                    {
-                        if (!ignoreKeyNotFound)
-                        {
-                            throw;
-                        }
-                    }
+                    var sigScript = await signer.CreateSigScript(wallet, transaction, input, sigHashType);
+                    transaction = transaction.CloneWithReplacedSigScript(input, sigScript);
                 }
-                else if (!ignoreKeyNotFound)
+                catch (PrivateKeyNotFoundException)
                 {
-                    throw new InvalidOperationException($"Unknown script type for prior output {input.PreviousTransaction}:{input.PreviousIndex}");
+                    if (!ignoreKeyNotFound)
+                    {
+                        throw;
+                    }
                 }
             }
-
-            return transaction;
+            else if (!ignoreKeyNotFound)
+            {
+                throw new InvalidOperationException($"Unknown script type for prior output {input.PreviousTransaction}:{input.PreviousIndex}");
+            }
         }
+
+        return transaction;
     }
 }

@@ -2,51 +2,50 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class Merkler
 {
-    public class Merkler
+    public byte[] ComputeMerkleRoot(IEnumerable<byte[]> hashes)
     {
-        public byte[] ComputeMerkleRoot(IEnumerable<byte[]> hashes)
+        if (hashes == null) throw new ArgumentNullException(nameof(hashes));
+        var hashList = hashes.ToList();
+        if (!hashList.Any()) throw new ArgumentException("Must contain at least one hash", nameof(hashes));
+        if (hashList.Any(h => h.Length != 32)) throw new ArgumentException("All hashes must be 32 bytes", nameof(hashes));
+        if (!Unique(hashList)) throw new ArgumentException("All hashes must be unique", nameof(hashes));
+
+        while (hashList.Count > 1)
         {
-            if (hashes == null) throw new ArgumentNullException(nameof(hashes));
-            var hashList = hashes.ToList();
-            if (!hashList.Any()) throw new ArgumentException("Must contain at least one hash", nameof(hashes));
-            if (hashList.Any(h => h == null || h.Length != 32)) throw new ArgumentException("All hashes must be 32 bytes", nameof(hashes));
-            if (!Unique(hashList)) throw new ArgumentException("All hashes must be unique", nameof(hashes));
-
-            while (hashList.Count > 1)
-            {
-                hashList = ComputeLevelParent(hashList);    
-            }
-
-            return hashList[0];
+            hashList = ComputeLevelParent(hashList);    
         }
 
-        public static byte[] ComputeParent(byte[] hash1, byte[] hash2)
+        return hashList[0];
+    }
+
+    public static byte[] ComputeParent(byte[] hash1, byte[] hash2)
+    {
+        return Cipher.Hash256(hash1.Concat(hash2));
+    }
+
+    List<byte[]> ComputeLevelParent(IEnumerable<byte[]> hashes)
+    {
+        var hashList = hashes.ToList();
+        if (hashList.Count % 2 == 1)
         {
-            return Cipher.Hash256(hash1.Concat(hash2));
+            hashList.Add(hashList[^1]);
+        }
+        var parentHashes = new List<byte[]>();
+        for (var i = 0; i < hashList.Count; i += 2)
+        {
+            parentHashes.Add(ComputeParent(hashList[i], hashList[i+1]));
         }
 
-        List<byte[]> ComputeLevelParent(IEnumerable<byte[]> hashes)
-        {
-            var hashList = hashes.ToList();
-            if (hashList.Count % 2 == 1)
-            {
-                hashList.Add(hashList[^1]);
-            }
-            var parentHashes = new List<byte[]>();
-            for (var i = 0; i < hashList.Count; i += 2)
-            {
-                parentHashes.Add(ComputeParent(hashList[i], hashList[i+1]));
-            }
+        return parentHashes;
+    }
 
-            return parentHashes;
-        }
-
-        bool Unique(IEnumerable<byte[]> hashList)
-        {
-            var hashSet = new HashSet<string>();
-            return hashList.Select(b => b.ToHex()).All(hashSet.Add);
-        }
+    bool Unique(IEnumerable<byte[]> hashList)
+    {
+        var hashSet = new HashSet<string>();
+        return hashList.Select(b => b.ToHex()).All(hashSet.Add);
     }
 }

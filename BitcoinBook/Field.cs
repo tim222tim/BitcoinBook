@@ -1,12 +1,11 @@
 ﻿using System.Numerics;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public record Field(BigInteger Prime)
 {
-    public record Field(BigInteger Prime)
+    public FieldElement Element(BigInteger number)
     {
-        public FieldElement Element(BigInteger number)
-        {
-            return new(number, this);
-        }
+        return new(number, this);
     }
 }

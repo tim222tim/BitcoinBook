@@ -1,10 +1,9 @@
-﻿namespace BitcoinBook
+﻿namespace BitcoinBook;
+
+public enum OpertationType
 {
-    public enum OpertationType
-    {
-        Stack,
-        Commands,
-        AltStack,
-        SigHash
-    }
+    Stack,
+    Commands,
+    AltStack,
+    SigHash
 }

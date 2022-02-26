@@ -1,10 +1,9 @@
-﻿namespace BitcoinBook
+﻿namespace BitcoinBook;
+
+public enum ScriptType
 {
-    public enum ScriptType
-    {
-        Unknown,
-        Empty,
-        PayToPubKey,
-        PayToPubKeyHash,
-    }
+    Unknown,
+    Empty,
+    PayToPubKey,
+    PayToPubKeyHash,
 }

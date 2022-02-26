@@ -1,7 +1,6 @@
-﻿namespace BitcoinBook
+﻿namespace BitcoinBook;
+
+public enum SigHashType
 {
-    public enum SigHashType
-    {
-        All = 1,
-    }
+    All = 1,
 }

@@ -1,66 +1,65 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class ScriptStack
 {
-    public class ScriptStack
+    readonly Stack<byte[]> stack = new();
+
+    public int Count => stack.Count;
+
+    public bool Push(byte[] bytes)
     {
-        readonly Stack<byte[]> stack = new();
+        stack.Push(bytes);
+        return true;
+    }
 
-        public int Count => stack.Count;
+    public bool Push(BigInteger i)
+    {
+        return Push(i == 0 ? new byte[0] : i.ToLittleBytes());
+    }
 
-        public bool Push(byte[] bytes)
-        {
-            stack.Push(bytes);
-            return true;
-        }
+    public bool Push(bool b)
+    {
+        return Push(b ? 1 : 0);
+    }
 
-        public bool Push(BigInteger i)
-        {
-            return Push(i == 0 ? new byte[0] : i.ToLittleBytes());
-        }
+    public byte[] Pop()
+    {
+        return stack.Pop();
+    }
 
-        public bool Push(bool b)
-        {
-            return Push(b ? 1 : 0);
-        }
+    public BigInteger PopInt()
+    {
+        return GetBigInteger(Pop());
+    }
 
-        public byte[] Pop()
-        {
-            return stack.Pop();
-        }
+    public PublicKey PopPublicKey()
+    {
+        var publicKey = PublicKey.FromSec(Pop());
+        return publicKey;
+    }
 
-        public BigInteger PopInt()
-        {
-            return GetBigInteger(Pop());
-        }
+    public Signature PopSignature()
+    {
+        // last byte is hash type! -- should this be previously removed?
+        var signature = Signature.FromDer(Pop().Copy(0, -1));
+        return signature;
+    }
 
-        public PublicKey PopPublicKey()
-        {
-            var publicKey = PublicKey.FromSec(Pop());
-            return publicKey;
-        }
+    public byte[] Peek()
+    {
+        return stack.Peek();
+    }
 
-        public Signature PopSignature()
-        {
-            // last byte is hash type! -- should this be previously removed?
-            var signature = Signature.FromDer(Pop().Copy(0, -1));
-            return signature;
-        }
+    public BigInteger PeekInt()
+    {
+        return GetBigInteger(Peek());
+    }
 
-        public byte[] Peek()
-        {
-            return stack.Peek();
-        }
-
-        public BigInteger PeekInt()
-        {
-            return GetBigInteger(Peek());
-        }
-
-        BigInteger GetBigInteger(byte[] bytes)
-        {
-            return bytes.Length == 0 ? 0 : new BigInteger(bytes);
-        }
+    BigInteger GetBigInteger(byte[] bytes)
+    {
+        return bytes.Length == 0 ? 0 : new BigInteger(bytes);
     }
 }

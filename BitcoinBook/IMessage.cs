@@ -1,8 +1,7 @@
-﻿namespace BitcoinBook
+﻿namespace BitcoinBook;
+
+public interface IMessage
 {
-    public interface IMessage
-    {
-        string Command { get; }
-        byte[] ToBytes();
-    }
+    string Command { get; }
+    byte[] ToBytes();
 }

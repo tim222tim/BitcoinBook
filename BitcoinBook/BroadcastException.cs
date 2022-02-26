@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class BroadcastException : Exception
 {
-    public class BroadcastException : Exception
+    public BroadcastException()
     {
-        public BroadcastException()
-        {
-        }
+    }
 
-        public BroadcastException(string message) : base(message)
-        {
-        }
+    public BroadcastException(string message) : base(message)
+    {
+    }
 
-        public BroadcastException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+    public BroadcastException(string message, Exception innerException) : base(message, innerException)
+    {
     }
 }

@@ -3,105 +3,104 @@ using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public class TransactionVerifier
 {
-    public class TransactionVerifier
+    readonly ITransactionFetcher fetcher;
+    readonly bool throwOnFailure;
+
+    readonly ScriptEvaluator evaluator;
+    readonly FeeCalculator feeCalculator;
+    readonly TransactionHasher hasher;
+
+    public TransactionVerifier(ITransactionFetcher fetcher, bool throwOnFailure = false)
     {
-        readonly ITransactionFetcher fetcher;
-        readonly bool throwOnFailure;
+        this.fetcher = fetcher;
+        this.throwOnFailure = throwOnFailure;
+        feeCalculator = new FeeCalculator(fetcher);
+        hasher = new TransactionHasher(fetcher);
+        evaluator = new ScriptEvaluator(throwOnFailure);
+    }
 
-        readonly ScriptEvaluator evaluator;
-        readonly FeeCalculator feeCalculator;
-        readonly TransactionHasher hasher;
-
-        public TransactionVerifier(ITransactionFetcher fetcher, bool throwOnFailure = false)
+    public async Task<bool> Verify(Transaction transaction)
+    {
+        try
         {
-            this.fetcher = fetcher;
-            this.throwOnFailure = throwOnFailure;
-            feeCalculator = new FeeCalculator(fetcher);
-            hasher = new TransactionHasher(fetcher);
-            evaluator = new ScriptEvaluator(throwOnFailure);
+            return await InternalVerify(transaction);
+        }
+        catch (FetchException ex)
+        {
+            if (throwOnFailure)
+            {
+                throw new VerificationException("Unable to fetch prior transaction", ex);
+            }
+
+            return false;
+        }
+        catch (VerificationException)
+        {
+            if (throwOnFailure)
+            {
+                throw;
+            }
+
+            return false;
+        }
+    }
+
+    async Task<bool> InternalVerify(Transaction transaction)
+    {
+        if (await feeCalculator.CalculateFeesAsync(transaction) < 0)
+        {
+            throw new VerificationException("Inputs are less than outputs");
         }
 
-        public async Task<bool> Verify(Transaction transaction)
+        return await transaction.Inputs.Select(i => InternalVerify(transaction, i)).All();
+    }
+
+    public async Task<bool> Verify(Transaction transaction, int inputIndex)
+    {
+        CheckInputIndex(transaction, inputIndex);
+        try
         {
-            try
-            {
-                return await InternalVerify(transaction);
-            }
-            catch (FetchException ex)
-            {
-                if (throwOnFailure)
-                {
-                    throw new VerificationException("Unable to fetch prior transaction", ex);
-                }
-
-                return false;
-            }
-            catch (VerificationException)
-            {
-                if (throwOnFailure)
-                {
-                    throw;
-                }
-
-                return false;
-            }
+            return await InternalVerify(transaction, transaction.Inputs[inputIndex]);
         }
-
-        async Task<bool> InternalVerify(Transaction transaction)
+        catch (FetchException ex)
         {
-            if (await feeCalculator.CalculateFeesAsync(transaction) < 0)
+            if (throwOnFailure)
             {
-                throw new VerificationException("Inputs are less than outputs");
+                throw new VerificationException("Unable to fetch prior transaction", ex);
             }
 
-            return await transaction.Inputs.Select(i => InternalVerify(transaction, i)).All();
+            return false;
         }
-
-        public async Task<bool> Verify(Transaction transaction, int inputIndex)
+        catch (VerificationException)
         {
-            CheckInputIndex(transaction, inputIndex);
-            try
+            if (throwOnFailure)
             {
-                return await InternalVerify(transaction, transaction.Inputs[inputIndex]);
+                throw;
             }
-            catch (FetchException ex)
-            {
-                if (throwOnFailure)
-                {
-                    throw new VerificationException("Unable to fetch prior transaction", ex);
-                }
 
-                return false;
-            }
-            catch (VerificationException)
-            {
-                if (throwOnFailure)
-                {
-                    throw;
-                }
-
-                return false;
-            }
+            return false;
         }
+    }
 
-        async Task<bool> InternalVerify(Transaction transaction, TransactionInput input)
+    async Task<bool> InternalVerify(Transaction transaction, TransactionInput input)
+    {
+        var priorOutput = await fetcher.FetchPriorOutput(input);
+        var script = new Script(input.SigScript, priorOutput.ScriptPubKey);
+        var sigHash = hasher.ComputeSigHash(transaction, input, priorOutput, SigHashType.All);
+
+        return evaluator.Evaluate(script.Commands, sigHash);
+    }
+
+    void CheckInputIndex(Transaction transaction, int inputIndex)
+    {
+        if (inputIndex < 0 || inputIndex >= transaction.Inputs.Count)
         {
-            var priorOutput = await fetcher.FetchPriorOutput(input);
-            var script = new Script(input.SigScript, priorOutput.ScriptPubKey);
-            var sigHash = hasher.ComputeSigHash(transaction, input, priorOutput, SigHashType.All);
-
-            return evaluator.Evaluate(script.Commands, sigHash);
-        }
-
-        void CheckInputIndex(Transaction transaction, int inputIndex)
-        {
-            if (inputIndex < 0 || inputIndex >= transaction.Inputs.Count)
-            {
-                throw new IndexOutOfRangeException(
-                    $"Input index {inputIndex} is invalid for transaction with {transaction.Inputs.Count} inputs");
-            }
+            throw new IndexOutOfRangeException(
+                $"Input index {inputIndex} is invalid for transaction with {transaction.Inputs.Count} inputs");
         }
     }
 }

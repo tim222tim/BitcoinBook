@@ -1,57 +1,56 @@
 ﻿using System;
 using System.Numerics;
 
-namespace BitcoinBook
+namespace BitcoinBook;
+
+public static class BigIntegerExtensions
 {
-    public static class BigIntegerExtensions
+    public static byte[] ToBigBytes(this BigInteger i, int minLength = 0)
     {
-        public static byte[] ToBigBytes(this BigInteger i, int minLength = 0)
+        var rawBytes = i.ToByteArray();
+        var rawLength = rawBytes.Length;
+        if (rawBytes[rawLength - 1] == 0)
         {
-            var rawBytes = i.ToByteArray();
-            var rawLength = rawBytes.Length;
-            if (rawBytes[rawLength - 1] == 0)
-            {
-                --rawLength;
-            }
-
-            var bytes = new byte[Math.Max(rawLength, minLength)];
-            var bx = bytes.Length - 1;
-            var rx = 0;
-            while (rx < rawLength)
-            {
-                bytes[bx--] = rawBytes[rx++];
-            }
-            while (bx >= 0)
-            {
-                bytes[bx--] = 0;
-            }
-
-            return bytes;
+            --rawLength;
         }
 
-        public static byte[] ToSignedBigBytes(this BigInteger i)
+        var bytes = new byte[Math.Max(rawLength, minLength)];
+        var bx = bytes.Length - 1;
+        var rx = 0;
+        while (rx < rawLength)
         {
-            return i.ToByteArray().Reverse();
+            bytes[bx--] = rawBytes[rx++];
+        }
+        while (bx >= 0)
+        {
+            bytes[bx--] = 0;
         }
 
-        public static byte[] ToBigBytes32(this BigInteger i)
-        {
-            return i.ToBigBytes(32);
-        }
+        return bytes;
+    }
 
-        public static byte[] ToLittleBytes(this BigInteger i)
-        {
-            return i.ToByteArray();
-        }
+    public static byte[] ToSignedBigBytes(this BigInteger i)
+    {
+        return i.ToByteArray().Reverse();
+    }
 
-        public static string ToHex(this BigInteger i)
-        {
-            return i.ToBigBytes().ToHex();
-        }
+    public static byte[] ToBigBytes32(this BigInteger i)
+    {
+        return i.ToBigBytes(32);
+    }
 
-        public static string ToHex32(this BigInteger i)
-        {
-            return i.ToBigBytes32().ToHex();
-        }
+    public static byte[] ToLittleBytes(this BigInteger i)
+    {
+        return i.ToByteArray();
+    }
+
+    public static string ToHex(this BigInteger i)
+    {
+        return i.ToBigBytes().ToHex();
+    }
+
+    public static string ToHex32(this BigInteger i)
+    {
+        return i.ToBigBytes32().ToHex();
     }
 }
